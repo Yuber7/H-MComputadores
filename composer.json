@@ -1,0 +1,45 @@
+{
+  "name": "jorgeestiven/ejemplocomposerestiven",
+  "description": "Ejemplo de creación de un proyecto",
+  "version": "0.0.1",
+  "type": "project",
+  "keywords": ["ejemplo", "composer", "adsi"],
+  "homepage": "https://google.com",
+  "time": "2020-09-24",
+  "minimum-stability": "dev",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Estiven Rodriguez",
+      "email": "jerodriguez7580@misena.edu.co",
+      "homepage": "https://www.sena.edu.co",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=7.4",
+    "ext-json": "*",
+    "ext-pdo": "*",
+    "almasaeed2010/adminlte": "^3.0",
+    "vlucas/phpdotenv": "^3.6",
+    "nesbot/carbon": "^2.37"
+  },
+  "require-dev": {
+
+  },
+  "autoload": {
+
+  },
+  "scripts": {
+    "post-install-cmd": [
+    ],
+    "post-update-cmd": [
+    ]
+  },
+  "config": {
+    "bin-dir": "vendor/bin"
+  },
+  "extra": {
+
+  }
+}
