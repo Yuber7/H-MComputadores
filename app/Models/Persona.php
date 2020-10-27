@@ -21,28 +21,20 @@ class Persona extends BasicModel
     protected bool $estado;
 
     //Metodo constructor
-    public function __construct (//$id = 0,
-                                 $nombre = "",
-                                 $apellido = "",
-                                 $tipoDocumento = "",
-                                 $documento = 0,
-                                 $correo = "",
-                                 $telefono = "",
-                                 $rol = "",
-                                 $direccion = "",
-                                 $estado = "")
+    public function __construct($arrPersona = array())
     {
         //Propiedad recibida y asigna a una propiedad de la clase
         parent::__construct();
-        $this->setNombre($nombre);
-        $this->setApellido($apellido);
-        $this->setTipoDocumento($tipoDocumento);
-        $this->setDocumento($documento);
-        $this->setCorreo($correo);
-        $this->setTelefono($telefono);
-        $this->setRol($rol);
-        $this->setDireccion($direccion);
-        $this->setEstado($estado);
+        $this->setId($arrPersona['id'] ?? 0);
+        $this->setNombre($arrPersona['nombre'] ?? "");
+        $this->setApellido($arrPersona['apellido'] ?? "");
+        $this->setTipoDocumento($arrPersona['tipoDocumento'] ?? "");
+        $this->setDocumento($arrPersona['documento'] ?? 0);
+        $this->setCorreo($arrPersona['correo'] ?? "");
+        $this->setTelefono($arrPersona['telefono'] ?? "");
+        $this->setRol($arrPersona['rol'] ?? "") ;
+        $this->setDireccion($arrPersona['direccion'] ?? "");
+        $this->setEstado($arrPersona['estado'] ?? "");
     }
 
 
@@ -346,6 +338,16 @@ class Persona extends BasicModel
     public function saludar (?string $nombre = "Sujeto", ?string $apellido = "Anonimo") : string
     { //Visibilidad, function, nombre metodo(parametros), retorno
         return "Hola ".$this->nombre." ".$this->apellido.", Bienvenido a H&M Computadores<br/>";
+    }
+
+
+    static function PersonaRegistrada(int $documento){
+        $result = Persona::search("SELECT * FROM `h&mcomputadores`.persona where documento = " .$documento);
+        if ( count ($result) > 0 ) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public function __toString() : string
