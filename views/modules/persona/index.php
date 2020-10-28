@@ -136,14 +136,14 @@ use App\Models\Persona;
                                                            class="btn docs-tooltip btn-warning btn-xs"><i
                                                                     class="fa fa-eye"></i></a>
                                                         <?php if ($persona->getEstado() != "activo") { ?>
-                                                            <a href="../../../app/Controllers/UsuariosController.php?action=activate&Id=<?php echo $persona->getId(); ?>"
-                                                               type="button" data-toggle="tooltip" title="Activar"
+                                                            <a href="../../../app/Controllers/PersonaController.php?action=activate&Id=<?php echo $persona->getId(); ?>"
+                                                               type="button" data-toggle="tooltip" title="Activo"
                                                                class="btn docs-tooltip btn-success btn-xs"><i
                                                                         class="fa fa-check-square"></i></a>
                                                         <?php } else { ?>
                                                             <a type="button"
-                                                               href="../../../app/Controllers/UsuariosController.php?action=inactivate&Id=<?php echo $persona->getId(); ?>"
-                                                               data-toggle="tooltip" title="Inactivar"
+                                                               href="../../../app/Controllers/PersonaController.php?action=inactivate&Id=<?php echo $persona->getId(); ?>"
+                                                               data-toggle="tooltip" title="Inactivo"
                                                                class="btn docs-tooltip btn-danger btn-xs"><i
                                                                         class="fa fa-times-circle"></i></a>
                                                         <?php } ?>
