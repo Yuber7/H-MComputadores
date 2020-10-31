@@ -30,7 +30,7 @@ $carlos = new Persona();
 $manuel = new persona("Samuel", "Naranjo", "C.C", 1234567842, "mnuel123@correo.com", "3211232345", "Cliente", "Kr10b-43-93","activo");
 $manuel->save();
 
-$arrPersonas = Persona::search("SELECT * FROM `h&mcomputadores`.persona WHERE rol='Cliente'");
+$arrPersonas = Persona::search("SELECT * FROM `h&mcomputadores`.personas WHERE rol='Cliente'");
 
 $allPersonas =Persona::getAll();
 var_dump($allPersonas);
