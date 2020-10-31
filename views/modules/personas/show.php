@@ -1,8 +1,8 @@
 <?php
 require("../../partials/routes.php");
-require("../../../app/Controllers/PersonaController.php");
+require("../../../app/Controllers/PersonasController.php");
 
-use App\Controllers\PersonaController; ?>
+use App\Controllers\PersonasController; ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -61,12 +61,15 @@ use App\Controllers\PersonaController; ?>
                         <!-- Horizontal Form -->
                         <div class="card card-green">
                             <?php if (!empty($_GET["id"]) && isset($_GET["id"])) {
-                                $DataPersona = PersonaController::searchForID($_GET["id"]);
-                                if (!empty($DataPersona)) {
+                                $DataPersonas
+                                    = PersonasController::searchForID($_GET["id"]);
+                                if (!empty($DataPersonas
+                                )) {
                                     ?>
                                     <div class="card-header">
                                         <h3 class="card-title"><i class="fas fa-info"></i> &nbsp; Ver Información
-                                            de <?= $DataPersona->getNombre() ?></h3>
+                                            de <?= $DataPersonas
+                                                ->getNombre() ?></h3>
                                         <div class="card-tools">
                                             <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
                                                     data-source="show.php" data-source-selector="#card-refresh-content"
@@ -85,29 +88,48 @@ use App\Controllers\PersonaController; ?>
                                         <p>
                                             <strong><i class="fas fa-book mr-1"></i> Nombre y Apellido</strong>
                                         <p class="text-muted">
-                                            <?= $DataPersona->getNombre() . " " . $DataPersona->getApellido() ?>
+                                            <?=
+                                            $DataPersonas->getNombre() . " " . $DataPersonas->getApellido() ?>
                                         </p>
                                         <hr>
 
                                         <strong><i class="fas fa-user mr-1"></i> Documento</strong>
-                                        <p class="text-muted"><?= $DataPersona->getTipoDocumento() . ": " . $DataPersona->getDocumento() ?></p>
-                                        <hr>
-
-                                        <strong><i class="fas fa-map-marker-alt mr-1"></i> Correo</strong>
-                                        <p class="text-muted"><?= $DataPersona->getCorreo() ?></p>
+                                        <p class="text-muted"><?=
+                                            $DataPersonas->getTipo_documento() . ": " . $DataPersonas->getDocumento() ?></p>
                                         <hr>
 
                                         <strong><i class="fas fa-phone mr-1"></i> Telefono</strong>
-                                        <p class="text-muted"><?= $DataPersona->getTelefono() ?></p>
+                                        <p class="text-muted">
+                                            <?= $DataPersonas->getTelefono() ?></p>
+                                        <hr>
+
+                                        //este esta F
+                                        <strong><i class="fas fa-map-marker-alt mr-1"></i> Direccion</strong>
+                                        <p class="text-muted"><?= $DataPersonas->getMunicipioId() ?></p>
                                         <hr>
 
                                         <strong><i class="fas fa-map-marker-alt mr-1"></i> Direccion</strong>
-                                        <p class="text-muted"><?= $DataPersona->getDireccion() ?></p>
+                                        <p class="text-muted"><?= $DataPersonas
+                                                ->getDireccion() ?></p>
+                                        <hr>
+
+                                        <strong><i class="fas fa-map-marker-alt mr-1"></i> Correo Electronico</strong>
+                                        <p class="text-muted">
+                                            <?= $DataPersonas->getEmail() ?></p>
+                                        <hr>
+
+                                        //este no creo que sirva o que vaya dentro
+                                        <strong><i class="fas fa-map-marker-alt mr-1"></i> Contaseña </strong>
+                                        <p class="text-muted">
+                                            <?= $DataPersonas->getPassword() ?></p>
                                         <hr>
 
                                         <strong><i class="far fa-file-alt mr-1"></i> Estado y Rol</strong>
-                                        <p class="text-muted"><?= $DataPersona->getEstado() . " - " . $DataPersona->getRol() ?></p>
+                                        <p class="text-muted">
+                                            <?= $DataPersonas->getEstado() . " - " . $DataPersonas->getRol() ?></p>
                                         </p>
+
+
 
                                     </div>
                                     <div class="card-footer">

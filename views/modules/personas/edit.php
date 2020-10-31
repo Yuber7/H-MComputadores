@@ -1,8 +1,8 @@
 <?php
 require("../../partials/routes.php");
-require("../../../app/Controllers/PersonaController.php");
+require("../../../app/Controllers/PersonasController.php");
 
-use  App\Controllers\PersonaController;
+use  App\Controllers\PersonasController;
 ?>
 
 <!DOCTYPE html>
@@ -70,8 +70,8 @@ use  App\Controllers\PersonaController;
                             <?php if (!empty($_GET["id"]) && isset($_GET["id"])) { ?>
                                 <p>
                                 <?php
-                                $DataPersona = PersonaController::searchForID($_GET["id"]);
-                                if (!empty($DataPersona)) {
+                                $DataPersonas = PersonasController::searchForID($_GET["id"]);
+                                if (!empty($DataPersonas)) {
                                     ?>
 
                             <!-- /.card-header -->
@@ -79,9 +79,9 @@ use  App\Controllers\PersonaController;
                                 <!-- form start -->
                                 <form class="form-horizontal" method="post" id="frmEditPersona"
                                       name="frmEditPersona"
-                                      action="../../../app/Controllers/PersonaController.php?action=edit">
+                                      action="../../../app/Controllers/PersonasController.php?action=edit">
 
-                                    <input id="id" name="id" value="<?php echo $DataPersona->getId(); ?>" hidden
+                                    <input id="id" name="id" value="<?php echo $DataPersonas->getId(); ?>" hidden
                                            required="required" type="text">
 
                                     <div class="form-group row">
@@ -89,7 +89,7 @@ use  App\Controllers\PersonaController;
                                         <div class="col-sm-10">
                                             <input required type="text" class="form-control" id="nombre" name="nombre"
                                                    placeholder="Ingrese su nombre"
-                                                   value="<?php echo $DataPersona->getNombre(); ?>">
+                                                   value="<?php echo $DataPersonas->getNombre(); ?>">
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -97,67 +97,93 @@ use  App\Controllers\PersonaController;
                                         <div class="col-sm-10">
                                             <input required type="text" class="form-control" id="apellido"
                                                    name="apellido" placeholder="Ingrese su apellido"
-                                                   value="<?php echo $DataPersona->getApellido(); ?>">
+                                                   value="<?php echo $DataPersonas->getApellido(); ?>">
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="tipoDocumento" class="col-sm-2 col-form-label">Tipo
+                                        <label for="tipo_documento" class="col-sm-2 col-form-label">Tipo
                                             Documento</label>
                                         <div class="col-sm-10">
-                                            <select id="tipoDocumento" name="tipoDocumento" class="custom-select">
-                                                <option <?= ($DataPersona->getTipoDocumento() == "C.C") ? "selected" : ""; ?> value="C.C">Cedula de Ciudadania</option>
-                                                <option <?= ($DataPersona->getTipoDocumento() == "T.I") ? "selected" : ""; ?> value="T.I">Tarjeta de Identidad</option>
-                                                <option <?= ($DataPersona->getTipoDocumento() == "NIT") ? "selected" : ""; ?> value="NIT">Nit Empresa</option>
-                                                <option <?= ($DataPersona->getTipoDocumento() == "C.E") ? "selected" : ""; ?> value="C.E">Cedula de Extranjeria</option>
+                                            <select id="tipo_documento" name="tipo_documento" class="custom-select">
+                                                <option <?= ($DataPersonas->getTipo_documento() == "CC") ? "selected" : ""; ?> value="C.C">Cedula de Ciudadania</option>
+                                                <option <?= ($DataPersonas->getTipo_documento() == "CE") ? "selected" : ""; ?> value="CE">Cedula de Extranjeria</option>
+                                                <option <?= ($DataPersonas->getTipo_documento() == "TI") ? "selected" : ""; ?> value="T.I">Tarjeta de Identidad</option>
+                                                <option <?= ($DataPersonas->getTipo_documento() == "NIT") ? "selected" : ""; ?> value="NIT">Nit Empresa</option>
+                                                <option <?= ($DataPersonas->getTipo_documento() == "REG") ? "selected" : ""; ?> value="REG">Registro Civil</option>
+                                                <option <?= ($DataPersonas->getTipo_documento() == "PAS") ? "selected" : ""; ?> value="PAS">Pasaporte</option>
                                             </select>
                                         </div>
                                     </div>
+
                                     <div class="form-group row">
                                         <label for="documento" class="col-sm-2 col-form-label">Documento</label>
                                         <div class="col-sm-10">
                                             <input required type="number" minlength="6" class="form-control"
                                                    id="documento" name="documento" placeholder="Ingrese su documento"
-                                                   value="<?php echo $DataPersona->getDocumento(); ?>">
+                                                   value="<?php echo $DataPersonas->getDocumento(); ?>">
                                         </div>
                                     </div>
-                                    <div class="form-group row">
-                                        <label for="correo" class="col-sm-2 col-form-label">Correo Electonico</label>
-                                        <div class="col-sm-10">
-                                            <input required type="email" minlength="6" class="form-control"
-                                                   id="correo" name="correo" placeholder="Ingrese su correo electonico"
-                                                   value="<?php echo $DataPersona->getCorreo(); ?>">
-                                        </div>
-                                    </div>
+
                                     <div class="form-group row">
                                         <label for="telefono" class="col-sm-2 col-form-label">Telefono</label>
                                         <div class="col-sm-10">
                                             <input required type="number" minlength="6" class="form-control"
                                                    id="telefono" name="telefono" placeholder="Ingrese su telefono"
-                                                   value="<?php echo $DataPersona->getTelefono(); ?>">
+                                                   value="<?php echo $DataPersonas->getTelefono(); ?>">
                                         </div>
                                     </div>
+
                                     <div class="form-group row">
                                         <label for="rol" class="col-sm-2 col-form-label">Rol</label>
                                         <div class="col-sm-10">
                                             <select id="rol" name="rol" class="custom-select">
-                                                <option <?= ($DataPersona->getRol() == "Proveedor") ? "selected" : ""; ?> value="Proveedor">Proveedor</option>
-                                                <option <?= ($DataPersona->getRol() == "Cliente") ? "selected" : ""; ?> value="Cliente">Cliente</option>
-                                                <option <?= ($DataPersona->getRol() == "Administrador") ? "selected" : ""; ?> value="Administrador">Administrador</option></select>
+                                                <option <?= ($DataPersonas->getRol() == "Proveedor") ? "selected" : ""; ?> value="Proveedor">Proveedor</option>
+                                                <option <?= ($DataPersonas->getRol() == "Cliente") ? "selected" : ""; ?> value="Cliente">Cliente</option>
+                                                <option <?= ($DataPersonas->getRol() == "Administrador") ? "selected" : ""; ?> value="Administrador">Administrador</option></select>
                                         </div>
                                     </div>
+
+                                    <div class="form-group row">
+                                        <label for="municipio_id" class="col-sm-2 col-form-label">Municipio</label>
+                                        <div class="col-sm-10">
+                                            <select id="municipio_id" name="municipio_id" class="custom-select">
+                                                <option value="Proveedor">Medellin</option>
+                                                <option value="Cliente">caldas</option></select>
+                                        </div>
+                                    </div>
+
                                     <div class="form-group row">
                                         <label for="direccion" class="col-sm-2 col-form-label">Direccion</label>
                                         <div class="col-sm-10">
                                             <input required type="text" class="form-control" id="direccion"
-                                                   name="direccion" placeholder="Ingrese su direccion" value="<?php echo $DataPersona->getDireccion(); ?>">
+                                                   name="direccion" placeholder="Ingrese su direccion" value="<?php echo $DataPersonas->getDireccion(); ?>">
                                         </div>
                                     </div>
+
+                                    <div class="form-group row">
+                                        <label for="email" class="col-sm-2 col-form-label">Correo Electonico</label>
+                                        <div class="col-sm-10">
+                                            <input required type="email" minlength="6" class="form-control"
+                                                   id="email" name="email" placeholder="Ingrese su correo electonico"
+                                                   value="<?php echo $DataPersonas->getEmail(); ?>">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="password" class="col-sm-2 col-form-label">Direccion</label>
+                                        <div class="col-sm-10">
+                                            <input required type="password" class="form-control" id="password"
+                                                   name="password" placeholder="Ingrese su contraseña" value="<?php echo $DataPersonas->getPassword(); ?>">
+                                        </div>
+                                    </div>
+
+
                                     <div class="form-group row">
                                         <label for="estado" class="col-sm-2 col-form-label">Estado</label>
                                         <div class="col-sm-10">
                                             <select id="estado" name="estado" class="custom-select">
-                                                <option <?= ($DataPersona->getEstado() == "activo") ? "selected" : ""; ?> value="activo">Activo</option>
-                                                <option <?= ($DataPersona->getEstado() == "inactivo") ? "selected" : ""; ?> value="inactivo">Inactivo</option>
+                                                <option <?= ($DataPersonas->getEstado() == "activo") ? "selected" : ""; ?> value="activo">Activo</option>
+                                                <option <?= ($DataPersonas->getEstado() == "inactivo") ? "selected" : ""; ?> value="inactivo">Inactivo</option>
                                             </select>
                                         </div>
                                     </div>

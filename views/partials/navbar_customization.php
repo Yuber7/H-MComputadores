@@ -11,7 +11,7 @@
     <ul class="navbar-nav ml-auto">
         <!-- Notifications Dropdown Menu -->
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="<?= $baseURL; ?>/app/Controllers/PersonaController.php?action=cerrarSession" class="nav-link">Cerrar Session</a>
+            <a href="<?= $baseURL; ?>/app/Controllers/PersonasController.php?action=cerrarSession" class="nav-link">Cerrar Session</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#">
