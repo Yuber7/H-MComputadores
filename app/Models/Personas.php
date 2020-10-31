@@ -1,9 +1,7 @@
 <?php
 
-
 namespace App\Models;
 require_once  ('BasicModel.php');
-
 
 class Personas extends BasicModel
 {
@@ -13,7 +11,7 @@ class Personas extends BasicModel
     protected string $apellido;
     protected string $tipo_documento;
     protected int $documento;
-    protected string $telefono;
+    protected int $telefono;
     protected string $rol;
     protected Municipios $municipio_id;
     protected string $direccion;
@@ -26,20 +24,32 @@ class Personas extends BasicModel
     {
         //Propiedad recibida y asigna a una propiedad de la clase
         parent::__construct();
-        $this->setId($arrPersonas['id'] ?? 0);
+        $this->id = $arrPersonas['id'] ?? 0;
+        $this->nombre = $arrPersonas['nombre'] ?? '';
+        $this->apellido = $arrPersonas['apellido'] ?? '';
+        $this->tipo_documento = $arrPersonas['tipo_documento'] ?? '';
+        $this->documento = $arrPersonas['documento'] ?? 0;
+        $this->telefono = $arrPersonas['telefono'] ?? 0;
+        $this->email = $arrPersonas['email'] ?? '';
+        $this->rol = $arrPersonas['rol'] ?? '';
+        $this->municipio_id = !empty($arrPersonas['municipio_id']) ? Municipios::searchForId($arrPersonas['municipio_id']) : new Municipios();
+        $this->direccion = $arrPersonas['direccion'] ?? '';
+        $this->email = $arrPersonas['email'] ?? '';
+        $this->password = $arrPersonas['password'] ?? '';
+        $this->estado = $arrPersonas['estado'] ?? '';
+
+        /*$this->setId($arrPersonas['id'] ?? "");
         $this->setNombre($arrPersonas['nombre'] ?? "");
         $this->setApellido($arrPersonas['apellido'] ?? "");
-        $this->setTipoDocumento($arrPersonas['tipo_documento'] ?? "");
+        $this->setTipo_documento($arrPersonas['tipo_documento'] ?? "");
         $this->setDocumento($arrPersonas['documento'] ?? 0);
         $this->setTelefono($arrPersonas['telefono'] ?? 0);
-        $this->setCorreo($arrPersonas['correo'] ?? "");
-        $this->setTelefono($arrPersonas['telefono'] ?? "");
         $this->setRol($arrPersonas['rol'] ?? "") ;
-        $this->municipio_id = !empty($Municipios['municipios_id']) ? Municipios::searchForId($Municipios['municipios_id']) : new Municipios();
+        $this->municipio_id = !empty($arrPersonas['municipio_id']) ? Municipios::searchForId($arrPersonas['municipio_id']) : new Municipios();
         $this->setDireccion($arrPersonas['direccion'] ?? "");
         $this->setEmail($arrPersonas['email'] ?? "");
         $this->setPassword($arrPersonas['password'] ?? null);
-        $this->setEstado($arrPersonas['estado'] ?? "");
+        $this->setEstado($arrPersonas['estado'] ?? "");*/
     }
 
 
@@ -55,7 +65,7 @@ class Personas extends BasicModel
 
 
     /**
-     * @return int
+     * @return mixed|int
      */
 
     public function getId(): int
@@ -64,7 +74,7 @@ class Personas extends BasicModel
     }
 
     /**
-     * @param int $id
+     * @param mixed|int $id
      */
     public function setId(int $id): void
     {
@@ -186,7 +196,7 @@ class Personas extends BasicModel
     /**
      * @return mixed|string
      */
-    public function getTelefono(): string
+    public function getTelefono(): int
     {
         return $this->telefono;
     }
@@ -194,7 +204,7 @@ class Personas extends BasicModel
     /**
      * @param mixed|string $telefono
      */
-    public function setTelefono(string $telefono): void
+    public function setTelefono(int $telefono): void
     {
         $this->telefono = $telefono;
     }
@@ -239,7 +249,7 @@ class Personas extends BasicModel
      */
     public function getEstado(): string
     {
-        return ($this->estado) ? "activo" : "inactivo";
+        return ($this->estado) ? "Activo" : "Inactivo";
     }
 
     /**
@@ -247,7 +257,7 @@ class Personas extends BasicModel
      */
     public function setEstado(string $estado): void
     {
-        $this->estado = strtolower(trim($estado)) == "activo";
+        $this->estado = trim($estado) == "Inactivo";
     }
 
 
@@ -257,17 +267,17 @@ class Personas extends BasicModel
     public function save() : Personas
     {
         $result = $this->insertRow( "INSERT INTO `h&mcomputadores`.personas VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", array(
-                $this->getNombre(),
-                $this->getApellido(),
-                $this->getTipo_documento(),
-                $this->getDocumento(),
-                $this->getTelefono(),
-                $this->getRol(),
+                $this->nombre,
+                $this->apellido,
+                $this->tipo_documento,
+                $this->documento,
+                $this->telefono,
+                $this->rol,
                 $this->municipio_id->getId(),
-                $this->getDireccion(),
-                $this->getEmail(),
-                $this->getPassword(),
-                $this->getEstado()
+                $this->direccion,
+                $this->email,
+                $this->password,
+                $this->estado
             )
         );
         $this->setId(($result) ? $this->getLastId() : null);
@@ -314,18 +324,36 @@ class Personas extends BasicModel
      * @param $query
      * @return mixed
      */
-    public static function search($query)
+    public static function search($query) : array
     {
         $arrPersonas = array();
         $tmp = new Personas();
         $getrows = $tmp->getRows($query);
 
-        foreach ($getrows as $valor) {
+
+
+        foreach ($getrows as $datos) {
             $Personas = new Personas();
+            $Personas->id = $datos['id'];
+            $Personas->nombre = $datos['nombre'];
+            $Personas->estado = $datos['estado'];
+            $Personas->apellido = $datos['apellido'];
+            $Personas->tipo_documento = $datos['tipo_documento'];
+            $Personas->documento = $datos['documento'];
+            $Personas->telefono = $datos['telefono'];
+            $Personas->rol = $datos['rol'];
+            $Personas->municipio_id = Municipios::searchForId($datos['municipio_id']);
+            $Personas->direccion = $datos['direccion'];
+            $Personas->email = $datos['email'];
+            $Personas->password = $datos['password'];
+            $Personas->estado = $datos['estado'];
+            array_push($arrPersonas, $Personas);
+
+            /*$Personas = new Personas();
             $Personas->setId($valor['id']);
             $Personas->setNombre($valor['nombre']);
             $Personas->setApellido($valor['apellido']);
-            $Personas->setTipo_documento($valor['tipoDocumento']);
+            $Personas->setTipo_documento($valor['tipo_documento']);
             $Personas->setDocumento($valor['documento']);
             $Personas->setTelefono($valor['telefono']);
             $Personas->setRol($valor['rol']);
@@ -335,10 +363,11 @@ class Personas extends BasicModel
             $Personas->setPassword($valor['password']);
             $Personas->setEstado($valor['estado']);
             $Personas->Disconnect();
-            array_push($arrPersonas, $Personas);
+            array_push($arrPersonas, $Personas);*/
         }
         $tmp->Disconnect();
-        return $arrPersonas;    }
+        return $arrPersonas;
+    }
 
 
     /**
@@ -362,7 +391,7 @@ class Personas extends BasicModel
             $Personas->direccion = $getrow['direccion'];
             $Personas->email = $getrow['email'];
             $Personas->password = $getrow['password'];
-            $Personas->setEstado($getrow['estado']);
+            $Personas->getEstado($getrow['estado']);
         }
         $Personas->Disconnect();
         return $Personas;
