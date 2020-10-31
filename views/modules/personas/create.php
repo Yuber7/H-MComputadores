@@ -66,9 +66,9 @@ require("../../partials/routes.php");;
                             <!-- /.card-header -->
                             <div class="card-body">
                                 <!-- form start -->
-                                <form class="form-horizontal" method="post" id="frmCreatePersona"
+                                <form class="form-horizontal" method="post" id="frmCreatePersonas"
                                       name="frmCreatePersona"
-                                      action="../../../app/Controllers/PersonaController.php?action=create">
+                                      action="../../../app/Controllers/PersonasController.php?action=create">
                                     <div class="form-group row">
                                         <label for="nombre" class="col-sm-2 col-form-label">Nombre</label>
                                         <div class="col-sm-10">
@@ -84,14 +84,17 @@ require("../../partials/routes.php");;
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="tipoDocumento" class="col-sm-2 col-form-label">Tipo
+                                        <label for="tipo_documento" class="col-sm-2 col-form-label">Tipo
                                             Documento</label>
                                         <div class="col-sm-10">
-                                            <select id="tipoDocumento" name="tipoDocumento" class="custom-select">
-                                                <option value="C.C">Cedula de Ciudadania</option>
-                                                <option value="T.I">Tarjeta de Identidad</option>
+                                            <select id="tipo_documento" name="tipo_documento" class="custom-select">
+                                                <option value="CC">Cedula de Ciudadania</option>
+                                                <option value="CE">Cedula de Extranjeria</option>
+                                                <option value="TI">Tarjeta de Identidad</option>
                                                 <option value="NIT">Nit Empresa</option>
-                                                <option value="C.E">Cedula de Extranjeria</option>
+                                                <option value="REG">Registro Civil</option>
+                                                <option value="PAS">Pasaporte</option>
+
                                             </select>
                                         </div>
                                     </div>
@@ -100,13 +103,6 @@ require("../../partials/routes.php");;
                                         <div class="col-sm-10">
                                             <input required type="number" minlength="6" class="form-control"
                                                    id="documento" name="documento" placeholder="Ingrese su documento">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="correo" class="col-sm-2 col-form-label">Correo Electonico</label>
-                                        <div class="col-sm-10">
-                                            <input required type="email" minlength="6" class="form-control"
-                                                   id="correo" name="correo" placeholder="Ingrese su correo electonico">
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -126,10 +122,32 @@ require("../../partials/routes.php");;
                                         </div>
                                     </div>
                                     <div class="form-group row">
+                                        <label for="municipio_id" class="col-sm-2 col-form-label">Municipio</label>
+                                        <div class="col-sm-10">
+                                            <select id="municipio_id" name="municipio_id" class="custom-select">
+                                                <option value="Proveedor">Medellin</option>
+                                                <option value="Cliente">caldas</option></select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
                                         <label for="direccion" class="col-sm-2 col-form-label">Direccion</label>
                                         <div class="col-sm-10">
                                             <input required type="text" class="form-control" id="direccion"
                                                    name="direccion" placeholder="Ingrese su direccion">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="email" class="col-sm-2 col-form-label">Correo Electonico</label>
+                                        <div class="col-sm-10">
+                                            <input type="email" minlength="6" class="form-control"
+                                                   id="email" name="email" placeholder="Ingrese su correo electonico">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="password" class="col-sm-2 col-form-label">Contraseña</label>
+                                        <div class="col-sm-10">
+                                            <input type="password" minlength="6" class="form-control"
+                                                   id="password" name="password" placeholder="Ingrese una contraseña - opcional">
                                         </div>
                                     </div>
                                         <div class="form-group row">
