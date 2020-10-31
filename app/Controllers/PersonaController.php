@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 require(__DIR__ . '/../../vendor/autoload.php'); //Requerido para convertir un objeto en Array
-require_once(__DIR__ . '/../Models/Persona.php');
+require_once(__DIR__ . '/../Models/Personas.php');
 require_once(__DIR__ . '/../Models/GeneralFunctions.php');
 
 use App\Models\GeneralFunctions;

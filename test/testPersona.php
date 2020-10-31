@@ -1,6 +1,6 @@
 <?php
 
-require_once ('..\app\Models\Persona.php');
+require_once('..\app\Models\Personas.php');
 require_once  ('..\app\Models\Administrador.php');
 
 use App\Models\Persona;
