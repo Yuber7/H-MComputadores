@@ -1,9 +1,9 @@
 <?php
-require_once("../../../app/Controllers/PersonaController.php");
+require_once("../../../app/Controllers/PersonasController.php");
 require_once("../../partials/routes.php");
 
-use App\Controllers\PersonaController;
-use App\Models\Persona;
+use App\Controllers\PersonasController;
+use App\Models\Personas;
 
 ?>
 <!DOCTYPE html>
@@ -101,48 +101,51 @@ use App\Models\Persona;
                                                 <th>Apellido</th>
                                                 <th>Tipo Doc.</th>
                                                 <th>Documento</th>
-                                                <th>Correo</th>
                                                 <th>Telefono</th>
                                                 <th>Rol</th>
+                                                <th>Municipio id</th>
                                                 <th>Direccion</th>
+                                                <th>Email</th>
                                                 <th>Estado</th>
                                                 <th>Acciones</th>
+
                                             </tr>
                                             </thead>
                                             <tbody>
                                             <?php
-                                            $arrPersonas = PersonaController::getAll();
-                                            /* @var $arrPersonas Persona[] */
-                                            foreach ($arrPersonas as $persona) {
+                                            $arrPersonas = PersonasController::getAll();
+                                            /* @var $arrPersonas Personas[] */
+                                            foreach ($arrPersonas as $personas) {
                                                 ?>
                                                 <tr>
-                                                    <td><?php echo $persona->getId(); ?></td>
-                                                    <td><?php echo $persona->getNombre(); ?></td>
-                                                    <td><?php echo $persona->getApellido(); ?></td>
-                                                    <td><?php echo $persona->getTipoDocumento(); ?></td>
-                                                    <td><?php echo $persona->getDocumento(); ?></td>
-                                                    <td><?php echo $persona->getCorreo(); ?></td>
-                                                    <td><?php echo $persona->getTelefono(); ?></td>
-                                                    <td><?php echo $persona->getRol(); ?></td>
-                                                    <td><?php echo $persona->getDireccion(); ?></td>
-                                                    <td><?php echo $persona->getEstado(); ?></td>
+                                                    <td><?php echo $personas->getId(); ?></td>
+                                                    <td><?php echo $personas->getNombre(); ?></td>
+                                                    <td><?php echo $personas->getApellido(); ?></td>
+                                                    <td><?php echo $personas->getTipo_documento(); ?></td>
+                                                    <td><?php echo $personas->getDocumento(); ?></td>
+                                                    <td><?php echo $personas->getTelefono(); ?></td>
+                                                    <td><?php echo $personas->getRol(); ?></td>
+                                                    <td><?php echo $personas->getMunicipioId()->getNombre(); ?> <?php echo $personas->getMunicipioId()->getId(); ?> </td>
+                                                    <td><?php echo $personas->getDireccion(); ?></td>
+                                                    <td><?php echo $personas->getEmail(); ?></td>
+                                                    <td><?php echo $personas->getEstado(); ?></td>
                                                     <td>
-                                                        <a href="edit.php?id=<?php echo $persona->getId(); ?>"
+                                                        <a href="edit.php?id=<?php echo $personas->getId(); ?>"
                                                            type="button" data-toggle="tooltip" title="Actualizar"
                                                            class="btn docs-tooltip btn-primary btn-xs"><i
                                                                     class="fa fa-edit"></i></a>
-                                                        <a href="show.php?id=<?php echo $persona->getId(); ?>"
+                                                        <a href="show.php?id=<?php echo $personas->getId(); ?>"
                                                            type="button" data-toggle="tooltip" title="Ver"
                                                            class="btn docs-tooltip btn-warning btn-xs"><i
                                                                     class="fa fa-eye"></i></a>
-                                                        <?php if ($persona->getEstado() != "activo") { ?>
-                                                            <a href="../../../app/Controllers/PersonaController.php?action=activate&Id=<?php echo $persona->getId(); ?>"
+                                                        <?php if ($personas->getEstado() != "activo") { ?>
+                                                            <a href="../../../app/Controllers/PersonasController.php?action=activate&Id=<?php echo $personas->getId(); ?>"
                                                                type="button" data-toggle="tooltip" title="Activo"
                                                                class="btn docs-tooltip btn-success btn-xs"><i
                                                                         class="fa fa-check-square"></i></a>
                                                         <?php } else { ?>
                                                             <a type="button"
-                                                               href="../../../app/Controllers/PersonaController.php?action=inactivate&Id=<?php echo $persona->getId(); ?>"
+                                                               href="../../../app/Controllers/PersonasController.php?action=inactivate&Id=<?php echo $personas->getId(); ?>"
                                                                data-toggle="tooltip" title="Inactivo"
                                                                class="btn docs-tooltip btn-danger btn-xs"><i
                                                                         class="fa fa-times-circle"></i></a>
@@ -159,10 +162,11 @@ use App\Models\Persona;
                                                 <th>Apellido</th>
                                                 <th>Tipo Doc.</th>
                                                 <th>Documento</th>
-                                                <th>Correo</th>
                                                 <th>Telefono</th>
                                                 <th>Rol</th>
+                                                <th>Municipio id</th>
                                                 <th>Direccion</th>
+                                                <th>Email</th>
                                                 <th>Estado</th>
                                                 <th>Acciones</th>
                                             </tr>
