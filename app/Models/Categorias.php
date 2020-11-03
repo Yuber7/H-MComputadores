@@ -10,21 +10,19 @@ class Categorias extends BasicModel
     //Propiedades
     protected int $id;
     protected string $nombre;
-    protected string $region;
+    protected string $descripcion;
     protected bool $estado;
 
     //Metodo constructor
-    public function __construct($arrDepartamentos = array())
+    public function __construct($arrCategorias = array())
     {
         //Propiedad recibida y asigna a una propiedad de la clase
         parent::__construct();
-        $this->setId($arrDepartamentos['id'] ?? 0);
-        $this->setNombre($arrDepartamentos['nombre'] ?? "");
-        $this->setRegion($arrDepartamentos['region'] ?? "");
-        $this->setEstado($arrDepartamentos['estado'] ?? "");
-
+        $this->setId($arrCategorias['id'] ?? 0);
+        $this->setNombre($arrCategorias['nombre'] ?? "");
+        $this->setDescripcion($arrCategorias['descripcion'] ?? "");
+        $this->setEstado($arrCategorias['estado'] ?? "");
     }
-
 
     public function __destruct() // Cierro Conexiones
     {
@@ -34,7 +32,6 @@ class Categorias extends BasicModel
         echo "</span>";
          */
     }
-
 
     /**
      * @return int
@@ -52,9 +49,8 @@ class Categorias extends BasicModel
         $this->id = $id;
     }
 
-
     /**
-     * @return mixed|string
+     * @return string
      */
     public function getNombre(): string
     {
@@ -62,27 +58,27 @@ class Categorias extends BasicModel
     }
 
     /**
-     * @param mixed|string $nombre
+     * @param string $nombre
      */
     public function setNombre(string $nombre): void
     {
-        $this->nombre = $nombre;
+        $this->nombre = trim(mb_strtoupper($nombre));
     }
 
     /**
-     * @return mixed|string
+     * @return string
      */
-    public function getRegion(): string
+    public function getDescripcion(): string
     {
-        return $this->region;
+        return $this->descripcion;
     }
 
     /**
-     * @param mixed|string $region
+     * @param string $descripcion
      */
-    public function setRegion(string $region): void
+    public function setDescripcion(string $descripcion): void
     {
-        $this->region = $region;
+        $this->descripcion = $descripcion;
     }
 
     /**
@@ -101,12 +97,11 @@ class Categorias extends BasicModel
         $this->estado = trim($estado) == "Activo";
     }
 
-
     public function save(): Categorias
     {
-        $result = $this->insertRow("INSERT INTO `h&mcomputadores`.departamentos VALUES (NULL, ?, ?, ?)", array(
+        $result = $this->insertRow("INSERT INTO `h&mcomputadores`.categorias VALUES (NULL, ?, ?, ?)", array(
                 $this->getNombre(),
-                $this->getRegion(),
+                $this->getDescripcion(),
                 $this->getEstado()
             )
         );
@@ -116,9 +111,9 @@ class Categorias extends BasicModel
 
     public function update()
     {
-        $result = $this->updateRow("UPDATE `h&mcomputadores`.departamentos SET nombre = ?, region = ?, estado = ? WHERE id = ?", array(
+        $result = $this->updateRow("UPDATE `h&mcomputadores`.categorias SET nombre = ?, descripcion = ?, estado = ? WHERE id = ?", array(
                 $this->getNombre(),
-                $this->getRegion(),
+                $this->getDescripcion(),
                 $this->getEstado(),
                 $this->getId()
             )
@@ -134,7 +129,7 @@ class Categorias extends BasicModel
      */
     public function deleted($id)
     {
-        $result = $this->updateRow("UPDATE `h&mcomputadores`.departamentos SET estado = ? WHERE id = ?", array(
+        $result = $this->updateRow("UPDATE `h&mcomputadores`.categorias SET estado = ? WHERE id = ?", array(
                 'Inactivo',
                 $this->getId()
             )
@@ -150,21 +145,21 @@ class Categorias extends BasicModel
      */
     public static function search($query)
     {
-        $arrDepartamentos = array();
+        $arrCategorias = array();
         $tmp = new Categorias();
         $getrows = $tmp->getRows($query);
 
         foreach ($getrows as $valor) {
-            $Departamentos = new Categorias();
-            $Departamentos->setId($valor['id']);
-            $Departamentos->setNombre($valor['nombre']);
-            $Departamentos->setRegion($valor['region']);
-            $Departamentos->setEstado($valor['estado']);
-            $Departamentos->Disconnect();
-            array_push($arrDepartamentos, $Departamentos);
+            $Categorias = new Categorias();
+            $Categorias->setId($valor['id']);
+            $Categorias->setNombre($valor['nombre']);
+            $Categorias->setDescripcion($valor['descripcion']);
+            $Categorias->setEstado($valor['estado']);
+            $Categorias->Disconnect();
+            array_push($arrCategorias, $Categorias);
         }
         $tmp->Disconnect();
-        return $arrDepartamentos;
+        return $arrCategorias;
 
     }
 
@@ -173,7 +168,7 @@ class Categorias extends BasicModel
      */
     public static function getAll()
     {
-        return Categorias::search("SELECT * FROM `h&mcomputadores`.departamentos");
+        return Categorias::search("SELECT * FROM `h&mcomputadores`.categorias");
     }
 
     /**
@@ -182,22 +177,22 @@ class Categorias extends BasicModel
      */
     public static function searchForId($id)
     {
-        $Departamentos = null;
+        $Categorias = null;
         if ($id > 0) {
-            $Departamentos = new Categorias();
-            $getrow = $Departamentos->getRow("SELECT * FROM `h&mcomputadores`.departamentos WHERE id =?", array($id));
-            $Departamentos->setId($getrow['id']);
-            $Departamentos->setNombre($getrow['nombre']);
-            $Departamentos->setRegion($getrow['region']);
-            $Departamentos->setEstado($getrow['estado']);
+            $Categorias = new Categorias();
+            $getrow = $Categorias->getRow("SELECT * FROM `h&mcomputadores`.categorias WHERE id =?", array($id));
+            $Categorias->setId($getrow['id']);
+            $Categorias->setNombre($getrow['nombre']);
+            $Categorias->setDescripcion($getrow['descripcion']);
+            $Categorias->setEstado($getrow['estado']);
         }
-        $Departamentos->Disconnect();
-        return $Departamentos;
+        $Categorias->Disconnect();
+        return $Categorias;
     }
 
 
-    static function DepartamentosRegistrado(string $nombre ){
-        $result = Categorias::search("SELECT * FROM `h&mcomputadores`.departamentos where nombre = " .$nombre);
+    static function CategoriaRegistrada(string $nombre ){
+        $result = Categorias::search("SELECT * FROM `h&mcomputadores`.categorias where nombre = " .$nombre);
         if ( count ($result) > 0 ) {
             return true;
         } else {
@@ -210,9 +205,7 @@ class Categorias extends BasicModel
         $typeOutput = "\n";
         return
             "nombre:  " .$this->getNombre(). $typeOutput.
-            "region:  " .$this->getRegion(). $typeOutput.
+            "descripcion:  " .$this->getDescripcion(). $typeOutput.
             "estado:  " .$this->getEstado(). $typeOutput;
     }
-
 }
-

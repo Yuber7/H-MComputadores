@@ -6,7 +6,7 @@ require(__DIR__ . '/../../vendor/autoload.php'); //Requerido para convertir un o
 require_once(__DIR__ . '/../Models/Departamentos.php');
 require_once(__DIR__ . '/../Models/GeneralFunctions.php');
 
-use App\Models\Departamentos;
+use App\Models\Categorias;
 use App\Models\GeneralFunctions;
 
 
@@ -42,8 +42,8 @@ class DepartamentosController
             $arrayDepartamentos['region'] = $_POST['region'];
             $arrayDepartamentos['estado'] = $_POST['estado'];
 
-            if (!Departamentos::DepartamentosRegistrado($arrayDepartamentos['nombre'])) {
-                $Departamentos = new Departamentos($arrayDepartamentos) ;
+            if (!Categorias::CategoriasRegistrado($arrayDepartamentos['nombre'])) {
+                $Departamentos = new Categorias($arrayDepartamentos) ;
                 if ($Departamentos->save()) {
                     header("Location: ../../views/modules/departamentos/index.php?accion=create&respuesta=correcto");
                 }
@@ -65,7 +65,7 @@ class DepartamentosController
             $arrayDepartamentos['estado'] = $_POST['estado'];
             $arrayDepartamentos['id'] = $_POST['id'];
 
-            $Departamentos = new Departamentos($arrayDepartamentos);
+            $Departamentos = new Categorias($arrayDepartamentos);
             $Departamentos->update();
 
             header("Location: ../../views/modules/departamentos/show.php?id=" . $Departamentos->getId() . "&respuesta=correcto");
@@ -78,7 +78,7 @@ class DepartamentosController
     static public function searchForID($id)
     {
         try {
-            return Departamentos::searchForId($id);
+            return Categorias::searchForId($id);
         } catch (\Exception $e) {
             GeneralFunctions::console($e, 'error', 'errorStack');
             //header("Location: ../../views/modules/departamentos/manager.php?respuesta=error");
@@ -88,7 +88,7 @@ class DepartamentosController
     static public function getAll()
     {
         try {
-            return Departamentos::getAll();
+            return Categorias::getAll();
         } catch (\Exception $e) {
             GeneralFunctions::console($e, 'log', 'errorStack');
             //header("Location: ../Vista/modules/departamentos/manager.php?respuesta=error");

@@ -1,16 +1,15 @@
 <?php
-require_once("../../../app/Controllers/MunicipiosController.php");
+require_once("../../../app/Controllers/CategoriasController.php");
 require_once("../../partials/routes.php");
 
-use App\Controllers\MunicipiosController;
+use App\Controllers\CategoriasController;
 use App\Models\Categorias;
-use App\Models\Municipios;
 
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?= $_ENV['TITLE_SITE'] ?> | Gestionar Municipios</title>
+    <title><?= $_ENV['TITLE_SITE'] ?> | Gestionar Categorias</title>
     <?php require("../../partials/head_imports.php"); ?>
     <!-- DataTables -->
     <link rel="stylesheet" href="<?= $adminlteURL ?>/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
@@ -53,9 +52,9 @@ use App\Models\Municipios;
                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                         <h5><i class="icon fas fa-check"></i> Correcto!</h5>
                         <?php if ($_GET['accion'] == "create") { ?>
-                            El Municipio ha sido creado con exito!
+                            La Categoria ha sido creado con exito!
                         <?php } else if ($_GET['accion'] == "update") { ?>
-                            Los datos del Municipio han sido actualizados correctamente!
+                            Los datos de la categoria han sido actualizados correctamente!
                         <?php } ?>
                     </div>
                 <?php } ?>
@@ -67,13 +66,13 @@ use App\Models\Municipios;
                         <!-- Default box -->
                         <div class="card card-dark">
                             <div class="card-header">
-                                <h3 class="card-title"><i class="fas fa-user"></i>  Gestionar Municipios</h3>
+                                <h3 class="card-title"><i class="fas fa-user"></i>  Gestionar Categorias</h3>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
                                             data-source="index.php" data-source-selector="#card-refresh-content"
                                             data-load-on-init="false"><i class="fas fa-sync-alt"></i></button>
                                     <button type="button" class="btn btn-tool" data-card-widget="maximize"><i
-                                            class="fas fa-expand"></i></button>
+                                                class="fas fa-expand"></i></button>
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse"
                                             data-toggle="tooltip" title="Collapse">
                                         <i class="fas fa-minus"></i></button>
@@ -85,49 +84,47 @@ use App\Models\Municipios;
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col">
-                                        <table id="tblMunicipios" class="datatable table table-bordered table-striped">
+                                        <table id="tblCategorias" class="datatable table table-bordered table-striped">
                                             <thead>
                                             <tr>
                                                 <th>#</th>
                                                 <th>Nombre</th>
-                                                <th>Departamento ID</th>
-                                                <th>Acortado</th>
+                                                <th>Region</th>
                                                 <th>Estado</th>
                                                 <th>Acciones</th>
                                             </tr>
                                             </thead>
                                             <tbody>
                                             <?php
-                                            $arrMunicipios = MunicipiosController::getAll();
-                                            /* @var $arrMunicipios Municipios[] */
-                                            foreach ($arrMunicipios as $Municipio) {
+                                            $arrDepartamentos = DepartamentosController::getAll();
+                                            /* @var $arrDepartamentos Categorias[] */
+                                            foreach ($arrDepartamentos as $Departamentos) {
                                                 ?>
                                                 <tr>
-                                                    <td><?php echo $Municipio->getId(); ?></td>
-                                                    <td><?php echo $Municipio->getNombre(); ?></td>
-                                                    <td><?php echo $Municipio->getDepartamentoId()->getNombre(); ?> <?php echo $Municipio->getDepartamentoId()->getId(); ?> </td>
-                                                    <td><?php echo $Municipio->getAcortado(); ?></td>
-                                                    <td><?php echo $Municipio->getEstado(); ?></td>
+                                                    <td><?php echo $Departamentos->getId(); ?></td>
+                                                    <td><?php echo $Departamentos->getNombre(); ?></td>
+                                                    <td><?php echo $Departamentos->getRegion(); ?></td>
+                                                    <td><?php echo $Departamentos->getEstado(); ?></td>
                                                     <td>
-                                                        <a href="edit.php?id=<?php echo $Municipio->getId(); ?>"
+                                                        <a href="edit.php?id=<?php echo $Departamentos->getId(); ?>"
                                                            type="button" data-toggle="tooltip" title="Actualizar"
                                                            class="btn docs-tooltip btn-primary btn-xs"><i
-                                                                class="fa fa-edit"></i></a>
-                                                        <a href="show.php?id=<?php echo $Municipio->getId(); ?>"
+                                                                    class="fa fa-edit"></i></a>
+                                                        <a href="show.php?id=<?php echo $Departamentos->getId(); ?>"
                                                            type="button" data-toggle="tooltip" title="Ver"
                                                            class="btn docs-tooltip btn-warning btn-xs"><i
-                                                                class="fa fa-eye"></i></a>
-                                                        <?php if ($Municipio->getEstado() != "Activo") { ?>
-                                                            <a href="../../../app/Controllers/MunicipiosController.php?action=activate&Id=<?php echo $Municipio->getId(); ?>"
+                                                                    class="fa fa-eye"></i></a>
+                                                        <?php if ($Departamentos->getEstado() != "Activo") { ?>
+                                                            <a href="../../../app/Controllers/DepartamentosController.php?action=activate&Id=<?php echo $Departamentos->getId(); ?>"
                                                                type="button" data-toggle="tooltip" title="Activo"
                                                                class="btn docs-tooltip btn-success btn-xs"><i
-                                                                    class="fa fa-check-square"></i></a>
+                                                                        class="fa fa-check-square"></i></a>
                                                         <?php } else { ?>
                                                             <a type="button"
-                                                               href="../../../app/Controllers/MunicipiosController.php?action=inactivate&Id=<?php echo $Municipio->getId(); ?>"
+                                                               href="../../../app/Controllers/DepartamentosController.php?action=inactivate&Id=<?php echo $Departamentos->getId(); ?>"
                                                                data-toggle="tooltip" title="Inactivo"
                                                                class="btn docs-tooltip btn-danger btn-xs"><i
-                                                                    class="fa fa-times-circle"></i></a>
+                                                                        class="fa fa-times-circle"></i></a>
                                                         <?php } ?>
                                                     </td>
                                                 </tr>
@@ -138,8 +135,7 @@ use App\Models\Municipios;
                                             <tr>
                                                 <th>#</th>
                                                 <th>Nombre</th>
-                                                <th>Departamento ID</th>
-                                                <th>Acortado</th>
+                                                <th>Region</th>
                                                 <th>Estado</th>
                                                 <th>Acciones</th>
                                             </tr>
