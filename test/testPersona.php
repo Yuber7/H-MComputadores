@@ -1,9 +1,8 @@
 <?php
 
 require_once('..\app\Models\Personas.php');
-require_once  ('..\app\Models\Administrador.php');
 
-use App\Models\Persona;
+use App\Models\Personas;
 use App\Models\Administrador;
 
 /*
@@ -26,8 +25,8 @@ $Juan->create();
 //echo $Juan->saludar();
 */
 
-$carlos = new Persona();
-$manuel = new persona("Samuel", "Naranjo", "C.C", 1234567842, "mnuel123@correo.com", "3211232345", "Cliente", "Kr10b-43-93","activo");
+$carlos = new Personas();
+$manuel = new Personas("Samuel", "Naranjo", "C.C", 1234567842, "mnuel123@correo.com", "3211232345", "Cliente", "Kr10b-43-93","activo");
 $manuel->save();
 
 $arrPersonas = Persona::search("SELECT * FROM `h&mcomputadores`.personas WHERE rol='Cliente'");
