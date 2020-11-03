@@ -5,7 +5,7 @@ require_once(__DIR__.'/../Models/Municipios.php');
 require_once(__DIR__.'/../Models/Departamentos.php');
 
 use App\Models\GeneralFunctions;
-use App\Models\Departamentos;
+use App\Models\Categorias;
 use App\Models\Municipios;
 
 if(!empty($_GET['action'])){
@@ -37,7 +37,7 @@ class MunicipiosController
         try {
             $arrayMunicipios = array();
             $arrayMunicipios['nombre'] = '';
-            $arrayMunicipios['departamento_id'] = Departamentos::searchForId($_POST['departamento_id']);
+            $arrayMunicipios['departamento_id'] = Categorias::searchForId($_POST['departamento_id']);
             $arrayMunicipios['acortado'] = '';
             $arrayMunicipios['estado'] = 'Activo';
             $Municipio = new Municipios($arrayMunicipios);
@@ -55,7 +55,7 @@ class MunicipiosController
         try {
             $arrayMunicipios = array();
             $arrayMunicipios['nombre'] = $_POST['nombre'];
-            $arrayMunicipios['departamento_id'] = Departamentos::searchForId($_POST['departamento_id']);
+            $arrayMunicipios['departamento_id'] = Categorias::searchForId($_POST['departamento_id']);
             $arrayMunicipios['acortado'] = $_POST['acortado'];
             $arrayMunicipios['estado'] = $_POST['estado'];
             $arrayMunicipios['id'] = $_POST['id'];

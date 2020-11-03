@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Models;
 require_once  ('BasicModel.php');
 
