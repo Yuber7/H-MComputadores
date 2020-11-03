@@ -3,7 +3,7 @@ require_once("../../../app/Controllers/DepartamentosController.php");
 require_once("../../partials/routes.php");
 
 use App\Controllers\DepartamentosController;
-use App\Models\Departamentos;
+use App\Models\Categorias;
 
 ?>
 <!DOCTYPE html>
@@ -97,7 +97,7 @@ use App\Models\Departamentos;
                                             <tbody>
                                             <?php
                                             $arrDepartamentos = DepartamentosController::getAll();
-                                            /* @var $arrDepartamentos Departamentos[] */
+                                            /* @var $arrDepartamentos Categorias[] */
                                             foreach ($arrDepartamentos as $Departamentos) {
                                                 ?>
                                                 <tr>
