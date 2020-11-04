@@ -94,4 +94,36 @@ class CategoriasController
         }
     }
 
+    static public function activate()
+    {
+        try {
+            $ObjCategoria = Categorias::searchForId($_GET['Id']);
+            $ObjCategoria->setEstado("Activo");
+            if ($ObjCategoria->update()) {
+                header("Location: ../../views/modules/categorias/index.php");
+            } else {
+                header("Location: ../../views/modules/categorias/index.php?respuesta=error&mensaje=Error al guardar");
+            }
+        } catch (\Exception $e) {
+            GeneralFunctions::console($e, 'error', 'errorStack');
+            //header("Location: ../../views/modules/personas/index.php?respuesta=error&mensaje=".$e->getMessage());
+        }
+    }
+
+    static public function inactivate()
+    {
+        try {
+            $ObjCategoria = Categorias::searchForId($_GET['Id']);
+            $ObjCategoria->setEstado("Inactivo");
+            if ($ObjCategoria->update()) {
+                header("Location: ../../views/modules/categorias/index.php");
+            } else {
+                header("Location: ../../views/modules/categorias/index.php?respuesta=error&mensaje=Error al guardar");
+            }
+        } catch (\Exception $e) {
+            GeneralFunctions::console($e, 'error', 'errorStack');
+            //header("Location: ../../views/modules/personas/index.php?respuesta=error");
+        }
+    }
+
 }

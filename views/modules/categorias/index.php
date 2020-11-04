@@ -52,7 +52,7 @@ use App\Models\Categorias;
                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                         <h5><i class="icon fas fa-check"></i> Correcto!</h5>
                         <?php if ($_GET['accion'] == "create") { ?>
-                            La Categoria ha sido creado con exito!
+                            La categoria ha sido creado con exito!
                         <?php } else if ($_GET['accion'] == "update") { ?>
                             Los datos de la categoria han sido actualizados correctamente!
                         <?php } ?>
@@ -89,39 +89,39 @@ use App\Models\Categorias;
                                             <tr>
                                                 <th>#</th>
                                                 <th>Nombre</th>
-                                                <th>Region</th>
+                                                <th>Descripción</th>
                                                 <th>Estado</th>
                                                 <th>Acciones</th>
                                             </tr>
                                             </thead>
                                             <tbody>
                                             <?php
-                                            $arrDepartamentos = DepartamentosController::getAll();
-                                            /* @var $arrDepartamentos Categorias[] */
-                                            foreach ($arrDepartamentos as $Departamentos) {
+                                            $arrCategorias = CategoriasController::getAll();
+                                            /* @var $arrCategorias Categorias[] */
+                                            foreach ($arrCategorias as $Categorias) {
                                                 ?>
                                                 <tr>
-                                                    <td><?php echo $Departamentos->getId(); ?></td>
-                                                    <td><?php echo $Departamentos->getNombre(); ?></td>
-                                                    <td><?php echo $Departamentos->getRegion(); ?></td>
-                                                    <td><?php echo $Departamentos->getEstado(); ?></td>
+                                                    <td><?php echo $Categorias->getId(); ?></td>
+                                                    <td><?php echo $Categorias->getNombre(); ?></td>
+                                                    <td><?php echo $Categorias->getDescripcion(); ?></td>
+                                                    <td><?php echo $Categorias->getEstado(); ?></td>
                                                     <td>
-                                                        <a href="edit.php?id=<?php echo $Departamentos->getId(); ?>"
+                                                        <a href="edit.php?id=<?php echo $Categorias->getId(); ?>"
                                                            type="button" data-toggle="tooltip" title="Actualizar"
                                                            class="btn docs-tooltip btn-primary btn-xs"><i
                                                                     class="fa fa-edit"></i></a>
-                                                        <a href="show.php?id=<?php echo $Departamentos->getId(); ?>"
+                                                        <a href="show.php?id=<?php echo $Categorias->getId(); ?>"
                                                            type="button" data-toggle="tooltip" title="Ver"
                                                            class="btn docs-tooltip btn-warning btn-xs"><i
                                                                     class="fa fa-eye"></i></a>
-                                                        <?php if ($Departamentos->getEstado() != "Activo") { ?>
-                                                            <a href="../../../app/Controllers/DepartamentosController.php?action=activate&Id=<?php echo $Departamentos->getId(); ?>"
+                                                        <?php if ($Categorias->getEstado() != "Activo") { ?>
+                                                            <a href="../../../app/Controllers/CategoriasController.php?action=activate&Id=<?php echo $Categorias->getId(); ?>"
                                                                type="button" data-toggle="tooltip" title="Activo"
                                                                class="btn docs-tooltip btn-success btn-xs"><i
                                                                         class="fa fa-check-square"></i></a>
                                                         <?php } else { ?>
                                                             <a type="button"
-                                                               href="../../../app/Controllers/DepartamentosController.php?action=inactivate&Id=<?php echo $Departamentos->getId(); ?>"
+                                                               href="../../../app/Controllers/CategoriasController.php?action=inactivate&Id=<?php echo $Categorias->getId(); ?>"
                                                                data-toggle="tooltip" title="Inactivo"
                                                                class="btn docs-tooltip btn-danger btn-xs"><i
                                                                         class="fa fa-times-circle"></i></a>
@@ -135,7 +135,7 @@ use App\Models\Categorias;
                                             <tr>
                                                 <th>#</th>
                                                 <th>Nombre</th>
-                                                <th>Region</th>
+                                                <th>Descripción</th>
                                                 <th>Estado</th>
                                                 <th>Acciones</th>
                                             </tr>

@@ -35,7 +35,7 @@ use App\Models\Personas;
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/Views/">H&M</a></li>
+                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/">H&M</a></li>
                             <li class="breadcrumb-item active">Inicio</li>
                         </ol>
                     </div>
@@ -125,7 +125,7 @@ use App\Models\Personas;
                                                     <td><?php echo $personas->getDocumento(); ?></td>
                                                     <td><?php echo $personas->getTelefono(); ?></td>
                                                     <td><?php echo $personas->getRol(); ?></td>
-                                                    <td><?php echo $personas->getMunicipioId()->getNombre(); ?> <?php echo $personas->getMunicipioId()->getId(); ?> </td>
+                                                    <td><?php echo $personas->getMunicipioId()->getNombre(); ?> - <?php echo $personas->getMunicipioId()->getId(); ?> </td>
                                                     <td><?php echo $personas->getDireccion(); ?></td>
                                                     <td><?php echo $personas->getEmail(); ?></td>
                                                     <td><?php echo $personas->getEstado(); ?></td>

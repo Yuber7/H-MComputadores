@@ -28,7 +28,7 @@ use App\Controllers\PersonasController; ?>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/Views/">H&M</a></li>
+                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/">H&M</a></li>
                             <li class="breadcrumb-item active">Inicio</li>
                         </ol>
                     </div>
@@ -103,23 +103,22 @@ use App\Controllers\PersonasController; ?>
                                             <?= $DataPersonas->getTelefono() ?></p>
                                         <hr>
 
-                                        //este esta F
-                                        <strong><i class="fas fa-map-marker-alt mr-1"></i> Direccion</strong>
-                                        <p class="text-muted"><?= $DataPersonas->getMunicipioId() ?></p>
+                                        <!--este esta F-->
+                                        <strong><i class="fas fa-map-marked-alt mr-1"></i> Municipio</strong>
+                                        <p class="text-muted"><?php echo $DataPersonas->getMunicipioId()->getNombre(); ?></p>
                                         <hr>
 
                                         <strong><i class="fas fa-map-marker-alt mr-1"></i> Direccion</strong>
-                                        <p class="text-muted"><?= $DataPersonas
-                                                ->getDireccion() ?></p>
+                                        <p class="text-muted"><?= $DataPersonas->getDireccion() ?></p>
                                         <hr>
 
-                                        <strong><i class="fas fa-map-marker-alt mr-1"></i> Correo Electronico</strong>
+                                        <strong><i class="fas fa-envelope mr-1"></i> Correo Electronico</strong>
                                         <p class="text-muted">
                                             <?= $DataPersonas->getEmail() ?></p>
                                         <hr>
 
-                                        //este no creo que sirva o que vaya dentro
-                                        <strong><i class="fas fa-map-marker-alt mr-1"></i> Contaseña </strong>
+                                        <!--este no creo que sirva o que vaya dentro-->
+                                        <strong><i class="fas fa-key mr-1"></i> Contaseña </strong>
                                         <p class="text-muted">
                                             <?= $DataPersonas->getPassword() ?></p>
                                         <hr>
@@ -138,12 +137,6 @@ use App\Controllers\PersonasController; ?>
                                                 <a role="button" href="index.php" class="btn btn-success float-right"
                                                    style="margin-right: 5px;">
                                                     <i class="fas fa-tasks"></i> Gestionar Personas
-                                                </a>
-                                            </div>
-                                            <div class="col-auto">
-                                                <a role="button" href="create.php" class="btn btn-primary float-right"
-                                                   style="margin-right: 5px;">
-                                                    <i class="fas fa-plus"></i> Crear Persona
                                                 </a>
                                             </div>
                                         </div>
