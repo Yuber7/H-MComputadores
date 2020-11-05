@@ -3,7 +3,6 @@ require_once("../../../app/Controllers/MunicipiosController.php");
 require_once("../../partials/routes.php");
 
 use App\Controllers\MunicipiosController;
-use App\Models\Categorias;
 use App\Models\Municipios;
 
 ?>
