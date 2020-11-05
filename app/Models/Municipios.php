@@ -192,8 +192,9 @@ class Municipios extends BasicModel
             $Municipios->departamento_id = Departamentos::searchForId($getrow['departamento_id']);
             $Municipios->acortado = $getrow['acortado'];
             $Municipios->estado = $getrow['estado'];
+            $Municipios->Disconnect();
         }
-        $Municipios->Disconnect();
+
         return $Municipios;
     }
 

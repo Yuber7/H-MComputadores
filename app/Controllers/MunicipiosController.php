@@ -5,7 +5,6 @@ require_once(__DIR__.'/../Models/Municipios.php');
 require_once(__DIR__.'/../Models/Departamentos.php');
 
 use App\Models\GeneralFunctions;
-use App\Models\Departamentos;
 use App\Models\Municipios;
 
 if(!empty($_GET['action'])){
@@ -37,7 +36,7 @@ class MunicipiosController
         try {
             $arrayMunicipios = array();
             $arrayMunicipios['nombre'] = '';
-            $arrayMunicipios['departamento_id'] = Departamentos::searchForId($_POST['departamento_id']);
+            $arrayMunicipios['departamento_id'] = Municipios::searchForId($_POST['departamento_id']);
             $arrayMunicipios['acortado'] = '';
             $arrayMunicipios['estado'] = 'Activo';
             $Municipio = new Municipios($arrayMunicipios);
@@ -55,7 +54,7 @@ class MunicipiosController
         try {
             $arrayMunicipios = array();
             $arrayMunicipios['nombre'] = $_POST['nombre'];
-            $arrayMunicipios['departamento_id'] = Departamentos::searchForId($_POST['departamento_id']);
+            $arrayMunicipios['departamento_id'] = Municipios::searchForId($_POST['departamento_id']);
             $arrayMunicipios['acortado'] = $_POST['acortado'];
             $arrayMunicipios['estado'] = $_POST['estado'];
             $arrayMunicipios['id'] = $_POST['id'];
@@ -121,4 +120,47 @@ class MunicipiosController
             header("Location: ../Vista/modules/municipios/index.php?respuesta=error");
         }
     }
+
+    static public function selectMunicipios($isMultiple = false,
+                                         $isRequired = true,
+                                         $id = "municio_id",
+                                         $nombre = "municipio_id",
+                                         $defaultValue = "",
+                                         $class = "form-control",
+                                         $where = "",
+                                         $arrExcluir = array())
+    {
+        $arrMunicipios = array();
+        if ($where != "") {
+            $base = "SELECT * FROM municipios WHERE ";
+            $arrMunicipios = Municipios::search($base . ' ' . $where);
+        } else {
+            $arrMunicipios = Municipios::getAll();
+        }
+
+        $htmlSelect = "<select " . (($isMultiple) ? "multiple" : "") . " " . (($isRequired) ? "required" : "") . " id= '" . $id . "' name='" . $nombre . "' class='" . $class . "' style='width: 100%;'>";
+        $htmlSelect .= "<option value='' >Seleccione</option>";
+        if (count($arrMunicipios) > 0) {
+            /* @var $arrMunicipios \App\Models\Municipios[] */
+            foreach ($arrMunicipios as $municipio)
+                if (!MunicipiosController::municipioIsInArray($municipio->getId(), $arrExcluir))
+                    $htmlSelect .= "<option " . (($municipio != "") ? (($defaultValue == $municipio->getId()) ? "selected" : "") : "") . " value='" . $municipio->getId() . "'>" .  $municipio->getNombre() . "</option>";
+        }
+        $htmlSelect .= "</select>";
+        return $htmlSelect;
+    }
+
+    private static function municipioIsInArray($idMunicipio, $ArrMunicipios)
+    {
+        if (count($ArrMunicipios) > 0) {
+            foreach ($ArrMunicipios as $Municipio) {
+                if ($Municipio->getId() == $idMunicipio) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
 }

@@ -1,12 +1,12 @@
 <?php
 require("../../partials/routes.php");
-require("../../../app/Controllers/PersonasController.php");
+require("../../../app/Controllers/CategoriasController.php");
 
-use App\Controllers\PersonasController; ?>
+use App\Controllers\CategoriasController; ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?= $_ENV['TITLE_SITE'] ?> | Datos de la Persona</title>
+    <title><?= $_ENV['TITLE_SITE'] ?> | Datos de la categoria</title>
     <?php require("../../partials/head_imports.php"); ?>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -24,7 +24,7 @@ use App\Controllers\PersonasController; ?>
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Informacion de la Persona</h1>
+                        <h1>Informacion de la categoria</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -44,7 +44,7 @@ use App\Controllers\PersonasController; ?>
                     <div class="alert alert-danger alert-dismissible">
                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                         <h5><i class="icon fas fa-ban"></i> Error!</h5>
-                        Error al consultar la persona: <?= ($_GET['mensaje']) ?? "" ?>
+                        Error al consultar la categoria: <?= ($_GET['mensaje']) ?? "" ?>
                     </div>
                 <?php } ?>
             <?php } else if (empty($_GET['id'])) { ?>
@@ -61,15 +61,12 @@ use App\Controllers\PersonasController; ?>
                         <!-- Horizontal Form -->
                         <div class="card card-green">
                             <?php if (!empty($_GET["id"]) && isset($_GET["id"])) {
-                                $DataPersonas
-                                    = PersonasController::searchForID($_GET["id"]);
-                                if (!empty($DataPersonas
-                                )) {
+                                $DataCategorias = CategoriasController::searchForID($_GET["id"]);
+                                if (!empty($DataCategorias)) {
                                     ?>
                                     <div class="card-header">
                                         <h3 class="card-title"><i class="fas fa-info"></i> &nbsp; Ver Información
-                                            de <?= $DataPersonas
-                                                ->getNombre() ?></h3>
+                                            de <?= $DataCategorias->getNombre() ?></h3>
                                         <div class="card-tools">
                                             <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
                                                     data-source="show.php" data-source-selector="#card-refresh-content"
@@ -86,49 +83,19 @@ use App\Controllers\PersonasController; ?>
                                     </div>
                                     <div class="card-body">
                                         <p>
-                                            <strong><i class="fas fa-book mr-1"></i> Nombre y Apellido</strong>
+                                            <strong><i class="fas fa-book mr-1"></i> Nombre </strong>
                                         <p class="text-muted">
-                                            <?=
-                                            $DataPersonas->getNombre() . " " . $DataPersonas->getApellido() ?>
+                                            <?= $DataCategorias->getNombre() ?>
                                         </p>
                                         <hr>
 
-                                        <strong><i class="fas fa-user mr-1"></i> Documento</strong>
-                                        <p class="text-muted"><?=
-                                            $DataPersonas->getTipo_documento() . ": " . $DataPersonas->getDocumento() ?></p>
+                                        <strong><i class="fas fa-keyboard mr-1"></i> Descripción</strong>
+                                        <p class="text-muted"><?= $DataCategorias->getDescripcion() ?></p>
                                         <hr>
 
-                                        <strong><i class="fas fa-phone mr-1"></i> Telefono</strong>
-                                        <p class="text-muted">
-                                            <?= $DataPersonas->getTelefono() ?></p>
-                                        <hr>
-
-                                        <!--este esta F-->
-                                        <strong><i class="fas fa-map-marked-alt mr-1"></i> Municipio</strong>
-                                        <p class="text-muted"><?php echo $DataPersonas->getMunicipioId()->getNombre(); ?></p>
-                                        <hr>
-
-                                        <strong><i class="fas fa-map-marker-alt mr-1"></i> Direccion</strong>
-                                        <p class="text-muted"><?= $DataPersonas->getDireccion() ?></p>
-                                        <hr>
-
-                                        <strong><i class="fas fa-envelope mr-1"></i> Correo Electronico</strong>
-                                        <p class="text-muted">
-                                            <?= $DataPersonas->getEmail() ?></p>
-                                        <hr>
-
-                                        <!--este no creo que sirva o que vaya dentro-->
-                                        <strong><i class="fas fa-key mr-1"></i> Contaseña </strong>
-                                        <p class="text-muted">
-                                            <?= $DataPersonas->getPassword() ?></p>
-                                        <hr>
-
-                                        <strong><i class="far fa-file-alt mr-1"></i> Estado y Rol</strong>
-                                        <p class="text-muted">
-                                            <?= $DataPersonas->getEstado() . " - " . $DataPersonas->getRol() ?></p>
+                                        <strong><i class="far fa-file-alt mr-1"></i> Estado </strong>
+                                        <p class="text-muted"><?= $DataCategorias->getEstado() ?></p>
                                         </p>
-
-
 
                                     </div>
                                     <div class="card-footer">
@@ -136,7 +103,7 @@ use App\Controllers\PersonasController; ?>
                                             <div class="col-auto mr-auto">
                                                 <a role="button" href="index.php" class="btn btn-success float-right"
                                                    style="margin-right: 5px;">
-                                                    <i class="fas fa-tasks"></i> Gestionar Personas
+                                                    <i class="fas fa-tasks"></i> Gestionar Categorias
                                                 </a>
                                             </div>
                                         </div>

@@ -38,21 +38,16 @@ class DepartamentosController
     {
         try {
             $arrayDepartamentos = array();
-            $arrayDepartamentos['nombre'] = $_POST['nombre'];
-            $arrayDepartamentos['region'] = $_POST['region'];
-            $arrayDepartamentos['estado'] = $_POST['estado'];
-
-            if (!Departamentos::DepartamentosRegistrado($arrayDepartamentos['nombre'])) {
-                $Departamentos = new Departamentos($arrayDepartamentos) ;
-                if ($Departamentos->save()) {
-                    header("Location: ../../views/modules/departamentos/index.php?accion=create&respuesta=correcto");
-                }
-            } else {
-                header("Location: ../../views/modules/departamentos/create.php?respuesta=error&mensaje=Departamento ya registrado");
+            $arrayDepartamentos['nombre'] = '';
+            $arrayDepartamentos['region'] = '';
+            $arrayDepartamentos['estado'] = 'Activo';
+            $Departamento = new Departamentos($arrayDepartamentos);
+            if ($Departamento->save()) {
+                header("Location: ../../views/modules/departamentos/create.php?id=" . $Departamento->getId());
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             GeneralFunctions::console($e, 'error', 'errorStack');
-            //header("Location: ../../views/modules/usuarios/create.php?respuesta=error&mensaje=" . $e->getMessage());
+            header("Location: ../../views/modules/departamentos/create.php?respuesta=error&mensaje=" . $e->getMessage());
         }
     }
 
@@ -65,13 +60,13 @@ class DepartamentosController
             $arrayDepartamentos['estado'] = $_POST['estado'];
             $arrayDepartamentos['id'] = $_POST['id'];
 
-            $Departamentos = new Departamentos($arrayDepartamentos);
-            $Departamentos->update();
+            $Departamento = new Departamentos($arrayDepartamentos);
+            $Departamento->update();
 
-            header("Location: ../../views/modules/departamentos/show.php?id=" . $Departamentos->getId() . "&respuesta=correcto");
+            header("Location: ../../views/modules/departamentos/show.php?id=" . $Departamento->getId() . "&respuesta=correcto");
         } catch (\Exception $e) {
             GeneralFunctions::console($e, 'error', 'errorStack');
-            //header("Location: ../../views/modules/departamentos/edit.php?respuesta=error&mensaje=".$e->getMessage());
+            header("Location: ../../views/modules/departamentos/edit.php?respuesta=error&mensaje=" . $e->getMessage());
         }
     }
 

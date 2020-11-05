@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Models;
 require_once  ('BasicModel.php');
 
@@ -30,26 +31,12 @@ class Personas extends BasicModel
         $this->tipo_documento = $arrPersonas['tipo_documento'] ?? '';
         $this->documento = $arrPersonas['documento'] ?? 0;
         $this->telefono = $arrPersonas['telefono'] ?? 0;
-        $this->email = $arrPersonas['email'] ?? '';
         $this->rol = $arrPersonas['rol'] ?? '';
         $this->municipio_id = !empty($arrPersonas['municipio_id']) ? Municipios::searchForId($arrPersonas['municipio_id']) : new Municipios();
         $this->direccion = $arrPersonas['direccion'] ?? '';
         $this->email = $arrPersonas['email'] ?? '';
         $this->password = $arrPersonas['password'] ?? '';
         $this->estado = $arrPersonas['estado'] ?? '';
-
-        /*$this->setId($arrPersonas['id'] ?? "");
-        $this->setNombre($arrPersonas['nombre'] ?? "");
-        $this->setApellido($arrPersonas['apellido'] ?? "");
-        $this->setTipo_documento($arrPersonas['tipo_documento'] ?? "");
-        $this->setDocumento($arrPersonas['documento'] ?? 0);
-        $this->setTelefono($arrPersonas['telefono'] ?? 0);
-        $this->setRol($arrPersonas['rol'] ?? "") ;
-        $this->municipio_id = !empty($arrPersonas['municipio_id']) ? Municipios::searchForId($arrPersonas['municipio_id']) : new Municipios();
-        $this->setDireccion($arrPersonas['direccion'] ?? "");
-        $this->setEmail($arrPersonas['email'] ?? "");
-        $this->setPassword($arrPersonas['password'] ?? null);
-        $this->setEstado($arrPersonas['estado'] ?? "");*/
     }
 
 
@@ -257,7 +244,7 @@ class Personas extends BasicModel
      */
     public function setEstado(string $estado): void
     {
-        $this->estado = trim($estado) == "Inactivo";
+        $this->estado = trim($estado) == "Activo";
     }
 
 
@@ -348,22 +335,6 @@ class Personas extends BasicModel
             $Personas->password = $datos['password'];
             $Personas->estado = $datos['estado'];
             array_push($arrPersonas, $Personas);
-
-            /*$Personas = new Personas();
-            $Personas->setId($valor['id']);
-            $Personas->setNombre($valor['nombre']);
-            $Personas->setApellido($valor['apellido']);
-            $Personas->setTipo_documento($valor['tipo_documento']);
-            $Personas->setDocumento($valor['documento']);
-            $Personas->setTelefono($valor['telefono']);
-            $Personas->setRol($valor['rol']);
-            $Personas->municipio_id = Municipios::searchForId($valor['municipio_id']);
-            $Personas->setDireccion($valor['direccion']);
-            $Personas->setEmail($valor['email']);
-            $Personas->setPassword($valor['password']);
-            $Personas->setEstado($valor['estado']);
-            $Personas->Disconnect();
-            array_push($arrPersonas, $Personas);*/
         }
         $tmp->Disconnect();
         return $arrPersonas;
@@ -383,7 +354,7 @@ class Personas extends BasicModel
             $Personas->id = $getrow['id'];
             $Personas->nombre = $getrow['nombre'];
             $Personas->apellido = $getrow['apellido'];
-            $Personas->tipo_documento = $getrow['tipoDocumento'];
+            $Personas->tipo_documento = $getrow['tipo_documento'];
             $Personas->documento = $getrow['documento'];
             $Personas->telefono = $getrow['telefono'];
             $Personas->rol = $getrow['rol'];
@@ -391,7 +362,7 @@ class Personas extends BasicModel
             $Personas->direccion = $getrow['direccion'];
             $Personas->email = $getrow['email'];
             $Personas->password = $getrow['password'];
-            $Personas->getEstado($getrow['estado']);
+            $Personas->estado = $getrow['estado'];
         }
         $Personas->Disconnect();
         return $Personas;
