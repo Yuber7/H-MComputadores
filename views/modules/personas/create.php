@@ -1,5 +1,8 @@
 <?php
-require("../../partials/routes.php");;
+
+use App\Controllers\MunicipiosController;
+require_once ("../../../app/Controllers/MunicipiosController.php");
+require("../../partials/routes.php");
 ?>
 
 <!DOCTYPE html>
@@ -116,17 +119,23 @@ require("../../partials/routes.php");;
                                         <label for="rol" class="col-sm-2 col-form-label">Rol</label>
                                         <div class="col-sm-10">
                                             <select id="rol" name="rol" class="custom-select">
+                                                <option value="Administrador">Administrador</option>
                                                 <option value="Proveedor">Proveedor</option>
                                                 <option value="Cliente">Cliente</option>
-                                                <option value="Administrador">Administrador</option></select>
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label for="municipio_id" class="col-sm-2 col-form-label">Municipio</label>
                                         <div class="col-sm-10">
-                                            <select id="municipio_id" name="municipio_id" class="custom-select">
-                                                <option value="Proveedor">Medellin</option>
-                                                <option value="Cliente">caldas</option></select>
+                                            <?= MunicipiosController::selectMunicipios(false,
+                                                true,
+                                                'municipio_id',
+                                                'municipio_id',
+                                                '',
+                                                'form-control select2bs4 select2-info',
+                                                "estado = 'Activo'")
+                                            ?>
                                         </div>
                                     </div>
                                     <div class="form-group row">

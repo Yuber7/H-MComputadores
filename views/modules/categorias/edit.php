@@ -1,14 +1,14 @@
 <?php
 require("../../partials/routes.php");
-require("../../../app/Controllers/DepartamentosController.php");
+require("../../../app/Controllers/CategoriasController.php");
 
-use App\Controllers\DepartamentosController;
+use App\Controllers\CategoriasController;
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?= $_ENV['TITLE_SITE'] ?> | Editar Departamento</title>
+    <title><?= $_ENV['TITLE_SITE'] ?> | Editar Categoria</title>
     <?php require("../../partials/head_imports.php"); ?>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -26,11 +26,11 @@ use App\Controllers\DepartamentosController;
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Editar o Actualizar un Departamento</h1>
+                        <h1>Editar o Actualizar una Categoria</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/">Departamentos</a></li>
+                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/">Categorias</a></li>
                             <li class="breadcrumb-item active">Inicio</li>
                         </ol>
                     </div>
@@ -45,7 +45,7 @@ use App\Controllers\DepartamentosController;
                     <div class="alert alert-danger alert-dismissible">
                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                         <h5><i class="icon fas fa-ban"></i> Error!</h5>
-                        Error al editar el departamento: <?= $_GET['mensaje'] ?>
+                        Error al editar la categoria: <?= $_GET['mensaje'] ?>
                     </div>
                 <?php } ?>
             <?php } ?>
@@ -55,7 +55,7 @@ use App\Controllers\DepartamentosController;
                         <!-- Horizontal Form -->
                         <div class="card card-info">
                             <div class="card-header">
-                                <h3 class="card-title"><i class="fas fa-user"></i> &nbsp; Información del departamento</h3>
+                                <h3 class="card-title"><i class="fas fa-user"></i> &nbsp; Información de la categoria</h3>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
                                             data-source="create.php" data-source-selector="#card-refresh-content"
@@ -70,47 +70,41 @@ use App\Controllers\DepartamentosController;
                             <?php if (!empty($_GET["id"]) && isset($_GET["id"])) { ?>
                                 <p>
                                 <?php
-                                $DataDepartamentos =DepartamentosController::searchForID($_GET["id"]);
-                                if (!empty($DataDepartamentos)) {
+                                $DataCategorias =CategoriasController::searchForID($_GET["id"]);
+                                if (!empty($DataCategorias)) {
                                     ?>
 
                             <!-- /.card-header -->
                             <div class="card-body">
                                 <!-- form start -->
-                                <form class="form-horizontal" method="post" id="frmEditDepartamento"
-                                      name="frmEditDepartamento"
-                                      action="../../../app/Controllers/DepartamentosController.php?action=edit">
+                                <form class="form-horizontal" method="post" id="frmEditCategoria"
+                                      name="frmEditCategoria"
+                                      action="../../../app/Controllers/CategoriasController.php?action=edit">
 
-                                    <input id="id" name="id" value="<?php echo $DataDepartamentos->getId(); ?>" hidden
+                                    <input id="id" name="id" value="<?php echo $DataCategorias->getId(); ?>" hidden
                                            required="required" type="text">
 
                                     <div class="form-group row">
                                         <label for="nombre" class="col-sm-2 col-form-label">Nombre</label>
                                         <div class="col-sm-10">
                                             <input required type="text" class="form-control" id="nombre" name="nombre"
-                                                   placeholder="Ingrese el nombre del departamento"
-                                                   value="<?php echo $DataDepartamentos->getNombre(); ?>">
+                                                   placeholder="Ingrese la categoria" value="<?php echo $DataCategorias->getNombre(); ?>">
                                         </div>
                                     </div>
+
                                     <div class="form-group row">
-                                        <label for="region" class="col-sm-2 col-form-label">Region</label>
+                                        <label for="descripcion" class="col-sm-2 col-form-label">Descripcion</label>
                                         <div class="col-sm-10">
-                                            <select id="region" name="region" class="custom-select">
-                                                <option <?= ($DataDepartamentos->getRegion() == "Caribe") ? "selected" : ""; ?> value="Caribe">Caribe</option>
-                                                <option <?= ($DataDepartamentos->getRegion() == "Centro Oriente") ? "selected" : ""; ?> value="Centro Oriente">Centro Oriente</option>
-                                                <option <?= ($DataDepartamentos->getRegion() == "Centro Sur") ? "selected" : ""; ?> value="Centro Sur">Centro Sur</option>
-                                                <option <?= ($DataDepartamentos->getRegion() == "Eje Cafetero - Antioquia") ? "selected" : ""; ?> value="Eje Cafetero - Antioquia">Eje Cafetero - Antioquia</option>
-                                                <option <?= ($DataDepartamentos->getRegion() == "Llano") ? "selected" : ""; ?> value="Llano">Llano</option>
-                                                <option <?= ($DataDepartamentos->getRegion() == "Pacífico") ? "selected" : ""; ?> value="Pacífico">Pacífico</option>
-                                            </select>
+                                            <textarea required class="form-control" id="descripcion" name="descripcion" placeholder="Ingrese una descripción" rows="3"><?php echo $DataCategorias->getDescripcion(); ?></textarea>
                                         </div>
                                     </div>
+
                                     <div class="form-group row">
                                         <label for="estado" class="col-sm-2 col-form-label">Estado</label>
                                         <div class="col-sm-10">
                                             <select id="estado" name="estado" class="custom-select">
-                                                <option <?= ($DataDepartamentos->getEstado() == "Activo") ? "selected" : ""; ?> value="Activo">Activo</option>
-                                                <option <?= ($DataDepartamentos->getEstado() == "Inactivo") ? "selected" : ""; ?> value="Inactivo">Inactivo</option>
+                                                <option <?= ($DataCategorias->getEstado() == "Activo") ? "selected" : ""; ?> value="Activo">Activo</option>
+                                                <option <?= ($DataCategorias->getEstado() == "Inactivo") ? "selected" : ""; ?> value="Inactivo">Inactivo</option>
                                             </select>
                                         </div>
                                     </div>

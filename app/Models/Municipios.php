@@ -8,13 +8,13 @@ require_once ('Departamentos.php');
 require_once('BasicModel.php');
 
 use Carbon\Carbon;
-use App\Models\Categorias;
+use App\Models\Departamentos;
 
 class Municipios extends BasicModel
 {
     protected int $id;
     protected string $nombre;
-    protected Categorias $departamento_id;
+    protected Departamentos $departamento_id;
     protected string $acortado;
     protected bool $estado;
 
@@ -24,7 +24,7 @@ class Municipios extends BasicModel
         parent::__construct();
         $this->id = $Municipio['id'] ?? 0;
         $this->nombre = $Municipios['nombre'] ?? '';
-        $this->departamento_id = !empty($Municipios['departamento_id']) ? Categorias::searchForId($Municipios['departamento_id']) : new Categorias();
+        $this->departamento_id = !empty($Municipios['departamento_id']) ? Departamentos::searchForId($Municipios['departamento_id']) : new Departamentos();
         $this->acortado = $Municipios['acortado'] ?? '';
         $this->estado = $Municipios['estado'] ?? '';
     }
@@ -72,7 +72,7 @@ class Municipios extends BasicModel
     /**
      * @return int|mixed|null
      */
-    public function getDepartamentoId() : Categorias
+    public function getDepartamentoId() : Departamentos
     {
         return $this->departamento_id;
     }
@@ -80,7 +80,7 @@ class Municipios extends BasicModel
     /**
      * @param int|mixed|null $departamento_id
      */
-    public function setDepartamentoId(Categorias $departamento_id): void
+    public function setDepartamentoId(Departamentos $departamento_id): void
     {
         $this->departamento_id = $departamento_id;
     }
@@ -170,7 +170,7 @@ class Municipios extends BasicModel
             $Municipios = new Municipios();
             $Municipios->id = $ubicacion['id'];
             $Municipios->nombre = $ubicacion['nombre'];
-            $Municipios->departamento_id = Categorias::searchForId($ubicacion['departamento_id']);
+            $Municipios->departamento_id = Departamentos::searchForId($ubicacion['departamento_id']);
             $Municipios->acortado = $ubicacion['acortado'];
             $Municipios->estado = $ubicacion['estado'];
             $Municipios->Disconnect();
@@ -189,11 +189,12 @@ class Municipios extends BasicModel
             $getrow = $Municipios->getRow("SELECT * FROM `h&mcomputadores`.municipios WHERE id =?", array($id));
             $Municipios->id = $getrow['id'];
             $Municipios->nombre = $getrow['nombre'];
-            $Municipios->departamento_id = Categorias::searchForId($getrow['departamento_id']);
+            $Municipios->departamento_id = Departamentos::searchForId($getrow['departamento_id']);
             $Municipios->acortado = $getrow['acortado'];
             $Municipios->estado = $getrow['estado'];
+            $Municipios->Disconnect();
         }
-        $Municipios->Disconnect();
+
         return $Municipios;
     }
 

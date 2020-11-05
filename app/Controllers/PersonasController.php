@@ -4,10 +4,10 @@ namespace App\Controllers;
 
 require(__DIR__ . '/../../vendor/autoload.php'); //Requerido para convertir un objeto en Array
 require_once(__DIR__ . '/../Models/Personas.php');
+require_once(__DIR__ . '/../Models/Municipios.php');
 require_once(__DIR__ . '/../Models/GeneralFunctions.php');
 
 use App\Models\GeneralFunctions;
-use App\Models\Municipios;
 use App\Models\Personas as Personas;
 
 if (!empty($_GET['action'])) { //PersonasController.php?action=create
@@ -44,7 +44,7 @@ class PersonasController
             $arrayPersonas['documento'] = $_POST['documento'];
             $arrayPersonas['telefono'] = $_POST['telefono'];
             $arrayPersonas['rol'] = $_POST['rol'];
-            $arrayPersonas['departamento_id'] = Municipios::searchForId($_POST['municipio_id']);
+            $arrayPersonas['municipio_id'] = $_POST['municipio_id'];
             $arrayPersonas['direccion'] = $_POST['direccion'];
             $arrayPersonas['email'] = $_POST['email'];
             $arrayPersonas['password'] = $_POST['password'];
@@ -74,7 +74,7 @@ class PersonasController
             $arrayPersonas['documento'] = $_POST['documento'];
             $arrayPersonas['telefono'] = $_POST['telefono'];
             $arrayPersonas['rol'] = $_POST['rol'];
-            $arrayPersonas['departamento_id'] = Municipios::searchForId($_POST['municipio_id']);
+            $arrayPersonas['municipio_id'] = $_POST['municipio_id'];
             $arrayPersonas['direccion'] = $_POST['direccion'];
             $arrayPersonas['email'] = $_POST['email'];
             $arrayPersonas['password'] = $_POST['password'];
@@ -108,6 +108,38 @@ class PersonasController
         } catch (\Exception $e) {
             GeneralFunctions::console($e, 'log', 'errorStack');
             //header("Location: ../Vista/modules/personas/manager.php?respuesta=error");
+        }
+    }
+
+    static public function activate()
+    {
+        try {
+            $ObjPersona = Personas::searchForId($_GET['Id']);
+            $ObjPersona->setEstado("Activo");
+            if ($ObjPersona->update()) {
+                header("Location: ../../views/modules/personas/index.php");
+            } else {
+                header("Location: ../../views/modules/personas/index.php?respuesta=error&mensaje=Error al guardar");
+            }
+        } catch (\Exception $e) {
+            GeneralFunctions::console($e, 'error', 'errorStack');
+            //header("Location: ../../views/modules/personas/index.php?respuesta=error&mensaje=".$e->getMessage());
+        }
+    }
+
+    static public function inactivate()
+    {
+        try {
+            $ObjPersona = Personas::searchForId($_GET['Id']);
+            $ObjPersona->setEstado("Inactivo");
+            if ($ObjPersona->update()) {
+                header("Location: ../../views/modules/personas/index.php");
+            } else {
+                header("Location: ../../views/modules/personas/index.php?respuesta=error&mensaje=Error al guardar");
+            }
+        } catch (\Exception $e) {
+            GeneralFunctions::console($e, 'error', 'errorStack');
+            //header("Location: ../../views/modules/personas/index.php?respuesta=error");
         }
     }
 

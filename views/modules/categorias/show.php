@@ -1,12 +1,12 @@
 <?php
 require("../../partials/routes.php");
-require("../../../app/Controllers/DepartamentosController.php");
+require("../../../app/Controllers/CategoriasController.php");
 
-use App\Controllers\DepartamentosController; ?>
+use App\Controllers\CategoriasController; ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?= $_ENV['TITLE_SITE'] ?> | Datos del Departamento</title>
+    <title><?= $_ENV['TITLE_SITE'] ?> | Datos de la categoria</title>
     <?php require("../../partials/head_imports.php"); ?>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -24,11 +24,11 @@ use App\Controllers\DepartamentosController; ?>
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Informacion del Departamento</h1>
+                        <h1>Informacion de la categoria</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/Views/">H&M</a></li>
+                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/">H&M</a></li>
                             <li class="breadcrumb-item active">Inicio</li>
                         </ol>
                     </div>
@@ -44,7 +44,7 @@ use App\Controllers\DepartamentosController; ?>
                     <div class="alert alert-danger alert-dismissible">
                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                         <h5><i class="icon fas fa-ban"></i> Error!</h5>
-                        Error al consultar el Departamento: <?= ($_GET['mensaje']) ?? "" ?>
+                        Error al consultar la categoria: <?= ($_GET['mensaje']) ?? "" ?>
                     </div>
                 <?php } ?>
             <?php } else if (empty($_GET['id'])) { ?>
@@ -61,12 +61,12 @@ use App\Controllers\DepartamentosController; ?>
                         <!-- Horizontal Form -->
                         <div class="card card-green">
                             <?php if (!empty($_GET["id"]) && isset($_GET["id"])) {
-                                $DataDepartamentos = DepartamentosController::searchForID($_GET["id"]);
-                                if (!empty($DataDepartamentos)) {
+                                $DataCategorias = CategoriasController::searchForID($_GET["id"]);
+                                if (!empty($DataCategorias)) {
                                     ?>
                                     <div class="card-header">
                                         <h3 class="card-title"><i class="fas fa-info"></i> &nbsp; Ver Información
-                                            de <?= $DataDepartamentos->getNombre() ?></h3>
+                                            de <?= $DataCategorias->getNombre() ?></h3>
                                         <div class="card-tools">
                                             <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
                                                     data-source="show.php" data-source-selector="#card-refresh-content"
@@ -85,16 +85,16 @@ use App\Controllers\DepartamentosController; ?>
                                         <p>
                                             <strong><i class="fas fa-book mr-1"></i> Nombre </strong>
                                         <p class="text-muted">
-                                            <?= $DataDepartamentos->getNombre() ?>
+                                            <?= $DataCategorias->getNombre() ?>
                                         </p>
                                         <hr>
 
-                                        <strong><i class="fas fa-map-marker-alt mr-1"></i> Region</strong>
-                                        <p class="text-muted"><?= $DataDepartamentos->getRegion() ?></p>
+                                        <strong><i class="fas fa-keyboard mr-1"></i> Descripción</strong>
+                                        <p class="text-muted"><?= $DataCategorias->getDescripcion() ?></p>
                                         <hr>
 
-                                        <strong><i class="far fa-file-alt mr-1"></i> Estado y Rol</strong>
-                                        <p class="text-muted"><?= $DataDepartamentos->getEstado() ?></p>
+                                        <strong><i class="far fa-file-alt mr-1"></i> Estado </strong>
+                                        <p class="text-muted"><?= $DataCategorias->getEstado() ?></p>
                                         </p>
 
                                     </div>
@@ -103,7 +103,7 @@ use App\Controllers\DepartamentosController; ?>
                                             <div class="col-auto mr-auto">
                                                 <a role="button" href="index.php" class="btn btn-success float-right"
                                                    style="margin-right: 5px;">
-                                                    <i class="fas fa-tasks"></i> Gestionar Departamentos
+                                                    <i class="fas fa-tasks"></i> Gestionar Categorias
                                                 </a>
                                             </div>
                                         </div>
