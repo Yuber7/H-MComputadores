@@ -192,7 +192,7 @@ class Categorias extends BasicModel
 
 
     static function CategoriaRegistrada(string $nombre ){
-        $result = Categorias::search("SELECT * FROM `h&mcomputadores`.categorias where nombre = " .$nombre);
+        $result = Categorias::search("SELECT * FROM `h&mcomputadores`.categorias where nombre = '" .$nombre. "'");
         if ( count ($result) > 0 ) {
             return true;
         } else {

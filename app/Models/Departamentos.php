@@ -5,7 +5,7 @@ namespace App\Models;
 require_once  ('BasicModel.php');
 
 
-class Categorias extends BasicModel
+class Departamentos extends BasicModel
 {
     //Propiedades
     protected int $id;
@@ -102,7 +102,7 @@ class Categorias extends BasicModel
     }
 
 
-    public function save(): Categorias
+    public function save(): Departamentos
     {
         $result = $this->insertRow("INSERT INTO `h&mcomputadores`.departamentos VALUES (NULL, ?, ?, ?)", array(
                 $this->getNombre(),
@@ -151,11 +151,11 @@ class Categorias extends BasicModel
     public static function search($query)
     {
         $arrDepartamentos = array();
-        $tmp = new Categorias();
+        $tmp = new Departamentos();
         $getrows = $tmp->getRows($query);
 
         foreach ($getrows as $valor) {
-            $Departamentos = new Categorias();
+            $Departamentos = new Departamentos();
             $Departamentos->setId($valor['id']);
             $Departamentos->setNombre($valor['nombre']);
             $Departamentos->setRegion($valor['region']);
@@ -173,7 +173,7 @@ class Categorias extends BasicModel
      */
     public static function getAll()
     {
-        return Categorias::search("SELECT * FROM `h&mcomputadores`.departamentos");
+        return Departamentos::search("SELECT * FROM `h&mcomputadores`.departamentos");
     }
 
     /**
@@ -184,7 +184,7 @@ class Categorias extends BasicModel
     {
         $Departamentos = null;
         if ($id > 0) {
-            $Departamentos = new Categorias();
+            $Departamentos = new Departamentos();
             $getrow = $Departamentos->getRow("SELECT * FROM `h&mcomputadores`.departamentos WHERE id =?", array($id));
             $Departamentos->setId($getrow['id']);
             $Departamentos->setNombre($getrow['nombre']);
@@ -197,7 +197,7 @@ class Categorias extends BasicModel
 
 
     static function DepartamentosRegistrado(string $nombre ){
-        $result = Categorias::search("SELECT * FROM `h&mcomputadores`.departamentos where nombre = " .$nombre);
+        $result = Departamentos::search("SELECT * FROM `h&mcomputadores`.departamentos where nombre = " .$nombre);
         if ( count ($result) > 0 ) {
             return true;
         } else {
