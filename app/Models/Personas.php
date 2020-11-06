@@ -81,7 +81,7 @@ class Personas extends BasicModel
      */
     public function setNombre(string $nombre): void
     {
-        $this->nombre = $nombre;
+        $this->nombre = trim(strtoupper($nombre));
     }
 
     /**
@@ -97,7 +97,7 @@ class Personas extends BasicModel
      */
     public function setApellido(string $apellido): void
     {
-        $this->apellido = $apellido;
+        $this->apellido = trim(strtoupper($apellido));
     }
 
     /**

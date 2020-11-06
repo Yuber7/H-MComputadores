@@ -39,7 +39,7 @@ class FotosController
             $arrayFotos = array();
             $arrayFotos['descripcion'] = $_POST['descripcion'];
             $arrayFotos['ruta'] = $_POST['ruta'];
-            $arrayFotos['productos_id'] = Fotos::searchForId($_POST['productos_id']);
+            $arrayFotos['productos_id'] = $_POST['productos_id'];
             $arrayFotos['estado'] = $_POST['estado'];
 
             if (!Fotos::FotoRegistrada($arrayFotos['ruta'])) {
@@ -62,7 +62,7 @@ class FotosController
             $arrayFotos = array();
             $arrayFotos['descripcion'] = $_POST['descripcion'];
             $arrayFotos['ruta'] = $_POST['ruta'];
-            $arrayFotos['productos_id'] = Fotos::searchForId($_POST['productos_id']);
+            $arrayFotos['productos_id'] = $_POST['productos_id'];
             $arrayFotos['estado'] = $_POST['estado'];
             $arrayFotos['id'] = $_POST['id'];
 
@@ -93,6 +93,38 @@ class FotosController
         } catch (\Exception $e) {
             GeneralFunctions::console($e, 'log', 'errorStack');
             //header("Location: ../Vista/modules/personas/manager.php?respuesta=error");
+        }
+    }
+
+    static public function activate()
+    {
+        try {
+            $ObjFoto = Fotos::searchForId($_GET['Id']);
+            $ObjFoto->setEstado("Activo");
+            if ($ObjFoto->update()) {
+                header("Location: ../../views/modules/fotos/index.php");
+            } else {
+                header("Location: ../../views/modules/fotos/index.php?respuesta=error&mensaje=Error al guardar");
+            }
+        } catch (\Exception $e) {
+            GeneralFunctions::console($e, 'error', 'errorStack');
+            //header("Location: ../../views/modules/personas/index.php?respuesta=error&mensaje=".$e->getMessage());
+        }
+    }
+
+    static public function inactivate()
+    {
+        try {
+            $ObjFoto = Fotos::searchForId($_GET['Id']);
+            $ObjFoto->setEstado("Inactivo");
+            if ($ObjFoto->update()) {
+                header("Location: ../../views/modules/fotos/index.php");
+            } else {
+                header("Location: ../../views/modules/fotos/index.php?respuesta=error&mensaje=Error al guardar");
+            }
+        } catch (\Exception $e) {
+            GeneralFunctions::console($e, 'error', 'errorStack');
+            //header("Location: ../../views/modules/productos/index.php?respuesta=error");
         }
     }
 
