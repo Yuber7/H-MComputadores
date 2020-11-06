@@ -1,11 +1,13 @@
 <?php
-require("../../partials/routes.php");;
+use App\Controllers\CategoriasController;
+require_once ("../../../app/Controllers/CategoriasController.php");
+require("../../partials/routes.php");
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?= $_ENV['TITLE_SITE'] ?> | Crear Categoria</title>
+    <title><?= $_ENV['TITLE_SITE'] ?> | Crear Producto</title>
     <?php require("../../partials/head_imports.php"); ?>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -23,11 +25,11 @@ require("../../partials/routes.php");;
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Crear una Categoria</h1>
+                        <h1>Crear un Producto</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/">Categoria</a></li>
+                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/">Producto</a></li>
                             <li class="breadcrumb-item active">Inicio</li>
                         </ol>
                     </div>
@@ -42,7 +44,7 @@ require("../../partials/routes.php");;
                     <div class="alert alert-danger alert-dismissible">
                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                         <h5><i class="icon fas fa-ban"></i> Error!</h5>
-                        Error al crear la categoria: <?= $_GET['mensaje'] ?>
+                        Error al crear el Producto: <?= $_GET['mensaje'] ?>
                     </div>
                 <?php } ?>
             <?php } ?>
@@ -52,7 +54,7 @@ require("../../partials/routes.php");;
                         <!-- Horizontal Form -->
                         <div class="card card-info">
                             <div class="card-header">
-                                <h3 class="card-title"><i class="fas fa-user"></i> &nbsp; Información de la categoria</h3>
+                                <h3 class="card-title"><i class="fas fa-user"></i> &nbsp; Información del Producto</h3>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
                                             data-source="create.php" data-source-selector="#card-refresh-content"
@@ -66,16 +68,47 @@ require("../../partials/routes.php");;
                             <!-- /.card-header -->
                             <div class="card-body">
                                 <!-- form start -->
-                                <form class="form-horizontal" method="post" id="frmCreateCategorias"
-                                      name="frmCreateCategorias"
-                                      action="../../../app/Controllers/CategoriasController.php?action=create">
+                                <form class="form-horizontal" method="post" id="frmCreateProducto"
+                                      name="frmCreateProducto"
+                                      action="../../../app/Controllers/ProductosController.php?action=create">
                                     <div class="form-group row">
                                         <label for="nombre" class="col-sm-2 col-form-label">Nombre</label>
                                         <div class="col-sm-10">
                                             <input required type="text" class="form-control" id="nombre" name="nombre"
-                                                   placeholder="Ingrese la categoria">
+                                                   placeholder="Ingrese el nombre del Producto">
                                         </div>
                                     </div>
+
+                                    <div class="form-group row">
+                                        <label for="marca" class="col-sm-2 col-form-label">Marca</label>
+                                        <div class="col-sm-10">
+                                            <input required type="text" class="form-control" id="marca"
+                                                   name="marca" placeholder="Ingrese la marca del Producto">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="categoria_id" class="col-sm-2 col-form-label">Categoria</label>
+                                        <div class="col-sm-10">
+                                            <?= CategoriasController::selectCategorias(false,
+                                                true,
+                                                'categoria_id',
+                                                'categoria_id',
+                                                '',
+                                                'form-control select2bs4 select2-info',
+                                                "estado = 'Activo'")
+                                            ?>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="referencia_fabrica" class="col-sm-2 col-form-label">Referencia</label>
+                                        <div class="col-sm-10">
+                                            <input required type="text"  class="form-control"
+                                                   id="referencia_fabrica" name="referencia_fabrica" placeholder="Ingrese la referencia de fabrica">
+                                        </div>
+                                    </div>
+
                                     <div class="form-group row">
                                         <label for="descripcion" class="col-sm-2 col-form-label">Descripcion</label>
                                         <div class="col-sm-10">
@@ -83,15 +116,34 @@ require("../../partials/routes.php");;
                                                       name="descripcion" placeholder="Ingrese una descripción" rows="3"></textarea>
                                         </div>
                                     </div>
+
+
                                     <div class="form-group row">
-                                        <label for="estado" class="col-sm-2 col-form-label">Estado</label>
+                                        <label for="stock" class="col-sm-2 col-form-label">Stock</label>
                                         <div class="col-sm-10">
-                                            <select id="estado" name="estado" class="custom-select">
-                                                <option value="Activo">Activo</option>
-                                                <option value="Inactivo">Inactivo</option>
-                                            </select>
+                                            <input required type="number"  class="form-control"
+                                                   id="stock" name="stock" placeholder="Ingrese el stock">
                                         </div>
                                     </div>
+
+                                    <div class="form-group row">
+                                        <label for="precio" class="col-sm-2 col-form-label">Precio</label>
+                                        <div class="col-sm-10">
+                                            <input required type="number"  class="form-control"
+                                                   id="precio" name="precio" placeholder="Ingrese el precio del producto">
+                                        </div>
+                                    </div>
+
+                                        <div class="form-group row">
+                                            <label for="estado" class="col-sm-2 col-form-label">Estado</label>
+                                            <div class="col-sm-10">
+                                                <select id="estado" name="estado" class="custom-select">
+                                                    <option value="Disponible">Disponible</option>
+                                                    <option value="Agotado">Agotado</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
                                     <hr>
                                     <button type="submit" class="btn btn-info">Enviar</button>
                                     <a href="index.php" role="button" class="btn btn-default float-right">Cancelar</a>

@@ -16,8 +16,8 @@ class Departamentos extends BasicModel
     //Metodo constructor
     public function __construct($arrDepartamentos = array())
     {
-        //Propiedad recibida y asigna a una propiedad de la clase
         parent::__construct();
+        //Propiedad recibida y asigna a una propiedad de la clase
         $this->setId($arrDepartamentos['id'] ?? 0);
         $this->setNombre($arrDepartamentos['nombre'] ?? "");
         $this->setRegion($arrDepartamentos['region'] ?? "");
