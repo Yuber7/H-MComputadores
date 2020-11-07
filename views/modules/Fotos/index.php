@@ -66,7 +66,7 @@ use App\Models\Fotos;
                             <!-- Default box -->
                             <div class="card card-dark">
                                 <div class="card-header">
-                                    <h3 class="card-title"><i class="fas fa-user"></i>  Gestionar Fotos</h3>
+                                    <h3 class="card-title"><i class="fas fa-images"></i>  Gestionar Fotos</h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
                                                 data-source="index.php" data-source-selector="#card-refresh-content"
@@ -87,7 +87,7 @@ use App\Models\Fotos;
                                         <div class="col-auto">
                                             <a role="button" href="create.php" class="btn btn-primary float-right"
                                                style="margin-right: 5px;">
-                                                <i class="fas fa-plus"></i> Crear Producto
+                                                <i class="fas fa-plus"></i> Crear Foto
                                             </a>
                                         </div>
                                     </div>
@@ -128,7 +128,7 @@ use App\Models\Fotos;
                                                                     class="fa fa-eye"></i></a>
                                                             <?php if ($fotos->getEstado() != "Activo") { ?>
                                                                 <a href="../../../app/Controllers/FotosController.php?action=activate&Id=<?php echo $fotos->getId(); ?>"
-                                                                   type="button" data-toggle="tooltip" title="Disponible"
+                                                                   type="button" data-toggle="tooltip" title="Activo"
                                                                    class="btn docs-tooltip btn-success btn-xs"><i
                                                                         class="fa fa-check-square"></i></a>
                                                             <?php } else { ?>

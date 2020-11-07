@@ -83,7 +83,7 @@ use App\Controllers\CategoriasController; ?>
                                     </div>
                                     <div class="card-body">
                                         <p>
-                                            <strong><i class="fas fa-book mr-1"></i> Nombre </strong>
+                                            <strong><i class="fas fa-signature mr-1"></i> Nombre </strong>
                                         <p class="text-muted">
                                             <?= $DataCategorias->getNombre() ?>
                                         </p>

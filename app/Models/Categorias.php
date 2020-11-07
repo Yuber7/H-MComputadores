@@ -207,4 +207,5 @@ class Categorias extends BasicModel
             "descripcion:  " .$this->getDescripcion(). $typeOutput.
             "estado:  " .$this->getEstado(). $typeOutput;
     }
+
 }

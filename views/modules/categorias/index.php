@@ -66,7 +66,7 @@ use App\Models\Categorias;
                         <!-- Default box -->
                         <div class="card card-dark">
                             <div class="card-header">
-                                <h3 class="card-title"><i class="fas fa-user"></i>  Gestionar Categorias</h3>
+                                <h3 class="card-title"><i class="fas fa-map-pin"></i>  Gestionar Categorias</h3>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
                                             data-source="index.php" data-source-selector="#card-refresh-content"
@@ -82,6 +82,15 @@ use App\Models\Categorias;
                                 </div>
                             </div>
                             <div class="card-body">
+                                <div class="row">
+                                    <div class="col-auto mr-auto"></div>
+                                    <div class="col-auto">
+                                        <a role="button" href="create.php" class="btn btn-primary float-right"
+                                           style="margin-right: 5px;">
+                                            <i class="fas fa-plus"></i> Crear Categoria
+                                        </a>
+                                    </div>
+                                </div>
                                 <div class="row">
                                     <div class="col">
                                         <table id="tblCategorias" class="datatable table table-bordered table-striped">

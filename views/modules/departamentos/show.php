@@ -83,17 +83,17 @@ use App\Controllers\DepartamentosController; ?>
                                     </div>
                                     <div class="card-body">
                                         <p>
-                                            <strong><i class="fas fa-book mr-1"></i> Nombre </strong>
+                                            <strong><i class="fas fa-signature mr-1"></i> Nombre </strong>
                                         <p class="text-muted">
                                             <?= $DataDepartamentos->getNombre() ?>
                                         </p>
                                         <hr>
 
-                                        <strong><i class="fas fa-map-marker-alt mr-1"></i> Region</strong>
+                                        <strong><i class="fas fa-map-marked-alt mr-1"></i> Region</strong>
                                         <p class="text-muted"><?= $DataDepartamentos->getRegion() ?></p>
                                         <hr>
 
-                                        <strong><i class="far fa-file-alt mr-1"></i> Estado y Rol</strong>
+                                        <strong><i class="far fa-file-alt mr-1"></i> Estado</strong>
                                         <p class="text-muted"><?= $DataDepartamentos->getEstado() ?></p>
                                         </p>
 
