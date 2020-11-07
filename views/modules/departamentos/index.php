@@ -3,7 +3,7 @@ require_once("../../../app/Controllers/DepartamentosController.php");
 require_once("../../partials/routes.php");
 
 use App\Controllers\DepartamentosController;
-use App\Models\Categorias;
+use App\Models\Departamentos;
 
 ?>
 <!DOCTYPE html>
@@ -97,7 +97,7 @@ use App\Models\Categorias;
                                             <tbody>
                                             <?php
                                             $arrDepartamentos = DepartamentosController::getAll();
-                                            /* @var $arrDepartamentos Categorias[] */
+                                            /* @var $arrDepartamentos \App\Models\Departamentos[] */
                                             foreach ($arrDepartamentos as $Departamentos) {
                                                 ?>
                                                 <tr>
@@ -106,10 +106,6 @@ use App\Models\Categorias;
                                                     <td><?php echo $Departamentos->getRegion(); ?></td>
                                                     <td><?php echo $Departamentos->getEstado(); ?></td>
                                                     <td>
-                                                        <a href="edit.php?id=<?php echo $Departamentos->getId(); ?>"
-                                                           type="button" data-toggle="tooltip" title="Actualizar"
-                                                           class="btn docs-tooltip btn-primary btn-xs"><i
-                                                                    class="fa fa-edit"></i></a>
                                                         <a href="show.php?id=<?php echo $Departamentos->getId(); ?>"
                                                            type="button" data-toggle="tooltip" title="Ver"
                                                            class="btn docs-tooltip btn-warning btn-xs"><i

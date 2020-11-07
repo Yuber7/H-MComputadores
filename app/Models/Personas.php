@@ -81,7 +81,7 @@ class Personas extends BasicModel
      */
     public function setNombre(string $nombre): void
     {
-        $this->nombre = trim(strtoupper($nombre));
+        $this->nombre = trim(mb_strtoupper($nombre));
     }
 
     /**
@@ -97,7 +97,7 @@ class Personas extends BasicModel
      */
     public function setApellido(string $apellido): void
     {
-        $this->apellido = trim(strtoupper($apellido));
+        $this->apellido = trim(mb_strtoupper($apellido));
     }
 
     /**
@@ -277,7 +277,7 @@ class Personas extends BasicModel
      */
     public function update()
     {
-        $result = $this->updateRow( "UPDATE `h&mcomputadores`.personas SET nombre = ?, apellido = ?, tipo_documento = ?, documento = ?, email = ?, telefono = ?, rol = ?, direccion = ?, estado = ? WHERE id = ?", array(
+        $result = $this->updateRow( "UPDATE `h&mcomputadores`.personas SET nombre = ?, apellido = ?, tipo_documento = ?, documento = ?, telefono = ?, rol = ?, direccion = ?, email = ?, password = ?, estado = ? WHERE id = ?", array(
                 $this->nombre,
                 $this->apellido,
                 $this->tipo_documento,
