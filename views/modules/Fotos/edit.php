@@ -57,7 +57,7 @@ use App\Controllers\ProductosController;
                         <!-- Horizontal Form -->
                         <div class="card card-info">
                             <div class="card-header">
-                                <h3 class="card-title"><i class="fas fa-user"></i> &nbsp; Información de la foto</h3>
+                                <h3 class="card-title"><i class="fas fa-images"></i> &nbsp; Información de la foto</h3>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
                                             data-source="create.php" data-source-selector="#card-refresh-content"

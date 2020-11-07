@@ -110,6 +110,7 @@ class Departamentos extends BasicModel
                 $this->getEstado()
             )
         );
+        $this->setId(($result) ? $this->getLastId() : null);
         $this->Disconnect();
         return $this;
     }
