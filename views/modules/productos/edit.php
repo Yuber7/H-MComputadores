@@ -109,7 +109,7 @@ use App\Controllers\ProductosController;
                                                     true,
                                                     'categoria_id',
                                                     'categoria_id',
-                                                    '',
+                                                    (!empty($DataProductos)) ? $DataProductos->getCategoriaId()->getId() : '',
                                                     'form-control select2bs4 select2-info',
                                                     "estado = 'Activo'")
                                                 ?>

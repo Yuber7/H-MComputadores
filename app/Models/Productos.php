@@ -19,7 +19,7 @@ class Productos extends BasicModel
     protected string $descripcion;
     protected int $stock;
     protected float $precio;
-    protected bool $estado;
+    protected string $estado;
 
 
     public function __construct($arrProductos = array())
@@ -181,7 +181,7 @@ class Productos extends BasicModel
      */
     public function getEstado(): string
     {
-        return ($this->estado) ? "Disponible" : "Agotado";
+        return $this->estado;
     }
 
     /**
@@ -189,7 +189,7 @@ class Productos extends BasicModel
      */
     public function setEstado(string $estado): void
     {
-        $this->estado = trim($estado) == "Disponible";
+        $this->estado = $estado;
     }
 
     /**
@@ -306,7 +306,7 @@ class Productos extends BasicModel
 
     static function ProductoRegistrado(string $nombre){
         $nombre = trim(strtoupper($nombre));
-        $result = Productos::search("SELECT * FROM `h&mcomputadores`.productos where nombre = " .$nombre);
+        $result = Productos::search("SELECT * FROM `h&mcomputadores`.productos where nombre = '".$nombre."'");
         if ( count ($result) > 0 ) {
             return true;
         } else {

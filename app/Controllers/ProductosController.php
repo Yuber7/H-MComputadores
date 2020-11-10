@@ -53,7 +53,7 @@ class ProductosController
                     header("Location: ../../views/modules/productos/index.php?accion=create&respuesta=correcto");
                 }
             } else {
-                header("Location: ../../views/modules/productos/create.php?respuesta=error&mensaje=Persona ya registrada");
+                header("Location: ../../views/modules/productos/create.php?respuesta=error&mensaje=Producto ya registrada");
             }
         } catch (Exception $e) {
             GeneralFunctions::console($e, 'error', 'errorStack');
