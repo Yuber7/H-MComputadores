@@ -111,7 +111,7 @@ use App\Controllers\ProductosController;
                                                     true,
                                                     'productos_id',
                                                     'productos_id',
-                                                    '',
+                                                    (!empty($DataFotos)) ? $DataFotos->getProductoId()->getId() : '',
                                                     'form-control select2bs4 select2-info',
                                                     "estado = 'Disponible'")
                                                 ?>

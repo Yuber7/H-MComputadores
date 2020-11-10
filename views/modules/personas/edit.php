@@ -151,7 +151,7 @@ use  App\Controllers\PersonasController;
                                                     true,
                                                     'municipio_id',
                                                     'municipio_id',
-                                                    '',
+                                                    (!empty($DataPersonas)) ? $DataPersonas->getMunicipioId()->getId() : '',
                                                     'form-control select2bs4 select2-info',
                                                     "estado = 'Activo'")
                                                 ?>

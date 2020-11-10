@@ -3,6 +3,8 @@
 
 namespace App\Models;
 require_once  ('BasicModel.php');
+require_once('Municipios.php');
+
 
 class Personas extends BasicModel
 {
@@ -18,7 +20,7 @@ class Personas extends BasicModel
     protected string $direccion;
     protected string $email;
     protected string $password;
-    protected bool $estado;
+    protected string $estado;
 
     //Metodo constructor
     public function __construct($arrPersonas = array())
@@ -236,7 +238,7 @@ class Personas extends BasicModel
      */
     public function getEstado(): string
     {
-        return ($this->estado) ? "Activo" : "Inactivo";
+        return ($this->estado) ;
     }
 
     /**
@@ -244,7 +246,7 @@ class Personas extends BasicModel
      */
     public function setEstado(string $estado): void
     {
-        $this->estado = trim($estado) == "Activo";
+        $this->estado = $estado;
     }
 
 
@@ -277,7 +279,7 @@ class Personas extends BasicModel
      */
     public function update()
     {
-        $result = $this->updateRow( "UPDATE `h&mcomputadores`.personas SET nombre = ?, apellido = ?, tipo_documento = ?, documento = ?, telefono = ?, rol = ?, direccion = ?, email = ?, password = ?, estado = ? WHERE id = ?", array(
+        $result = $this->updateRow( "UPDATE `h&mcomputadores`.personas SET nombre = ?, apellido = ?, tipo_documento = ?, documento = ?, telefono = ?, rol = ?, municipio_id = ?, direccion = ?, email = ?, password = ?, estado = ? WHERE id = ?", array(
                 $this->nombre,
                 $this->apellido,
                 $this->tipo_documento,

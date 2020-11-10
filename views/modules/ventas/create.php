@@ -1,13 +1,14 @@
 <?php
-use App\Controllers\ProductosController;
-require_once ("../../../app/Controllers/ProductosController.php");
-require("../../partials/routes.php");
+use App\Controllers\PersonasController;
+require_once ("../../../app/Controllers/PersonasController.php");
+use Carbon\Carbon;
+    require("../../partials/routes.php");
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?= $_ENV['TITLE_SITE'] ?> | Crear Foto</title>
+    <title><?= $_ENV['TITLE_SITE'] ?> | Crear Venta</title>
     <?php require("../../partials/head_imports.php"); ?>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -25,11 +26,11 @@ require("../../partials/routes.php");
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Crear una Foto</h1>
+                        <h1>Crear una Nueva Venta</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/">Foto</a></li>
+                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/">H&M</a></li>
                             <li class="breadcrumb-item active">Inicio</li>
                         </ol>
                     </div>
@@ -44,7 +45,7 @@ require("../../partials/routes.php");
                     <div class="alert alert-danger alert-dismissible">
                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                         <h5><i class="icon fas fa-ban"></i> Error!</h5>
-                        Error al crear la Foto: <?= $_GET['mensaje'] ?>
+                        Error al crear la Venta: <?= $_GET['mensaje'] ?>
                     </div>
                 <?php } ?>
             <?php } ?>
@@ -54,63 +55,75 @@ require("../../partials/routes.php");
                         <!-- Horizontal Form -->
                         <div class="card card-info">
                             <div class="card-header">
-                                <h3 class="card-title"><i class="fas fa-images"></i> &nbsp; Información de la Foto</h3>
+                                <h3 class="card-title"><i class="fas fa-user"></i> &nbsp; Información de la Venta</h3>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
                                             data-source="create.php" data-source-selector="#card-refresh-content"
                                             data-load-on-init="false"><i class="fas fa-sync-alt"></i></button>
                                     <button type="button" class="btn btn-tool" data-card-widget="maximize"><i
-                                            class="fas fa-expand"></i></button>
+                                                class="fas fa-expand"></i></button>
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
-                                            class="fas fa-minus"></i></button>
+                                                class="fas fa-minus"></i></button>
                                 </div>
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">
                                 <!-- form start -->
-                                <form class="form-horizontal" method="post" id="frmCreateFoto"
-                                      name="frmCreateFoto"
-                                      action="../../../app/Controllers/FotosController.php?action=create">
+                                <form class="form-horizontal" method="post" id="frmCreateVenta"
+                                      name="frmCreateVenta"
+                                      action="../../../app/Controllers/VentasController.php?action=create">
+
                                     <div class="form-group row">
-                                        <label for="descripcion" class="col-sm-2 col-form-label">Descripcion</label>
+                                        <label for="fecha" class="col-sm-2 col-form-label">Fecha</label>
                                         <div class="col-sm-10">
-                                            <input required type="text" class="form-control" id="descripcion" name="descripcion"
-                                                   placeholder="Ingrese un descripcion de la Foto">
+                                            <input required type="date" max="<?= Carbon::now()->subYear(12)->format('Y-m-d') ?>" class="form-control" id="fecha"
+                                                   name="fecha" placeholder="Ingrese  Fecha">
                                         </div>
                                     </div>
 
+
                                     <div class="form-group row">
-                                        <label for="ruta" class="col-sm-2 col-form-label">Ruta</label>
-                                        <div class="col-sm-10">
-                                            <input required type="text" class="form-control" id="ruta"
-                                                   name="ruta" placeholder="Ingrese la ruta de acceso">
-                                        </div>
+                                            <label for="valor_total" class="col-sm-2 col-form-label">Valor total</label>
+                                            <div class="col-sm-10">
+                                                <input required type="number" class="form-control" id="valor_total" name="valor_total" placeholder="Ingrese valor total">
+                                            </div>
                                     </div>
 
                                     <div class="form-group row">
-                                        <label for="productos_id" class="col-sm-2 col-form-label">Producto</label>
+                                        <label for="persona_id" class="col-sm-2 col-form-label">Persona</label>
                                         <div class="col-sm-10">
-                                            <?= ProductosController::selectProductos(false,
+                                            <?= PersonasController::selectPersonas(false,
                                                 true,
-                                                'productos_id',
-                                                'productos_id',
+                                                'persona_id',
+                                                'persona_id',
                                                 '',
                                                 'form-control select2bs4 select2-info',
-                                                "estado = 'Disponible'")
+                                                "estado = 'Activo'")
                                             ?>
                                         </div>
                                     </div>
 
+                                        <div class="form-group row">
+                                            <label for="forma_pago" class="col-sm-2 col-form-label">Rol</label>
+                                            <div class="col-sm-10">
+                                                <select id="forma_pago" name="forma_pago" class="custom-select">
+                                                    <option value="Efectivo">Efectivo</option>
+                                                    <option value="Cheque">Cheque</option>
+                                                    <option value="Otros">Otros</option>
+                                                </select>
+                                            </div>
+                                        </div>
 
                                         <div class="form-group row">
                                             <label for="estado" class="col-sm-2 col-form-label">Estado</label>
                                             <div class="col-sm-10">
-                                                <select id="estado" name="estado" class="custom-select">
-                                                    <option value="Activo">Activo</option>
-                                                    <option value="Inactivo">Inactivo</option>
+                                                <select id="rol" name="Estado" class="custom-select">
+                                                    <option value="Pendiente">Pendiente</option>
+                                                    <option value="Procesada">Procesada</option>
                                                 </select>
                                             </div>
                                         </div>
+                                    <?php  ?>
 
                                     <hr>
                                     <button type="submit" class="btn btn-info">Enviar</button>
