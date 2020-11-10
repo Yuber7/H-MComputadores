@@ -84,6 +84,7 @@ class PersonasController
             $Personas = new Personas ($arrayPersonas);
             $Personas ->update();
 
+
             header("Location: ../../views/modules/personas/show.php?id=" . $Personas->getId() . "&respuesta=correcto");
         } catch (\Exception $e) {
             GeneralFunctions::console($e, 'error', 'errorStack');
@@ -109,6 +110,47 @@ class PersonasController
             GeneralFunctions::console($e, 'log', 'errorStack');
             //header("Location: ../Vista/modules/personas/manager.php?respuesta=error");
         }
+    }
+    static public function selectPersonas($isMultiple = false,
+                                           $isRequired = true,
+                                           $id = "persona_id",
+                                           $nombre = "persona_id",
+                                           $defaultValue = "",
+                                           $class = "form-control",
+                                           $where = "",
+                                           $arrExcluir = array())
+    {
+        $arrPersonas = array();
+        if ($where != "") {
+            $base = "SELECT * FROM `h&mcomputadores`.personas WHERE ";
+            $arrPersonas = Personas::search($base . ' ' . $where);
+        } else {
+            $arrPersonas = Personas::getAll();
+        }
+
+        $htmlSelect = "<select " . (($isMultiple) ? "multiple" : "") . " " . (($isRequired) ? "required" : "") . " id= '" . $id . "' name='" . $nombre . "' class='" . $class . "' style='width: 100%;'>";
+        $htmlSelect .= "<option value='' >Seleccione</option>";
+        if (count($arrPersonas) > 0) {
+            /* @var $arrPersonas Personas[] */
+            foreach ($arrPersonas as $persona)
+                if (!PersonasController::personaIsInArray($persona->getId(), $arrExcluir))
+                    $htmlSelect .= "<option " . (($persona != "") ? (($defaultValue == $persona->getId()) ? "selected" : "") : "") . " value='" . $persona->getId() . "'>" .  $persona->getNombre() . "</option>";
+        }
+        $htmlSelect .= "</select>";
+        return $htmlSelect;
+    }
+
+
+    private static function personaIsInArray($idPersona, $arrPersonas)
+    {
+        if (count($arrPersonas) > 0) {
+            foreach ($arrPersonas as $persona) {
+                if ($persona->getId() == $idPersona) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     static public function activate()

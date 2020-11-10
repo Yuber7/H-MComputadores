@@ -66,6 +66,7 @@ class FotosController
             $arrayFotos['estado'] = $_POST['estado'];
             $arrayFotos['id'] = $_POST['id'];
 
+
             $Fotos = new Fotos ($arrayFotos);
             $Fotos ->update();
 

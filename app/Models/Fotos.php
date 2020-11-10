@@ -16,7 +16,7 @@ class Fotos extends BasicModel
     protected string $descripcion;
     protected string $ruta;
     protected Productos $productos_id;
-    protected bool $estado;
+    protected string $estado;
 
     //Metodo constructor
     public function __construct($arrFotos = array())
@@ -107,19 +107,19 @@ class Fotos extends BasicModel
 
 
     /**
-     * @return mixed|bool
+     * @return mixed|string
      */
     public function getEstado(): string
     {
-        return ($this->estado) ? "Activo" : "Inactivo";
+        return ($this->estado);
     }
 
     /**
-     * @param mixed|bool $estado
+     * @param mixed|string $estado
      */
     public function setEstado(string $estado): void
     {
-        $this->estado = trim($estado) == "Inactivo";
+        $this->estado = $estado;
     }
 
 
@@ -141,11 +141,12 @@ class Fotos extends BasicModel
 
     public function update()
     {
-        $result = $this->updateRow("UPDATE `h&mcomputadores`.fotos SET descripcion = ?, ruta = ?, estado = ? WHERE id = ?", array(
+        $result = $this->updateRow("UPDATE `h&mcomputadores`.fotos SET descripcion = ?, ruta = ?, productos_id = ?, estado = ? WHERE id = ?", array(
                 $this->descripcion,
                 $this->ruta,
                 $this->productos_id->getId(),
-                $this->estado
+                $this->estado,
+                $this->id
             )
         );
         $this->Disconnect();
@@ -212,7 +213,7 @@ class Fotos extends BasicModel
 
 
     static function FotoRegistrada(string $ruta ){
-        $result = Fotos::search("SELECT * FROM `h&mcomputadores`.fotos where ruta = " .$ruta);
+        $result = Fotos::search("SELECT * FROM `h&mcomputadores`.fotos where ruta = '" .$ruta."'");
         if ( count ($result) > 0 ) {
             return true;
         } else {
