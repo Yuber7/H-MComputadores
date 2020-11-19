@@ -1,15 +1,15 @@
 <?php
-require_once("../../../app/Controllers/PersonasController.php");
+require_once("../../../app/Controllers/VentasController.php");
 require_once("../../partials/routes.php");
 
-use App\Controllers\PersonasController;
-use App\Models\Personas;
+use App\Controllers\VentasController;
+use App\Models\Ventas;
 
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?= $_ENV['TITLE_SITE'] ?> | Gestionar Personas</title>
+    <title><?= $_ENV['TITLE_SITE'] ?> | Gestionar Ventas</title>
     <?php require("../../partials/head_imports.php"); ?>
     <!-- DataTables -->
     <link rel="stylesheet" href="<?= $adminlteURL ?>/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
@@ -52,9 +52,9 @@ use App\Models\Personas;
                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                         <h5><i class="icon fas fa-check"></i> Correcto!</h5>
                         <?php if ($_GET['accion'] == "create") { ?>
-                            La persona ha sido creada con exito!
+                            La venta ha sido creada con exito!
                         <?php } else if ($_GET['accion'] == "update") { ?>
-                            Los datos de la persona han sido actualizados correctamente!
+                            Los datos de la venta han sido actualizados correctamente!
                         <?php } ?>
                     </div>
                 <?php } ?>
@@ -66,13 +66,13 @@ use App\Models\Personas;
                         <!-- Default box -->
                         <div class="card card-dark">
                             <div class="card-header">
-                                <h3 class="card-title"><i class="fas fa-user"></i>  Gestionar Personas</h3>
+                                <h3 class="card-title"><i class="fas fa-user"></i>  Gestionar Ventas</h3>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
                                             data-source="index.php" data-source-selector="#card-refresh-content"
                                             data-load-on-init="false"><i class="fas fa-sync-alt"></i></button>
                                     <button type="button" class="btn btn-tool" data-card-widget="maximize"><i
-                                                class="fas fa-expand"></i></button>
+                                            class="fas fa-expand"></i></button>
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse"
                                             data-toggle="tooltip" title="Collapse">
                                         <i class="fas fa-minus"></i></button>
@@ -87,25 +87,20 @@ use App\Models\Personas;
                                     <div class="col-auto">
                                         <a role="button" href="create.php" class="btn btn-primary float-right"
                                            style="margin-right: 5px;">
-                                            <i class="fas fa-plus"></i> Crear Persona
+                                            <i class="fas fa-plus"></i> Crear Venta
                                         </a>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col">
-                                        <table id="tblPersonas" class="datatable table table-bordered table-striped">
+                                        <table id="tblProductos" class="datatable table table-bordered table-striped">
                                             <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Nombre</th>
-                                                <th>Apellido</th>
-                                                <th>Tipo Doc.</th>
-                                                <th>Documento</th>
-                                                <th>Telefono</th>
-                                                <th>Rol</th>
-                                                <th>Municipio id</th>
-                                                <th>Direccion</th>
-                                                <th>Email</th>
+                                                <th>Fecha</th>
+                                                <th>Valor Total</th>
+                                                <th>Persona id</th>
+                                                <th>Forma Pago</th>
                                                 <th>Estado</th>
                                                 <th>Acciones</th>
 
@@ -113,42 +108,37 @@ use App\Models\Personas;
                                             </thead>
                                             <tbody>
                                             <?php
-                                            $arrPersonas = PersonasController::getAll();
-                                            /* @var $arrPersonas Personas[] */
-                                            foreach ($arrPersonas as $personas) {
+                                            $arrVentas = VentasController::getAll();
+                                            /* @var $arrVentas Ventas[] */
+                                            foreach ($arrVentas as $ventas) {
                                                 ?>
                                                 <tr>
-                                                    <td><?php echo $personas->getId(); ?></td>
-                                                    <td><?php echo $personas->getNombre(); ?></td>
-                                                    <td><?php echo $personas->getApellido(); ?></td>
-                                                    <td><?php echo $personas->getTipo_documento(); ?></td>
-                                                    <td><?php echo $personas->getDocumento(); ?></td>
-                                                    <td><?php echo $personas->getTelefono(); ?></td>
-                                                    <td><?php echo $personas->getRol(); ?></td>
-                                                    <td><?php echo $personas->getMunicipioId()->getNombre(); ?> - <?php echo $personas->getMunicipioId()->getId(); ?> </td>
-                                                    <td><?php echo $personas->getDireccion(); ?></td>
-                                                    <td><?php echo $personas->getEmail(); ?></td>
-                                                    <td><?php echo $personas->getEstado(); ?></td>
+                                                    <td><?php echo $ventas->getId(); ?></td>
+                                                    <td><?php echo $ventas->getFecha(); ?></td>
+                                                    <td><?php echo $ventas->getValorTotal(); ?> </td>
+                                                    <td><?php echo $ventas->getPersonaId()->getNombre(); ?> - <?php echo $ventas->getPersonaId()->getId(); ?> </td>
+                                                    <td><?php echo $ventas->getFormaPago(); ?></td>
+                                                    <td><?php echo $ventas->getEstado(); ?></td>
                                                     <td>
-                                                        <a href="edit.php?id=<?php echo $personas->getId(); ?>"
+                                                        <a href="edit.php?id=<?php echo $ventas->getId(); ?>"
                                                            type="button" data-toggle="tooltip" title="Actualizar"
                                                            class="btn docs-tooltip btn-primary btn-xs"><i
-                                                                    class="fa fa-edit"></i></a>
-                                                        <a href="show.php?id=<?php echo $personas->getId(); ?>"
+                                                                class="fa fa-edit"></i></a>
+                                                        <a href="show.php?id=<?php echo $ventas->getId(); ?>"
                                                            type="button" data-toggle="tooltip" title="Ver"
                                                            class="btn docs-tooltip btn-warning btn-xs"><i
-                                                                    class="fa fa-eye"></i></a>
-                                                        <?php if ($personas->getEstado() != "Activo") { ?>
-                                                            <a href="../../../app/Controllers/PersonasController.php?action=Activo&Id=<?php echo $personas->getId(); ?>"
-                                                               type="button" data-toggle="tooltip" title="Activo"
+                                                                class="fa fa-eye"></i></a>
+                                                        <?php if ($ventas->getEstado() != "Pendiente") { ?>
+                                                            <a href="../../../app/Controllers/VentasController.php?action=Pendiente&Id=<?php echo $ventas->getId(); ?>"
+                                                               type="button" data-toggle="tooltip" title="Pendiente"
                                                                class="btn docs-tooltip btn-success btn-xs"><i
-                                                                        class="fa fa-check-square"></i></a>
+                                                                    class="fa fa-check-square"></i></a>
                                                         <?php } else { ?>
                                                             <a type="button"
-                                                               href="../../../app/Controllers/PersonasController.php?action=Inactivo&Id=<?php echo $personas->getId(); ?>"
-                                                               data-toggle="tooltip" title="Inactivo"
+                                                               href="../../../app/Controllers/VentasController.php?action=Procesada&Id=<?php echo $ventas->getId(); ?>"
+                                                               data-toggle="tooltip" title="Procesada"
                                                                class="btn docs-tooltip btn-danger btn-xs"><i
-                                                                        class="fa fa-times-circle"></i></a>
+                                                                    class="fa fa-times-circle"></i></a>
                                                         <?php } ?>
                                                     </td>
                                                 </tr>
@@ -158,15 +148,10 @@ use App\Models\Personas;
                                             <tfoot>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Nombre</th>
-                                                <th>Apellido</th>
-                                                <th>Tipo Doc.</th>
-                                                <th>Documento</th>
-                                                <th>Telefono</th>
-                                                <th>Rol</th>
-                                                <th>Municipio id</th>
-                                                <th>Direccion</th>
-                                                <th>Email</th>
+                                                <th>Fecha</th>
+                                                <th>Valor Total</th>
+                                                <th>Persona id</th>
+                                                <th>Forma Pago</th>
                                                 <th>Estado</th>
                                                 <th>Acciones</th>
                                             </tr>

@@ -27,10 +27,10 @@ class PersonasController
             PersonasController::searchForID($_REQUEST['idPersonas']);
         } else if ($action == "searchAll") {
             PersonasController::getAll();
-        }  else if ($action == "activate") {
-            PersonasController::activate();
-        } else if ($action == "inactivate") {
-            PersonasController::inactivate();
+        }  else if ($action == "Activo") {
+            PersonasController::Activo();
+        } else if ($action == "Inactivo") {
+            PersonasController::Inactivo();
         }
     }
 
@@ -153,7 +153,7 @@ class PersonasController
         return false;
     }
 
-    static public function activate()
+    static public function Activo()
     {
         try {
             $ObjPersona = Personas::searchForId($_GET['Id']);
@@ -169,7 +169,7 @@ class PersonasController
         }
     }
 
-    static public function inactivate()
+    static public function Inactivo()
     {
         try {
             $ObjPersona = Personas::searchForId($_GET['Id']);

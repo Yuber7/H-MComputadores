@@ -45,14 +45,15 @@ class VentasController
             $arrayVentas['forma_pago'] = $_POST['forma_pago'];
             $arrayVentas['estado'] = $_POST['estado'];
 
-            if (!Ventas::VentaRegistrada($arrayVentas['id'])) {
+            //esta linea aun no funciona debemos dejar lo de registrar por otro tipo de dato no se puede por id
+            //if (!Ventas::VentaRegistrada($arrayVentas['id'])) {
                 $Ventas = new Ventas($arrayVentas);
                 if ($Ventas->save()) {
                     header("Location: ../../views/modules/ventas/index.php?accion=create&respuesta=correcto");
                 }
-            } else {
+            /*} else {
                 header("Location: ../../views/modules/ventas/create.php?respuesta=error&mensaje=Venta ya registrada");
-            }
+            }*/
         } catch (Exception $e) {
             GeneralFunctions::console($e, 'error', 'errorStack');
             //header("Location: ../../views/modules/usuarios/create.php?respuesta=error&mensaje=" . $e->getMessage());
