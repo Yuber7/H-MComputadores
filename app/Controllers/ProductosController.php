@@ -28,9 +28,9 @@ class ProductosController
         } else if ($action == "searchAll") {
             ProductosController::getAll();
         } else if ($action == "Disponible") {
-            ProductosController::activate();
+            ProductosController::Disponible();
         } else if ($action == "Agotado") {
-            ProductosController::inactivate();
+            ProductosController::Agotado();
         }
     }
 
@@ -147,7 +147,7 @@ class ProductosController
     }
 
 
-    static public function activate()
+    static public function Disponible()
     {
         try {
             $ObjProducto = Productos::searchForId($_GET['Id']);
@@ -163,7 +163,7 @@ class ProductosController
         }
     }
 
-    static public function inactivate()
+    static public function Agotado()
     {
         try {
             $ObjProducto = Productos::searchForId($_GET['Id']);
