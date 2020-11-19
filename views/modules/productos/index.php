@@ -135,13 +135,13 @@ use App\Models\Productos;
                                                            class="btn docs-tooltip btn-warning btn-xs"><i
                                                                     class="fa fa-eye"></i></a>
                                                         <?php if ($productos->getEstado() != "Disponible") { ?>
-                                                            <a href="../../../app/Controllers/ProductosController.php?action=activate&Id=<?php echo $productos->getId(); ?>"
+                                                            <a href="../../../app/Controllers/ProductosController.php?action=Disponible&Id=<?php echo $productos->getId(); ?>"
                                                                type="button" data-toggle="tooltip" title="Disponible"
                                                                class="btn docs-tooltip btn-success btn-xs"><i
                                                                         class="fa fa-check-square"></i></a>
                                                         <?php } else { ?>
                                                             <a type="button"
-                                                               href="../../../app/Controllers/ProductosController.php?action=inactivate&Id=<?php echo $productos->getId(); ?>"
+                                                               href="../../../app/Controllers/ProductosController.php?action=Agotado&Id=<?php echo $productos->getId(); ?>"
                                                                data-toggle="tooltip" title="Agotado"
                                                                class="btn docs-tooltip btn-danger btn-xs"><i
                                                                         class="fa fa-times-circle"></i></a>
