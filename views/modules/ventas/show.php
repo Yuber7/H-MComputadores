@@ -1,12 +1,12 @@
 <?php
 require("../../partials/routes.php");
-require("../../../app/Controllers/CategoriasController.php");
+require("../../../app/Controllers/VentasController.php");
 
-use App\Controllers\CategoriasController; ?>
+use App\Controllers\VentasController; ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?= $_ENV['TITLE_SITE'] ?> | Datos de la categoria</title>
+    <title><?= $_ENV['TITLE_SITE'] ?> | Datos de la Venta</title>
     <?php require("../../partials/head_imports.php"); ?>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -24,7 +24,7 @@ use App\Controllers\CategoriasController; ?>
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Informacion de la categoria</h1>
+                        <h1>Informacion de la Venta</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -44,7 +44,7 @@ use App\Controllers\CategoriasController; ?>
                     <div class="alert alert-danger alert-dismissible">
                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                         <h5><i class="icon fas fa-ban"></i> Error!</h5>
-                        Error al consultar la categoria: <?= ($_GET['mensaje']) ?? "" ?>
+                        Error al consultar la Venta: <?= ($_GET['mensaje']) ?? "" ?>
                     </div>
                 <?php } ?>
             <?php } else if (empty($_GET['id'])) { ?>
@@ -61,12 +61,13 @@ use App\Controllers\CategoriasController; ?>
                         <!-- Horizontal Form -->
                         <div class="card card-green">
                             <?php if (!empty($_GET["id"]) && isset($_GET["id"])) {
-                                $DataCategorias = CategoriasController::searchForID($_GET["id"]);
-                                if (!empty($DataCategorias)) {
+                                $DataVentas = VentasController::searchForID($_GET["id"]);
+                                if (!empty($DataVentas
+                                )) {
                                     ?>
                                     <div class="card-header">
                                         <h3 class="card-title"><i class="fas fa-info"></i> &nbsp; Ver Información
-                                            de <?= $DataCategorias->getNombre() ?></h3>
+                                            de la venta N°<?= $DataVentas->getId() ?></h3>
                                         <div class="card-tools">
                                             <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
                                                     data-source="show.php" data-source-selector="#card-refresh-content"
@@ -83,19 +84,33 @@ use App\Controllers\CategoriasController; ?>
                                     </div>
                                     <div class="card-body">
                                         <p>
-                                            <strong><i class="fas fa-signature mr-1"></i> Nombre </strong>
+                                            <strong><i class="fas fa-book mr-1"></i> Fecha</strong>
                                         <p class="text-muted">
-                                            <?= $DataCategorias->getNombre() ?>
+                                            <?= $DataVentas->getFecha() ?>
                                         </p>
                                         <hr>
 
-                                        <strong><i class="fas fa-keyboard mr-1"></i> Descripción</strong>
-                                        <p class="text-muted"><?= $DataCategorias->getDescripcion() ?></p>
+                                        <strong><i class="fas fa-user mr-1"></i> Valor Total</strong>
+                                        <p class="text-muted"><?=
+                                            $DataVentas->getValorTotal()?></p>
+                                        <hr>
+
+                                        <strong><i class="fas fa-phone mr-1"></i> Persona</strong>
+                                        <p class="text-muted">
+                                            <?= $DataVentas->getPersonaId()->getNombre() ?></p>
+                                        <hr>
+
+                                        <strong><i class="fas fa-phone mr-1"></i> Descripcion</strong>
+                                        <p class="text-muted">
+                                            <?= $DataVentas->getFormaPago() ?></p>
                                         <hr>
 
                                         <strong><i class="far fa-file-alt mr-1"></i> Estado </strong>
-                                        <p class="text-muted"><?= $DataCategorias->getEstado() ?></p>
+                                        <p class="text-muted">
+                                            <?= $DataVentas->getEstado() ?></p>
                                         </p>
+
+
 
                                     </div>
                                     <div class="card-footer">
@@ -103,7 +118,7 @@ use App\Controllers\CategoriasController; ?>
                                             <div class="col-auto mr-auto">
                                                 <a role="button" href="index.php" class="btn btn-success float-right"
                                                    style="margin-right: 5px;">
-                                                    <i class="fas fa-tasks"></i> Gestionar Categorias
+                                                    <i class="fas fa-tasks"></i> Gestionar Ventas
                                                 </a>
                                             </div>
                                         </div>

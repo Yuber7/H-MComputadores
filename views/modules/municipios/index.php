@@ -108,10 +108,6 @@ use App\Models\Municipios;
                                                     <td><?php echo $Municipio->getAcortado(); ?></td>
                                                     <td><?php echo $Municipio->getEstado(); ?></td>
                                                     <td>
-                                                        <a href="edit.php?id=<?php echo $Municipio->getId(); ?>"
-                                                           type="button" data-toggle="tooltip" title="Actualizar"
-                                                           class="btn docs-tooltip btn-primary btn-xs"><i
-                                                                class="fa fa-edit"></i></a>
                                                         <a href="show.php?id=<?php echo $Municipio->getId(); ?>"
                                                            type="button" data-toggle="tooltip" title="Ver"
                                                            class="btn docs-tooltip btn-warning btn-xs"><i
