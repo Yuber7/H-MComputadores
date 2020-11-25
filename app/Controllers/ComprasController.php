@@ -6,11 +6,12 @@ require_once(__DIR__ . '/../Models/Compras.php');
 require_once(__DIR__ . '/../Models/Personas.php');
 require_once(__DIR__ . '/../Models/GeneralFunctions.php');
 
-use App\Models\GeneralFunctions;
 use App\Models\Compras;
+use App\Models\GeneralFunctions;
+use App\Models\Ventas;
 use Carbon\Carbon;
 
-if (!empty($_GET['action'])) { //VentasController.php?action=create
+if (!empty($_GET['action'])) { //ComprasController.php?action=create
     ComprasController::main($_GET['action']);
 }
 
@@ -27,13 +28,12 @@ class ComprasController
             ComprasController::searchForID($_REQUEST['idCompras']);
         } else if ($action == "searchAll") {
             ComprasController::getAll();
-        } else if ($action == "Recibida") {
-            ComprasController::activate();
-        } else if ($action == "Pendiente") {
+        } else if ($action == "Procesada") {
             ComprasController::inactivate();
+        } else if ($action == "Pendiente") {
+            ComprasController::activate();
         }
     }
-
 
     static public function create()
     {
@@ -44,14 +44,15 @@ class ComprasController
             $arrayCompras['persona_id'] = $_POST['persona_id'];
             $arrayCompras['estado'] = $_POST['estado'];
 
-            if (!Compras::CompraRegistrada($arrayCompras['id'])) {
-                $Compras = new Compras($arrayCompras);
-                if ($Compras->save()) {
-                    header("Location: ../../views/modules/compras/index.php?accion=create&respuesta=correcto");
-                }
-            } else {
-                header("Location: ../../views/modules/compras/create.php?respuesta=error&mensaje=Venta ya registrada");
+            //esta linea aun no funciona debemos dejar lo de registrar por otro tipo de dato no se puede por id
+            //if (!Compras::ComprasRegistrada($arrayCompras['id'])) {
+            $Compras = new Compras($arrayCompras);
+            if ($Compras->save()) {
+                header("Location: ../../views/modules/compras/index.php?accion=create&respuesta=correcto");
             }
+            /*} else {
+                header("Location: ../../views/modules/compras/create.php?respuesta=error&mensaje=Venta ya registrada");
+            }*/
         } catch (Exception $e) {
             GeneralFunctions::console($e, 'error', 'errorStack');
             //header("Location: ../../views/modules/usuarios/create.php?respuesta=error&mensaje=" . $e->getMessage());
@@ -101,17 +102,17 @@ class ComprasController
 
 
     static public function selectCompras($isMultiple = false,
-                                        $isRequired = true,
-                                        $id = "compra_id",
-                                        $nombre = "compra_id",
-                                        $defaultValue = "",
-                                        $class = "form-control",
-                                        $where = "",
-                                        $arrExcluir = array())
+                                         $isRequired = true,
+                                         $id = "compras_id",
+                                         $nombre = "compras_id",
+                                         $defaultValue = "",
+                                         $class = "form-control",
+                                         $where = "",
+                                         $arrExcluir = array())
     {
         $arrCompras = array();
         if ($where != "") {
-            $base = "SELECT * FROM `h&mcomputadores`.compras WHERE ";
+            $base = "SELECT * FROM `h&mcomputadores`.Compras WHERE ";
             $arrCompras = Compras::search($base . ' ' . $where);
         } else {
             $arrCompras = Compras::getAll();
@@ -120,20 +121,20 @@ class ComprasController
         $htmlSelect = "<select " . (($isMultiple) ? "multiple" : "") . " " . (($isRequired) ? "required" : "") . " id= '" . $id . "' name='" . $nombre . "' class='" . $class . "' style='width: 100%;'>";
         $htmlSelect .= "<option value='' >Seleccione</option>";
         if (count($arrCompras) > 0) {
-            /* @var $arrCompras Compras[] */
-            foreach ($arrCompras as $compra)
-                if (!ComprasController::compraIsInArray($compra->getId(), $arrExcluir))
-                    $htmlSelect .= "<option " . (($compra != "") ? (($defaultValue == $compra->getId()) ? "selected" : "") : "") . " value='" . $compra->getId() . "'>" .  $compra->getFecha() . "</option>";
+            /* @var $arrCompras Ventas[] */
+            foreach ($arrCompras as $Compras)
+                if (!VentasController::comprasIsInArray($Compras>getId(), $arrExcluir))
+                    $htmlSelect .= "<option " . (($Compras != "") ? (($defaultValue == $Compras->getId()) ? "selected" : "") : "") . " value='" . $Compras->getId() . "'>" .  $Compras->getFecha() . "</option>";
         }
         $htmlSelect .= "</select>";
         return $htmlSelect;
     }
 
-    private static function compraIsInArray($idCompra, $arrCompras)
+    private static function comprasIsInArray($idCompras, $arrCompras)
     {
         if (count($arrCompras) > 0) {
-            foreach ($arrCompras as $compra) {
-                if ($compra->getId() == $idCompra) {
+            foreach ($arrCompras as $Compras) {
+                if ($Compras->getId() == $idCompras) {
                     return true;
                 }
             }
@@ -141,29 +142,29 @@ class ComprasController
         return false;
     }
 
-    static public function activate()
+    static public function inactivate()
     {
         try {
-            $ObjCompra = Compras::searchForId($_GET['Id']);
-            $ObjCompra->setEstado("Recibida");
-            if ($ObjCompra->update()) {
+            $ObjCompras = Compras::searchForId($_GET['Id']);
+            $ObjCompras->setEstado("Procesada");
+            if ($ObjCompras->update()) {
                 header("Location: ../../views/modules/compras/index.php");
             } else {
                 header("Location: ../../views/modules/compras/index.php?respuesta=error&mensaje=Error al guardar");
             }
         } catch (\Exception $e) {
             GeneralFunctions::console($e, 'error', 'errorStack');
-            //header("Location: ../../views/modules/compras/index.php?respuesta=error&mensaje=".$e->getMessage());
+            //header("Location: ../../views/modules/Compras/index.php?respuesta=error&mensaje=".$e->getMessage());
         }
     }
 
 
-    static public function inactivate()
+    static public function activate()
     {
         try {
-            $ObjCompra = Compras::searchForId($_GET['Id']);
-            $ObjCompra->setEstado("Pendiente");
-            if ($ObjCompra->update()) {
+            $ObjCompras = Compras::searchForId($_GET['Id']);
+            $ObjCompras->setEstado("Pendiente");
+            if ($ObjCompras->update()) {
                 header("Location: ../../views/modules/compras/index.php");
             } else {
                 header("Location: ../../views/modules/compras/index.php?respuesta=error&mensaje=Error al guardar");
