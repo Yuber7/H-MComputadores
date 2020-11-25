@@ -106,6 +106,7 @@ use App\Models\Personas;
                                                 <th>Municipio id</th>
                                                 <th>Direccion</th>
                                                 <th>Email</th>
+                                                <th>Usuario</th>
                                                 <th>Estado</th>
                                                 <th>Acciones</th>
 
@@ -128,6 +129,7 @@ use App\Models\Personas;
                                                     <td><?php echo $personas->getMunicipioId()->getNombre(); ?> - <?php echo $personas->getMunicipioId()->getId(); ?> </td>
                                                     <td><?php echo $personas->getDireccion(); ?></td>
                                                     <td><?php echo $personas->getEmail(); ?></td>
+                                                    <td><?php echo $personas->getUser(); ?></td>
                                                     <td><?php echo $personas->getEstado(); ?></td>
                                                     <td>
                                                         <a href="edit.php?id=<?php echo $personas->getId(); ?>"
@@ -167,6 +169,7 @@ use App\Models\Personas;
                                                 <th>Municipio id</th>
                                                 <th>Direccion</th>
                                                 <th>Email</th>
+                                                <th>Usuario</th>
                                                 <th>Estado</th>
                                                 <th>Acciones</th>
                                             </tr>
