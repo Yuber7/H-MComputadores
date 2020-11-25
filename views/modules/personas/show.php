@@ -117,7 +117,12 @@ use App\Controllers\PersonasController; ?>
                                             <?= $DataPersonas->getEmail() ?></p>
                                         <hr>
 
-                                        <!--este no creo que sirva o que vaya dentro-->
+                                        <strong><i class="fas fa-key mr-1"></i> Usuario </strong>
+                                        <p class="text-muted">
+                                            <?= $DataPersonas->getUser() ?></p>
+                                        <hr>
+
+
                                         <strong><i class="fas fa-key mr-1"></i> Contaseña </strong>
                                         <p class="text-muted">
                                             <?= $DataPersonas->getPassword() ?></p>
