@@ -153,6 +153,13 @@ require("../../partials/routes.php");
                                         </div>
                                     </div>
                                     <div class="form-group row">
+                                        <label for="user" class="col-sm-2 col-form-label">Usuario:</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" minlength="6" class="form-control"
+                                                   id="user" name="user" placeholder="Ingrese su Usuario  - opcional">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
                                         <label for="password" class="col-sm-2 col-form-label">Contraseña</label>
                                         <div class="col-sm-10">
                                             <input type="password" minlength="6" class="form-control"

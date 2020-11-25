@@ -31,6 +31,10 @@ class PersonasController
             PersonasController::Activo();
         } else if ($action == "Inactivo") {
             PersonasController::Inactivo();
+        }else if ($action == "login") {
+            PersonasController::login();
+        }else if($action == "cerrarSession"){
+            PersonasController::cerrarSession();
         }
     }
 
@@ -47,6 +51,7 @@ class PersonasController
             $arrayPersonas['municipio_id'] = $_POST['municipio_id'];
             $arrayPersonas['direccion'] = $_POST['direccion'];
             $arrayPersonas['email'] = $_POST['email'];
+            $arrayPersonas['user'] = $_POST['user'];
             $arrayPersonas['password'] = $_POST['password'];
             $arrayPersonas['estado'] = $_POST['estado'];
 
@@ -77,6 +82,7 @@ class PersonasController
             $arrayPersonas['municipio_id'] = $_POST['municipio_id'];
             $arrayPersonas['direccion'] = $_POST['direccion'];
             $arrayPersonas['email'] = $_POST['email'];
+            $arrayPersonas['user'] = $_POST['user'];
             $arrayPersonas['password'] = $_POST['password'];
             $arrayPersonas['estado'] = $_POST['estado'];
             $arrayPersonas['id'] = $_POST['id'];
@@ -185,4 +191,31 @@ class PersonasController
         }
     }
 
+    public static function login (){
+        try {
+            if(session_status() == PHP_SESSION_NONE){ //Si la session no ha iniciado
+                session_start();
+            }
+            if(!empty($_POST['user']) && !empty($_POST['password'])){
+                $tmpUser = new Personas();
+                $respuesta = $tmpUser->Login($_POST['user'], $_POST['password']);
+                if (is_a($respuesta,"App\Models\Personas")) {
+                    $_SESSION['UserInSession'] = $respuesta->jsonSerialize();
+                    header("Location: ../../views/index.php");
+                }else{
+                    header("Location: ../../views/modules/site/login.php?respuesta=error&mensaje=".$respuesta);
+                }
+            }else{
+                header("Location: ../../views/modules/site/login.php?respuesta=error&mensaje=Datos Vacíos");
+            }
+        } catch (\Exception $e) {
+            header("Location: ../../views/modules/site/login.php?respuesta=error".$e->getMessage());
+        }
+    }
+
+    public static function cerrarSession (){
+        session_unset();
+        session_destroy();
+        header("Location: ../../views/modules/site/login.php");
+    }
 }
