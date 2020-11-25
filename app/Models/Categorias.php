@@ -4,7 +4,6 @@
 namespace App\Models;
 require_once  ('BasicModel.php');
 
-
 class Categorias extends BasicModel
 {
     //Propiedades
@@ -34,7 +33,7 @@ class Categorias extends BasicModel
     }
 
     /**
-     * @return int
+     * @return mixed|int
      */
     public function getId(): int
     {
@@ -42,7 +41,7 @@ class Categorias extends BasicModel
     }
 
     /**
-     * @param int $id
+     * @param  mixed|int $id
      */
     public function setId(int $id): void
     {
@@ -50,7 +49,7 @@ class Categorias extends BasicModel
     }
 
     /**
-     * @return string
+     * @return  mixed|string
      */
     public function getNombre(): string
     {
@@ -58,7 +57,7 @@ class Categorias extends BasicModel
     }
 
     /**
-     * @param string $nombre
+     * @param  mixed|string $nombre
      */
     public function setNombre(string $nombre): void
     {
@@ -66,7 +65,7 @@ class Categorias extends BasicModel
     }
 
     /**
-     * @return string
+     * @return mixed|string
      */
     public function getDescripcion(): string
     {
@@ -74,7 +73,7 @@ class Categorias extends BasicModel
     }
 
     /**
-     * @param string $descripcion
+     * @param mixed|string $descripcion
      */
     public function setDescripcion(string $descripcion): void
     {
@@ -208,4 +207,5 @@ class Categorias extends BasicModel
             "descripcion:  " .$this->getDescripcion(). $typeOutput.
             "estado:  " .$this->getEstado(). $typeOutput;
     }
+
 }

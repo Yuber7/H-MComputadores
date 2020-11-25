@@ -1,12 +1,12 @@
 <?php
 require("../../partials/routes.php");
-require("../../../app/Controllers/CategoriasController.php");
+require("../../../app/Controllers/ProductosController.php");
 
-use App\Controllers\CategoriasController; ?>
+use App\Controllers\ProductosController; ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?= $_ENV['TITLE_SITE'] ?> | Datos de la categoria</title>
+    <title><?= $_ENV['TITLE_SITE'] ?> | Datos del Producto</title>
     <?php require("../../partials/head_imports.php"); ?>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -24,7 +24,7 @@ use App\Controllers\CategoriasController; ?>
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Informacion de la categoria</h1>
+                        <h1>Informacion del Producto</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -44,7 +44,7 @@ use App\Controllers\CategoriasController; ?>
                     <div class="alert alert-danger alert-dismissible">
                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                         <h5><i class="icon fas fa-ban"></i> Error!</h5>
-                        Error al consultar la categoria: <?= ($_GET['mensaje']) ?? "" ?>
+                        Error al consultar el Producto: <?= ($_GET['mensaje']) ?? "" ?>
                     </div>
                 <?php } ?>
             <?php } else if (empty($_GET['id'])) { ?>
@@ -61,12 +61,15 @@ use App\Controllers\CategoriasController; ?>
                         <!-- Horizontal Form -->
                         <div class="card card-green">
                             <?php if (!empty($_GET["id"]) && isset($_GET["id"])) {
-                                $DataCategorias = CategoriasController::searchForID($_GET["id"]);
-                                if (!empty($DataCategorias)) {
+                                $DataProductos
+                                    = ProductosController::searchForID($_GET["id"]);
+                                if (!empty($DataProductos
+                                )) {
                                     ?>
                                     <div class="card-header">
                                         <h3 class="card-title"><i class="fas fa-info"></i> &nbsp; Ver Información
-                                            de <?= $DataCategorias->getNombre() ?></h3>
+                                            de <?= $DataProductos
+                                                ->getNombre() ?></h3>
                                         <div class="card-tools">
                                             <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
                                                     data-source="show.php" data-source-selector="#card-refresh-content"
@@ -83,19 +86,45 @@ use App\Controllers\CategoriasController; ?>
                                     </div>
                                     <div class="card-body">
                                         <p>
-                                            <strong><i class="fas fa-signature mr-1"></i> Nombre </strong>
+                                            <strong><i class="fas fa-book mr-1"></i> Nombre y Marca</strong>
                                         <p class="text-muted">
-                                            <?= $DataCategorias->getNombre() ?>
+                                            <?=
+                                            $DataProductos->getNombre() . " " . $DataProductos->getMarca() ?>
                                         </p>
                                         <hr>
 
-                                        <strong><i class="fas fa-keyboard mr-1"></i> Descripción</strong>
-                                        <p class="text-muted"><?= $DataCategorias->getDescripcion() ?></p>
+                                        <strong><i class="fas fa-user mr-1"></i> Categoria </strong>
+                                        <p class="text-muted"><?=
+                                            $DataProductos->getCategoriaId()->getNombre();?></p>
+                                        <hr>
+
+                                        <strong><i class="fas fa-phone mr-1"></i> Referencia de fabrica</strong>
+                                        <p class="text-muted">
+                                            <?= $DataProductos->getReferenciaFabrica() ?></p>
+                                        <hr>
+
+                                        <strong><i class="fas fa-phone mr-1"></i> Descripcion</strong>
+                                        <p class="text-muted">
+                                            <?= $DataProductos->getDescripcion() ?></p>
+                                        <hr>
+
+                                        <!--este esta F-->
+                                        <strong><i class="fas fa-map-marked-alt mr-1"></i> Stock</strong>
+                                        <p class="text-muted"><?php echo $DataProductos->getStock() ?></p>
+                                        <hr>
+
+                                        <strong><i class="fas fa-map-marker-alt mr-1"></i> Precio</strong>
+                                        <p class="text-muted"><?= $DataProductos->getPrecio() ?></p>
+                                        <hr>
+
                                         <hr>
 
                                         <strong><i class="far fa-file-alt mr-1"></i> Estado </strong>
-                                        <p class="text-muted"><?= $DataCategorias->getEstado() ?></p>
+                                        <p class="text-muted">
+                                            <?= $DataProductos->getEstado() ?></p>
                                         </p>
+
+
 
                                     </div>
                                     <div class="card-footer">
@@ -103,7 +132,7 @@ use App\Controllers\CategoriasController; ?>
                                             <div class="col-auto mr-auto">
                                                 <a role="button" href="index.php" class="btn btn-success float-right"
                                                    style="margin-right: 5px;">
-                                                    <i class="fas fa-tasks"></i> Gestionar Categorias
+                                                    <i class="fas fa-tasks"></i> Gestionar Productos
                                                 </a>
                                             </div>
                                         </div>

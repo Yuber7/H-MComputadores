@@ -16,18 +16,18 @@ class Fotos extends BasicModel
     protected string $descripcion;
     protected string $ruta;
     protected Productos $productos_id;
-    protected bool $estado;
+    protected string $estado;
 
     //Metodo constructor
     public function __construct($arrFotos = array())
     {
         //Propiedad recibida y asigna a una propiedad de la clase
         parent::__construct();
-        $this->setId($arrFotos['id'] ?? 0);
-        $this->setDescripcion($arrFotos['descripcion'] ?? "");
-        $this->setRuta($arrFotos['ruta'] ?? "");
-        $this->productos_id = !empty($Fotos['productos_id']) ? Fotos::searchForId($Fotos['productos_id']) : new Productos();
-        $this->setEstado($arrFotos['estado'] ?? "");
+        $this->id = $arrFotos['id'] ?? 0;
+        $this->descripcion = $arrFotos['descripcion'] ?? '';
+        $this->ruta = $arrFotos['ruta'] ?? '';
+        $this->productos_id = !empty($arrFotos['productos_id']) ? Productos::searchForId($arrFotos['productos_id']) : new Productos();
+        $this->estado = $arrFotos['estado'] ?? '';
 
     }
 
@@ -107,44 +107,46 @@ class Fotos extends BasicModel
 
 
     /**
-     * @return mixed|bool
+     * @return mixed|string
      */
     public function getEstado(): string
     {
-        return ($this->estado) ? "Activo" : "Inactivo";
+        return ($this->estado);
     }
 
     /**
-     * @param mixed|bool $estado
+     * @param mixed|string $estado
      */
     public function setEstado(string $estado): void
     {
-        $this->estado = trim($estado) == "Inactivo";
+        $this->estado = $estado;
     }
 
 
 
     public function save(): Fotos
     {
-        $result = $this->insertRow("INSERT INTO `h&mcomputadores`.fotos VALUES (NULL, ?, ?, ?,?)", array(
-                $this->getDescripcion(),
-                $this->getRuta(),
+        $result = $this->insertRow("INSERT INTO `h&mcomputadores`.fotos VALUES (NULL, ?, ?, ?, ?)", array(
+                $this->descripcion,
+                $this->ruta,
                 $this->productos_id->getId(),
-                $this->getEstado()
+                $this->estado
             )
         );
+        $this->setId(($result) ? $this->getLastId() : null);
         $this->Disconnect();
         return $this;
     }
 
+
     public function update()
     {
-        $result = $this->updateRow("UPDATE `h&mcomputadores`.fotos SET descripcion = ?, ruta = ?, estado = ? WHERE id = ?", array(
-                $this->getDescripcion(),
-                $this->getRuta(),
+        $result = $this->updateRow("UPDATE `h&mcomputadores`.fotos SET descripcion = ?, ruta = ?, productos_id = ?, estado = ? WHERE id = ?", array(
+                $this->descripcion,
+                $this->ruta,
                 $this->productos_id->getId(),
-                $this->getEstado(),
-                $this->getId()
+                $this->estado,
+                $this->id
             )
         );
         $this->Disconnect();
@@ -158,13 +160,9 @@ class Fotos extends BasicModel
      */
     public function deleted($id)
     {
-        $result = $this->updateRow("UPDATE `h&mcomputadores`.fotos SET estado = ? WHERE id = ?", array(
-                'Inactivo',
-                $this->getId()
-            )
-        );
-        $this->Disconnect();
-        return $this;
+        $Fotos = Categorias::searchForId($id); //Buscando un Municipio por el ID
+        $Fotos->setEstado("Inactivo"); //Cambia el estado del Usuario
+        return $Fotos->update();
     }
 
 
@@ -180,12 +178,11 @@ class Fotos extends BasicModel
 
         foreach ($getrows as $valor) {
             $Fotos = new Fotos();
-            $Fotos->setId($valor['id']);
-            $Fotos->setDescripcion($valor['descripcion']);
-            $Fotos->setRuta($valor['ruta']);
-            $Fotos->productos_id = Fotos::searchForId($valor['productos_id']);
-            $Fotos->setEstado($valor['estado']);
-            $Fotos->Disconnect();
+            $Fotos->id = $valor['id'];
+            $Fotos->descripcion = $valor['descripcion'];
+            $Fotos->ruta = $valor['ruta'];
+            $Fotos->productos_id = Productos::searchForId($valor['productos_id']);
+            $Fotos->estado = $valor['estado'];
             array_push($arrFotos, $Fotos);
         }
         $tmp->Disconnect();
@@ -193,13 +190,6 @@ class Fotos extends BasicModel
 
     }
 
-    /**
-     * @return mixed
-     */
-    public static function getAll()
-    {
-        return Fotos::search("SELECT * FROM `h&mcomputadores`.fotos");
-    }
 
     /**
      * @param $id
@@ -211,11 +201,11 @@ class Fotos extends BasicModel
         if ($id > 0) {
             $Fotos = new Fotos();
             $getrow = $Fotos->getRow("SELECT * FROM `h&mcomputadores`.fotos WHERE id =?", array($id));
-            $Fotos->setId($getrow['id']);
-            $Fotos->setDescripcion($getrow['descripcion']);
-            $Fotos->setRuta($getrow['ruta']);
-            $Fotos->productos_id = Fotos::searchForId($getrow['productos_id']);
-            $Fotos->setEstado($getrow['estado']);
+            $Fotos->id = $getrow['id'];
+            $Fotos->descripcion = $getrow['descripcion'];
+            $Fotos->ruta = $getrow['ruta'];
+            $Fotos->productos_id = Productos::searchForId($getrow['productos_id']);
+            $Fotos->estado = $getrow['estado'];
         }
         $Fotos->Disconnect();
         return $Fotos;
@@ -223,7 +213,7 @@ class Fotos extends BasicModel
 
 
     static function FotoRegistrada(string $ruta ){
-        $result = Fotos::search("SELECT * FROM `h&mcomputadores`.fotos where ruta = " .$ruta);
+        $result = Fotos::search("SELECT * FROM `h&mcomputadores`.fotos where ruta = '" .$ruta."'");
         if ( count ($result) > 0 ) {
             return true;
         } else {
@@ -231,13 +221,24 @@ class Fotos extends BasicModel
         }
     }
 
+
+    /**
+     * @return mixed
+     */
+    public static function getAll()
+    {
+        return Fotos::search("SELECT * FROM `h&mcomputadores`.fotos");
+    }
+
+
+
     public function __toString() : string
     {
         $typeOutput = "\n";
         return
-            "descripcion:  " .$this->getDescripcion(). $typeOutput.
-            "ruta:  " .$this->getRuta(). $typeOutput.
-            "estado:  " .$this->getEstado(). $typeOutput;
+            "descripcion:  " .$this->descripcion. $typeOutput.
+            "ruta:  " .$this->ruta. $typeOutput.
+            "estado:  " .$this->estado. $typeOutput;
     }
 
 }
