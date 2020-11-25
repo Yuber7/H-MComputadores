@@ -5,8 +5,11 @@ namespace App\Models;
 require_once  ('BasicModel.php');
 require_once('Municipios.php');
 
+use JsonSerializable;
+use Carbon\Carbon;
 
-class Personas extends BasicModel
+
+class Personas extends BasicModel implements JsonSerializable
 {
     //Propiedades
     protected int $id;
@@ -19,7 +22,8 @@ class Personas extends BasicModel
     protected Municipios $municipio_id;
     protected string $direccion;
     protected string $email;
-    protected string $password;
+    protected ?string $user;
+    protected ?string $password;
     protected string $estado;
 
     //Metodo constructor
@@ -37,6 +41,7 @@ class Personas extends BasicModel
         $this->municipio_id = !empty($arrPersonas['municipio_id']) ? Municipios::searchForId($arrPersonas['municipio_id']) : new Municipios();
         $this->direccion = $arrPersonas['direccion'] ?? '';
         $this->email = $arrPersonas['email'] ?? '';
+        $this->user = $arrPersonas['user'] ?? '';
         $this->password = $arrPersonas['password'] ?? '';
         $this->estado = $arrPersonas['estado'] ?? '';
     }
@@ -151,6 +156,23 @@ class Personas extends BasicModel
     }
 
     /**
+     * @return mixed|string
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param mixed|string $user
+     */
+    public function setUser($user): void
+    {
+        $this->user = $user;
+    }
+
+
+    /**
      * @return string
      */
     public function getPassword(): string
@@ -255,7 +277,7 @@ class Personas extends BasicModel
      */
     public function save() : Personas
     {
-        $result = $this->insertRow( "INSERT INTO `h&mcomputadores`.personas VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", array(
+        $result = $this->insertRow( "INSERT INTO `h&mcomputadores`.personas VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", array(
                 $this->nombre,
                 $this->apellido,
                 $this->tipo_documento,
@@ -265,6 +287,7 @@ class Personas extends BasicModel
                 $this->municipio_id->getId(),
                 $this->direccion,
                 $this->email,
+                $this->user,
                 $this->password,
                 $this->estado
             )
@@ -279,7 +302,7 @@ class Personas extends BasicModel
      */
     public function update()
     {
-        $result = $this->updateRow( "UPDATE `h&mcomputadores`.personas SET nombre = ?, apellido = ?, tipo_documento = ?, documento = ?, telefono = ?, rol = ?, municipio_id = ?, direccion = ?, email = ?, password = ?, estado = ? WHERE id = ?", array(
+        $result = $this->updateRow( "UPDATE `h&mcomputadores`.personas SET nombre = ?, apellido = ?, tipo_documento = ?, documento = ?, telefono = ?, rol = ?, municipio_id = ?, direccion = ?, email = ?, user = ? ,password = ?, estado = ? WHERE id = ?", array(
                 $this->nombre,
                 $this->apellido,
                 $this->tipo_documento,
@@ -289,6 +312,7 @@ class Personas extends BasicModel
                 $this->municipio_id->getId(),
                 $this->direccion,
                 $this->email,
+                $this->user,
                 $this->password,
                 $this->estado,
                 $this->id
@@ -334,6 +358,7 @@ class Personas extends BasicModel
             $Personas->municipio_id = Municipios::searchForId($datos['municipio_id']);
             $Personas->direccion = $datos['direccion'];
             $Personas->email = $datos['email'];
+            $Personas->user = $datos['user'];
             $Personas->password = $datos['password'];
             $Personas->estado = $datos['estado'];
             array_push($arrPersonas, $Personas);
@@ -363,6 +388,7 @@ class Personas extends BasicModel
             $Personas->municipio_id = Municipios::searchForId($getrow['municipio_id']);
             $Personas->direccion = $getrow['direccion'];
             $Personas->email = $getrow['email'];
+            $Personas->user = $getrow['user'];
             $Personas->password = $getrow['password'];
             $Personas->estado = $getrow['estado'];
         }
@@ -400,9 +426,51 @@ class Personas extends BasicModel
             "Municipio:  " .$this->municipio_id.
             "Direcciòn:  " .$this->direccion.
             "Email:  " .$this->email.
+            "User:  " .$this->user.
+            "Password:  " .$this->password.
             "Estado:  " .$this->getEstado(). $typeOutput;
     }
 
+    public function Login($User, $Password){
+        try {
+            $resultPersonas = Personas::search("SELECT * FROM `h&mcomputadores`.personas WHERE user = '$User'");
+            if(count($resultPersonas) >= 1){
+                if($resultPersonas[0]->password == $Password){
+                    if($resultPersonas[0]->estado == 'Activo'){
+                        return $resultPersonas[0];
+                    }else{
+                        return "Persona Inactiva";
+                    }
+                }else{
+                    return "Contraseña Incorrecta";
+                }
+            }else{
+                return "Persona Incorrecta";
+            }
+        } catch (Exception $e) {
+            GeneralFunctions::logFile('Exception',$e, 'error');
+            return "Error en Servidor";
+        }
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->getId(),
+            'nombres' => $this->getNombre(),
+            'apellidos' => $this->getApellido(),
+            'tipo_documento' => $this->getTipo_documento(),
+            'documento' => $this->getDocumento(),
+            'telefono' => $this->getTelefono(),
+            'rol' => $this->getRol(),
+            'municipio_id' => $this->getMunicipioId(),
+            'direccion' => $this->getDireccion(),
+            'email' => $this->getEmail(),
+            'user' => $this->getUser(),
+            'password' => $this->getPassword(),
+            'estado' => $this->getEstado(),
+        ];
+    }
 
 }
 
