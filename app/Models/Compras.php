@@ -210,6 +210,6 @@ class Compras extends BasicModel
 
     public static function getAll()
     {
-        // TODO: Implement getAll() method.
+        return Compras::search("SELECT * FROM `h&mcomputadores`.Compras");
     }
 }
