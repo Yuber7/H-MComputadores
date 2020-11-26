@@ -9,7 +9,7 @@ use Exception;
 use PDOException;
 
 /**
- * Created by PhpStorm.
+ * Created by PhpStorm.8
  * User: Jorge-Pc
  * Date: 10/12/2019
  * Time: 9:17
@@ -29,7 +29,7 @@ abstract class BasicModel {
     abstract protected function update();
     abstract protected function deleted($id);
     abstract protected static function search($query);
-    abstract protected static function getAll();
+    abstract public static function getAll();
     abstract protected static function searchForId($id);
 
     public function __construct(){

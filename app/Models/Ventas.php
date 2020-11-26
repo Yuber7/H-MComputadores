@@ -11,12 +11,12 @@ use Carbon\Carbon;
 class Ventas extends BasicModel
 {
     //Propiedades
-    protected int $id;
-    protected Carbon $fecha;
-    protected float $valor_total;
-    protected Personas $persona_id;
+    public int $id;
+    public Carbon $fecha;
+    public float $valor_total;
+    public Personas $persona_id;
     protected string $forma_pago;
-    protected string $estado;
+    public string $estado;
 
 
     public function __construct($arrVentas = array())

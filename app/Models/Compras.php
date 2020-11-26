@@ -41,7 +41,7 @@ class Compras extends BasicModel
     /**
      * @return int|mixed
      */
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }
@@ -49,21 +49,21 @@ class Compras extends BasicModel
     /**
      * @param int|mixed $id
      */
-    public function setId(int $id): void
+    public function setId($id): void
     {
         $this->id = $id;
     }
 
     /**
-     * @return Carbon
+     * @return Carbon|mixed
      */
-    public function getFecha(): Carbon
+    public function getFecha()
     {
-        return $this->fecha->locale('es');
+        return $this->fecha;
     }
 
     /**
-     * @param Carbon $fecha
+     * @param Carbon|mixed $fecha
      */
     public function setFecha(Carbon $fecha): void
     {
@@ -73,7 +73,7 @@ class Compras extends BasicModel
     /**
      * @return float|int|mixed
      */
-    public function getValorTotal(): float
+    public function getValorTotal()
     {
         return $this->valor_total;
     }
@@ -81,49 +81,47 @@ class Compras extends BasicModel
     /**
      * @param float|int|mixed $valor_total
      */
-    public function setValorTotal(float $valor_total): void
+    public function setValorTotal($valor_total): void
     {
         $this->valor_total = $valor_total;
     }
 
     /**
-     * @return Personas|mixed
+     * @return \App\Models\Personas|mixed
      */
-    public function getPersonaId() :Personas
+    public function getPersonaId()
     {
         return $this->persona_id;
     }
 
     /**
-     * @param Personas|mixed $persona_id
+     * @param \App\Models\Personas|mixed $persona_id
      */
-    public function setPersonaId(Personas $persona_id): void
+    public function setPersonaId($persona_id): void
     {
         $this->persona_id = $persona_id;
     }
 
     /**
-     * @return bool|mixed|string
+     * @return mixed|string
      */
-    public function getEstado(): string
+    public function getEstado()
     {
         return $this->estado;
     }
 
     /**
-     * @param bool|mixed|string $estado
+     * @param mixed|string $estado
      */
-    public function setEstado(string $estado): void
+    public function setEstado($estado): void
     {
         $this->estado = $estado;
     }
 
-    /**
-     * @return mixed
-     */
-    public function save() : Compras
+
+    public function save(): Compras
     {
-        $result = $this->insertRow( "INSERT INTO `h&mcomputadores`.compras VALUES (NULL, ?, ?, ?, ?)", array(
+        $result = $this->insertRow("INSERT INTO `h&mcomputadores`.Compras VALUES (NULL, ?, ?, ?, ?)", array(
                 $this->fecha->toDateString(), //YYYY-MM-DD,
                 $this->valor_total,
                 $this->persona_id->getId(),
@@ -140,7 +138,7 @@ class Compras extends BasicModel
      */
     public function update()
     {
-        $result = $this->updateRow( "UPDATE `h&mcomputadores`.compras SET fecha = ?, valor_total = ?, persona_id= ?, estado = ? WHERE id = ?", array(
+        $result = $this->updateRow("UPDATE `h&mcomputadores`.Compras SET fecha = ?, valor_total = ?, persona_id= ?,  estado = ? WHERE id = ?", array(
                 $this->fecha->toDateString(),
                 $this->valor_total,
                 $this->persona_id->getId(),
@@ -170,25 +168,24 @@ class Compras extends BasicModel
      * @return mixed
      */
 
-    public static function search($query) : array
+    public static function search($query): array
     {
         $arrCompras = array();
         $tmp = new Compras();
         $getrows = $tmp->getRows($query);
 
-        foreach ($getrows as $comp) {
+        foreach ($getrows as $deta) {
             $Compras = new Compras();
-            $Compras->id = $comp['id'];
-            $Compras->fecha = Carbon::parse($comp['fecha']);
-            $Compras->valor_total = $comp['valor_total'];
-            $Compras->persona_id = Personas::searchForId($comp['persona_id']);
-            $Compras->estado = $comp['estado'];
+            $Compras->id = $deta['id'];
+            $Compras->fecha = Carbon::parse($deta['fecha']);
+            $Compras->valor_total = $deta['valor_total'];
+            $Compras->persona_id = Personas::searchForId($deta['persona_id']);
+            $Compras->estado = $deta['estado'];
             array_push($arrCompras, $Compras);
         }
         $tmp->Disconnect();
         return $arrCompras;
     }
-
 
 
     /**
@@ -199,8 +196,8 @@ class Compras extends BasicModel
     {
         $Compras = null;
         if ($id > 0) {
-            $Compras = new Compras();
-            $getrow = $Compras->getRow("SELECT * FROM `h&mcomputadores`.compras WHERE id =?", array($id));
+            $Compras = new Ventas();
+            $getrow = $Compras->getRow("SELECT * FROM `h&mcomputadores`.Compras WHERE id =?", array($id));
             $Compras->id = $getrow['id'];
             $Compras->fecha = Carbon::parse($getrow['fecha']);
             $Compras->valor_total = $getrow['valor_total'];
@@ -211,33 +208,8 @@ class Compras extends BasicModel
         return $Compras;
     }
 
-
-    static function CompraRegistrada(int $id){
-        $result = Compras::search("SELECT * FROM `h&mcomputadores`.compras where id = " .$id);
-        if ( count ($result) > 0 ) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * @return mixed
-     */
     public static function getAll()
     {
-        return Compras::search("SELECT * FROM `h&mcomputadores`.compras");
+        return Compras::search("SELECT * FROM `h&mcomputadores`.Compras");
     }
-
-    public function __toString() : string
-    {
-        $typeOutput = "\n";
-        return
-            "fecha:  " .$this->fecha.
-            "valor total:  " .$this->valor_total.
-            "persona:  " .$this->persona_id.
-            "Estado:  " .$this->getEstado(). $typeOutput;
-    }
-
-
 }
