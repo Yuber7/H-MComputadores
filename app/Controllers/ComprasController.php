@@ -28,10 +28,10 @@ class ComprasController
             ComprasController::searchForID($_REQUEST['idCompras']);
         } else if ($action == "searchAll") {
             ComprasController::getAll();
-        } else if ($action == "pendiente") {
-            ComprasController::pendiente();
-        } else if ($action == "procesada") {
-            ComprasController::procesada();
+        } else if ($action == "Pendiente") {
+            ComprasController::Pendiente();
+        } else if ($action == "Procesada") {
+            ComprasController::Procesada();
         }
     }
 
@@ -142,11 +142,11 @@ class ComprasController
         return false;
     }
 
-    static public function pendiente()
+    static public function Pendiente()
     {
         try {
             $ObjCompras = Compras::searchForId($_GET['Id']);
-            $ObjCompras->setEstado("pendiente");
+            $ObjCompras->setEstado("Pendiente");
             if ($ObjCompras->update()) {
                 header("Location: ../../views/modules/compras/index.php");
             } else {
@@ -159,11 +159,11 @@ class ComprasController
     }
 
 
-    static public function procesada()
+    static public function Procesada()
     {
         try {
             $ObjCompras = Compras::searchForId($_GET['Id']);
-            $ObjCompras->setEstado("procesada");
+            $ObjCompras->setEstado("Procesada");
             if ($ObjCompras->update()) {
                 header("Location: ../../views/modules/compras/index.php");
             } else {
