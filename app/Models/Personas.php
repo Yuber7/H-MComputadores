@@ -2,81 +2,81 @@
 
 
 namespace App\Models;
-require_once  ('BasicModel.php');
-require_once('Municipios.php');
 
-use JsonSerializable;
+use App\Models\Interfaces\Model;
 use Carbon\Carbon;
+use Exception;
+use JsonSerializable;
 
-
-class Personas extends BasicModel implements JsonSerializable
+class Personas extends AbstractDBConnection implements Model, JsonSerializable
 {
-    //Propiedades
-    protected int $id;
+    /* Tipos de Datos => bool, int, float,  */
+    protected ?int $id;
     protected string $nombre;
     protected string $apellido;
     protected string $tipo_documento;
     protected int $documento;
     protected int $telefono;
     protected string $rol;
-    protected Municipios $municipio_id;
+    protected int $municipio_id;
     protected string $direccion;
     protected string $email;
     protected ?string $user;
     protected ?string $password;
     protected string $estado;
 
-    //Metodo constructor
-    public function __construct($arrPersonas = array())
-    {
-        //Propiedad recibida y asigna a una propiedad de la clase
-        parent::__construct();
-        $this->id = $arrPersonas['id'] ?? 0;
-        $this->nombre = $arrPersonas['nombre'] ?? '';
-        $this->apellido = $arrPersonas['apellido'] ?? '';
-        $this->tipo_documento = $arrPersonas['tipo_documento'] ?? '';
-        $this->documento = $arrPersonas['documento'] ?? 0;
-        $this->telefono = $arrPersonas['telefono'] ?? 0;
-        $this->rol = $arrPersonas['rol'] ?? '';
-        $this->municipio_id = !empty($arrPersonas['municipio_id']) ? Municipios::searchForId($arrPersonas['municipio_id']) : new Municipios();
-        $this->direccion = $arrPersonas['direccion'] ?? '';
-        $this->email = $arrPersonas['email'] ?? '';
-        $this->user = $arrPersonas['user'] ?? '';
-        $this->password = $arrPersonas['password'] ?? '';
-        $this->estado = $arrPersonas['estado'] ?? '';
-    }
-
-
-
-    public function __destruct() // Cierro Conexiones
-    {
-        /*
-        echo "<span style='color: #8b0000'>";
-        echo $this->getNombre()." se ha eliminado<br/>";
-        echo "</span>";
-         */
-    }
-
+    /* Relaciones */
+    private ?Municipios $municipio;
+    private array $ventasCliente;
+    private array $ventasEmpleado;
 
     /**
-     * @return mixed|int
+     * Usuarios constructor. Recibe un array asociativo
+     * @param array $persona
      */
+    public function __construct(array $persona = [])
+    {
+        parent::__construct();
+        $this->setId($persona['id'] ?? NULL);
+        $this->setNombre($persona['nombre'] ?? '');
+        $this->setApellido($persona['apellido'] ?? '');
+        $this->setTipo_documento($persona['tipo_documento'] ?? '');
+        $this->setDocumento($persona['documento'] ?? 0);
+        $this->setTelefono($persona['telefono'] ?? 0);
+        $this->setRol($persona['rol'] ?? '');
+        $this->setMunicipioId($persona['municipio_id'] ?? 0);
+        $this->setDireccion($persona['direccion'] ?? '');
+        $this->setEmail($persona['email'] ?? null);
+        $this->setUser($persona['user'] ?? null);
+        $this->setPassword($persona['password'] ?? null);
+        $this->setEstado($persona['estado'] ?? '');
+    }
 
-    public function getId(): int
+    function __destruct()
+    {
+        if($this->isConnected){
+            $this->Disconnect();
+        }
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getId(): ?int
     {
         return $this->id;
     }
 
     /**
-     * @param mixed|int $id
+     * @param int|null $id
      */
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }
 
     /**
-     * @return mixed|string
+     * @return string
      */
     public function getNombre(): string
     {
@@ -84,15 +84,15 @@ class Personas extends BasicModel implements JsonSerializable
     }
 
     /**
-     * @param mixed|string $nombre
+     * @param string $nombre
      */
     public function setNombre(string $nombre): void
     {
-        $this->nombre = trim(mb_strtoupper($nombre));
+        $this->nombre = $nombre;
     }
 
     /**
-     * @return mixed|string
+     * @return string
      */
     public function getApellido(): string
     {
@@ -100,92 +100,27 @@ class Personas extends BasicModel implements JsonSerializable
     }
 
     /**
-     * @param mixed|string $apellido
+     * @param string $apellido
      */
     public function setApellido(string $apellido): void
     {
-        $this->apellido = trim(mb_strtoupper($apellido));
+        $this->apellido = $apellido;
     }
 
     /**
-     * @return mixed|string
+     * @return string
      */
-    public function getTipo_documento(): string
+    public function getTipoDocumento(): string
     {
         return $this->tipo_documento;
     }
 
     /**
-     * @param  $tipo_documento
+     * @param string $tipo_documento
      */
-    public function setTipo_documento(string $tipo_documento): void
+    public function setTipoDocumento(string $tipo_documento): void
     {
         $this->tipo_documento = $tipo_documento;
-    }
-
-    /**
-     * @return Municipios
-     */
-    public function getMunicipioId(): Municipios
-    {
-        return $this->municipio_id;
-    }
-
-    /**
-     * @param Municipios $municipio_id
-     */
-    public function setMunicipioId(Municipios $municipio_id): void
-    {
-        $this->municipio_id = $municipio_id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEmail(): string
-    {
-        return $this->email;
-    }
-
-    /**
-     * @param string $email
-     */
-    public function setEmail(string $email): void
-    {
-        $this->email = $email;
-    }
-
-    /**
-     * @return mixed|string
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    /**
-     * @param mixed|string $user
-     */
-    public function setUser($user): void
-    {
-        $this->user = $user;
-    }
-
-
-    /**
-     * @return string
-     */
-    public function getPassword(): string
-    {
-        return $this->password;
-    }
-
-    /**
-     * @param string $password
-     */
-    public function setPassword(string $password): void
-    {
-        $this->password = $password;
     }
 
     /**
@@ -205,7 +140,7 @@ class Personas extends BasicModel implements JsonSerializable
     }
 
     /**
-     * @return mixed|string
+     * @return int
      */
     public function getTelefono(): int
     {
@@ -213,17 +148,15 @@ class Personas extends BasicModel implements JsonSerializable
     }
 
     /**
-     * @param mixed|string $telefono
+     * @param int $telefono
      */
     public function setTelefono(int $telefono): void
     {
         $this->telefono = $telefono;
     }
 
-
-
     /**
-     * @return mixed|string
+     * @return string
      */
     public function getRol(): string
     {
@@ -231,7 +164,7 @@ class Personas extends BasicModel implements JsonSerializable
     }
 
     /**
-     * @param mixed|string $rol
+     * @param string $rol
      */
     public function setRol(string $rol): void
     {
@@ -239,7 +172,23 @@ class Personas extends BasicModel implements JsonSerializable
     }
 
     /**
-     * @return mixed|string
+     * @return int
+     */
+    public function getMunicipioId(): int
+    {
+        return $this->municipio_id;
+    }
+
+    /**
+     * @param int $municipio_id
+     */
+    public function setMunicipioId(int $municipio_id): void
+    {
+        $this->municipio_id = $municipio_id;
+    }
+
+    /**
+     * @return string
      */
     public function getDireccion(): string
     {
@@ -247,158 +196,239 @@ class Personas extends BasicModel implements JsonSerializable
     }
 
     /**
-     * @param mixed|string $direccion
+     * @param string $direccion
      */
     public function setDireccion(string $direccion): void
     {
         $this->direccion = $direccion;
     }
 
-
     /**
-     * @return mixed|bool
+     * @return string
      */
-    public function getEstado(): string
+    public function getEmail(): string
     {
-        return ($this->estado) ;
+        return $this->email;
     }
 
     /**
-     * @param mixed|bool $estado
+     * @param string $email
+     */
+    public function setEmail(string $email): void
+    {
+        $this->email = $email;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUser(): ?string
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param string|null $user
+     */
+    public function setUser(?string $user): void
+    {
+        $this->user = $user;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    /**
+     * @param string|null $password
+     */
+    public function setPassword(?string $password): void
+    {
+        $this->password = $password;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEstado(): string
+    {
+        return $this->estado;
+    }
+
+    /**
+     * @param string $estado
      */
     public function setEstado(string $estado): void
     {
         $this->estado = $estado;
     }
 
-
     /**
-     * @return mixed
+     * @return Municipios|null
      */
-    public function save() : Personas
+    public function getMunicipio(): ?Municipios
     {
-        $result = $this->insertRow( "INSERT INTO `h&mcomputadores`.personas VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", array(
-                $this->nombre,
-                $this->apellido,
-                $this->tipo_documento,
-                $this->documento,
-                $this->telefono,
-                $this->rol,
-                $this->municipio_id->getId(),
-                $this->direccion,
-                $this->email,
-                $this->user,
-                $this->password,
-                $this->estado
-            )
-        );
-        $this->setId(($result) ? $this->getLastId() : null);
-        $this->Disconnect();
-        return $this;
+        if(!empty($this->municipio_id)){
+            $this->municipio = Municipios::searchForId($this->municipio_id) ?? new Municipios();
+            return $this->municipio;
+        }
+        return NULL;
     }
 
     /**
-     * @return mixed
+     * @return array
      */
-    public function update()
+    public function getVentasCliente(): array
     {
-        $result = $this->updateRow( "UPDATE `h&mcomputadores`.personas SET nombre = ?, apellido = ?, tipo_documento = ?, documento = ?, telefono = ?, rol = ?, municipio_id = ?, direccion = ?, email = ?, user = ? ,password = ?, estado = ? WHERE id = ?", array(
-                $this->nombre,
-                $this->apellido,
-                $this->tipo_documento,
-                $this->documento,
-                $this->telefono,
-                $this->rol,
-                $this->municipio_id->getId(),
-                $this->direccion,
-                $this->email,
-                $this->user,
-                $this->password,
-                $this->estado,
-                $this->id
-             )
-        );
+        //TODO Falta programar la venta
+        return array();
+    }
+
+    /**
+     * @return array
+     */
+    public function getVentasEmpleado(): array
+    {
+        //TODO Falta programar la venta
+        return array();
+    }
+
+    /**
+     * @param string $query
+     * @return bool|null
+     */
+    protected function save(string $query): ?bool
+    {
+        $arrData = [
+            ':id' =>    $this->getId(),
+            ':nombres' =>   $this->getNombre(),
+            ':apellidos' =>   $this->getApellido(),
+            ':tipo_documento' =>  $this->getTipoDocumento(),
+            ':documento' =>   $this->getDocumento(),
+            ':telefono' =>   $this->getTelefono(),
+            ':rol' =>   $this->getRol(),
+            ':municipio_id' =>   $this->getMunicipioId(),
+            ':direccion' =>   $this->getDireccion(),
+            ':email' =>   $this->getEmail(),
+            ':user' =>  $this->getUser(),
+            ':password' =>   $this->getPassword(),
+            ':estado' =>   $this->getEstado(),
+        ];
+        $this->Connect();
+        $result = $this->insertRow($query, $arrData);
         $this->Disconnect();
         return $result;
     }
 
     /**
-     * @param $id
-     * @return mixed
+     * @return bool|null
      */
-    public function deleted($id)
+    public function insert(): ?bool
     {
-        $Personas = Personas::searchForId($id); //Buscando un Municipio por el ID
-        $Personas->setEstado("Inactivo"); //Cambia el estado del Usuario
-        return $Personas->update();                    //Guarda los cambios..
+        $query = "INSERT INTO h&mcomputadores.personas VALUES (
+            :id,:nombres,:apellidos,:tipo_documento,:documento,
+            :telefono,:direccion,:municipio_id,:fecha_nacimiento,:user,
+            :password,:foto,:rol,:estado,:created_at,:updated_at
+        )";
+        return $this->save($query);
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function update(): ?bool
+    {
+        $query = "UPDATE h&mcomputadores.personas SET 
+            nombre = :nombre, apellido = :apellido, tipo_documento = :tipo_documento, 
+            documento = :documento, telefono = :telefono, rol = :rol, municipio_id = :municipio_id,
+            direccion = :direccion, email = :email, user = :user,  
+            password = :password, estado = :estado WHERE id = :id";
+        return $this->save($query);
+    }
+
+    /**
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    public function deleted(): bool
+    {
+        $this->setEstado("Inactivo"); //Cambia el estado del Usuario
+        return $this->update();             //Guarda los cambios..
     }
 
     /**
      * @param $query
-     * @return mixed
+     * @return Personas|array
+     * @throws Exception
      */
-    public static function search($query) : array
+    public static function search($query) : ?array
     {
-        $arrPersonas = array();
-        $tmp = new Personas();
-        $getrows = $tmp->getRows($query);
+        try {
+            $arrUsuarios = array();
+            $tmp = new Personas();
+            $tmp->Connect();
+            $getrows = $tmp->getRows($query);
+            $tmp->Disconnect();
 
-
-
-        foreach ($getrows as $datos) {
-            $Personas = new Personas();
-            $Personas->id = $datos['id'];
-            $Personas->nombre = $datos['nombre'];
-            $Personas->estado = $datos['estado'];
-            $Personas->apellido = $datos['apellido'];
-            $Personas->tipo_documento = $datos['tipo_documento'];
-            $Personas->documento = $datos['documento'];
-            $Personas->telefono = $datos['telefono'];
-            $Personas->rol = $datos['rol'];
-            $Personas->municipio_id = Municipios::searchForId($datos['municipio_id']);
-            $Personas->direccion = $datos['direccion'];
-            $Personas->email = $datos['email'];
-            $Personas->user = $datos['user'];
-            $Personas->password = $datos['password'];
-            $Personas->estado = $datos['estado'];
-            array_push($arrPersonas, $Personas);
+            foreach ($getrows as $valor) {
+                $Usuario = new Personas($valor);
+                array_push($arrUsuarios, $Usuario);
+                unset($Usuario);
+            }
+            return $arrUsuarios;
+        } catch (Exception $e) {
+            GeneralFunctions::logFile('Exception',$e, 'error');
         }
-        $tmp->Disconnect();
-        return $arrPersonas;
+        return null;
     }
 
 
     /**
      * @param $id
-     * @return mixed
+     * @return Personas
+     * @throws Exception
      */
-    public static function searchForId($id)
+    public static function searchForId(int $id): ?Personas
     {
-        $Personas = null;
-        if ($id > 0) {
-            $Personas = new Personas();
-            $getrow = $Personas->getRow("SELECT * FROM `h&mcomputadores`.personas WHERE id =?", array($id));
-            $Personas->id = $getrow['id'];
-            $Personas->nombre = $getrow['nombre'];
-            $Personas->apellido = $getrow['apellido'];
-            $Personas->tipo_documento = $getrow['tipo_documento'];
-            $Personas->documento = $getrow['documento'];
-            $Personas->telefono = $getrow['telefono'];
-            $Personas->rol = $getrow['rol'];
-            $Personas->municipio_id = Municipios::searchForId($getrow['municipio_id']);
-            $Personas->direccion = $getrow['direccion'];
-            $Personas->email = $getrow['email'];
-            $Personas->user = $getrow['user'];
-            $Personas->password = $getrow['password'];
-            $Personas->estado = $getrow['estado'];
+        try {
+            if ($id > 0) {
+                $tmpUsuario = new Personas();
+                $tmpUsuario->Connect();
+                $getrow = $tmpUsuario->getRow("SELECT * FROM h&mcomputadores.personas WHERE id =?", array($id));
+                $tmpUsuario->Disconnect();
+                return ($getrow) ? new Personas($getrow) : null;
+            }else{
+                throw new Exception('Id de persona Invalido');
+            }
+        } catch (Exception $e) {
+            GeneralFunctions::logFile('Exception',$e, 'error');
         }
-        $Personas->Disconnect();
-        return $Personas;
+        return null;
     }
 
-    static function PersonaRegistrada(int $documento){
-        $result = Personas::search("SELECT * FROM `h&mcomputadores`.personas where documento = " .$documento);
-        if ( count ($result) > 0 ) {
+    /**
+     * @return array
+     * @throws Exception
+     */
+    public static function getAll(): array
+    {
+        return Personas::search("SELECT * FROM h&mcomputadores.personas");
+    }
+
+    /**
+     * @param $documento
+     * @return bool
+     * @throws Exception
+     */
+    public static function personaRegistrada($documento): bool
+    {
+        $result = Personas::search("SELECT * FROM h&mcomputadores.personas where documento = " . $documento);
+        if ( !empty($result) && count ($result) > 0 ) {
             return true;
         } else {
             return false;
@@ -406,29 +436,19 @@ class Personas extends BasicModel implements JsonSerializable
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public static function getAll()
+    public function nombresCompletos() : string
     {
-        return Personas::search("SELECT * FROM `h&mcomputadores`.personas");
+        return $this->nombre . " " . $this->apellido;
     }
 
+    /**
+     * @return string
+     */
     public function __toString() : string
     {
-        $typeOutput = "\n";
-        return
-            "Nombre:  " .$this->nombre.
-            "Apellido:  " .$this->apellido.
-            "Tipo de documento:  " .$this->tipo_documento.
-            "Documento:  " .$this->documento.
-            "Teléfono:  " .$this->telefono.
-            "Rol:  " .$this->rol.
-            "Municipio:  " .$this->municipio_id.
-            "Direcciòn:  " .$this->direccion.
-            "Email:  " .$this->email.
-            "User:  " .$this->user.
-            "Password:  " .$this->password.
-            "Estado:  " .$this->getEstado(). $typeOutput;
+        return "Nombre: $this->nombre, Apellido: $this->apellido, Tipo Documento: $this->tipo_documento, Documento: $this->documento, Telefono: $this->telefono, Direccion: $this->direccion, Email: $this->email";
     }
 
     public function Login($User, $Password){
@@ -457,9 +477,9 @@ class Personas extends BasicModel implements JsonSerializable
     {
         return [
             'id' => $this->getId(),
-            'nombres' => $this->getNombre(),
-            'apellidos' => $this->getApellido(),
-            'tipo_documento' => $this->getTipo_documento(),
+            'nombre' => $this->getNombre(),
+            'apellido' => $this->getApellido(),
+            'tipo_documento' => $this->getTipoDocumento(),
             'documento' => $this->getDocumento(),
             'telefono' => $this->getTelefono(),
             'rol' => $this->getRol(),
@@ -471,6 +491,7 @@ class Personas extends BasicModel implements JsonSerializable
             'estado' => $this->getEstado(),
         ];
     }
+
 
 }
 
