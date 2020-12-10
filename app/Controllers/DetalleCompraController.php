@@ -10,7 +10,7 @@ require_once(__DIR__ . '/../Models/GeneralFunctions.php');
 
 use App\Models\Compras;
 use App\Models\GeneralFunctions;
-use App\Models\Ventas;
+use App\Models\Compras;
 
 if (!empty($_GET['action'])) { //VentasController.php?action=create
     DetalleComprasController::main($_GET['action']);

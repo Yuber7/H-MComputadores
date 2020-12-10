@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\Interfaces\Model;
-use Carbon\Carbon;
 use Exception;
 use JsonSerializable;
 

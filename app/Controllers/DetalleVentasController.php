@@ -9,7 +9,7 @@ require_once(__DIR__ . '/../Models/Productos.php');
 require_once(__DIR__ . '/../Models/GeneralFunctions.php');
 
 use App\Models\GeneralFunctions;
-use App\Models\Ventas;
+use App\Models\Compras;
 
 if (!empty($_GET['action'])) { //VentasController.php?action=create
     DetalleVentasController::main($_GET['action']);
@@ -69,7 +69,7 @@ class DetalleVentasController
             $arrayDetalleVentas['venta_id'] = $_POST['venta_id'];
             $arrayDetalleVentas['estado'] = $_POST['estado'];
 
-            $DetalleVentas = new Ventas($arrayDetalleVentas);
+            $DetalleVentas = new Compras($arrayDetalleVentas);
             $DetalleVentas->update();
 
             header("Location: ../../views/modules/Detalleventas/show.php?id=" . $DetalleVentas->getId() . "&respuesta=correcto");

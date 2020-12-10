@@ -27,8 +27,8 @@ class Personas extends AbstractDBConnection implements Model, JsonSerializable
 
     /* Relaciones */
     private ?Municipios $municipio;
-    private array $ventasCliente;
-    private array $ventasEmpleado;
+    private ?array $ventasCliente;
+    private ?array $ventasAdministrador;
 
     /**
      * Usuarios constructor. Recibe un array asociativo
@@ -40,7 +40,7 @@ class Personas extends AbstractDBConnection implements Model, JsonSerializable
         $this->setId($persona['id'] ?? NULL);
         $this->setNombre($persona['nombre'] ?? '');
         $this->setApellido($persona['apellido'] ?? '');
-        $this->setTipo_documento($persona['tipo_documento'] ?? '');
+        $this->setTipoDocumento($persona['tipo_documento'] ?? '');
         $this->setDocumento($persona['documento'] ?? 0);
         $this->setTelefono($persona['telefono'] ?? 0);
         $this->setRol($persona['rol'] ?? '');
@@ -282,19 +282,25 @@ class Personas extends AbstractDBConnection implements Model, JsonSerializable
     /**
      * @return array
      */
-    public function getVentasCliente(): array
+    public function getVentasCliente(): ?array
     {
-        //TODO Falta programar la venta
-        return array();
+        if(!empty($this->getId())){
+            $this->ventasCliente = Compras::search('SELECT * FROM ventas WHERE cliente_id = '.$this->getId());
+            return $this->ventasCliente;
+        }
+        return null;
     }
 
     /**
      * @return array
      */
-    public function getVentasEmpleado(): array
+    public function getVentasAdministrador(): ?array
     {
-        //TODO Falta programar la venta
-        return array();
+        if(!empty($this->getId())){
+            $this->ventasAdministrador = Compras::search('SELECT * FROM ventas WHERE administrador_id = '.$this->getId());
+            return $this->ventasAdministrador;
+        }
+        return null;
     }
 
     /**

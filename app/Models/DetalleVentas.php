@@ -2,81 +2,78 @@
 
 namespace App\Models;
 
-require_once(__DIR__ . '/../../vendor/autoload.php');
-require_once('Productos.php');
-require_once('Ventas.php');
-require_once('BasicModel.php');
+use App\Models\Interfaces\Model;
+use Exception;
+use JsonSerializable;
 
-use App\Models\Productos;
-use App\Models\Ventas;
-
-
-class DetalleVentas extends BasicModel
+class DetalleVentas extends AbstractDBConnection implements Model, JsonSerializable
 {
-    //Propiedades
-    protected int $id;
-    protected float $valor_unitario;
-    protected int $cantidad;
-    protected Productos $producto_id;
-    protected Ventas $venta_id;
-    protected string $estado;
+    private ?int $id;
+    private int $venta_id;
+    private int $producto_id;
+    private float $precio_venta;
+    private int $cantidad;
 
-    public function __construct($arrDetalleVentas = array())
-    {
-        //Propiedad recibida y asigna a una propiedad de la clase
-        parent::__construct();
-        $this->id = $arrDetalleVentas['id'] ?? 0;
-        $this->valor_unitario = $arrDetalleVentas['valor_unitario'] ?? 0;
-        $this->cantidad = $arrDetalleVentas['cantidad'] ?? 0;
-        $this->producto_id = !empty($arrDetalleVentas['producto_id']) ? Productos::searchForId($arrDetalleVentas['producto_id']) : new Productos();
-        $this->venta_id = !empty($arrDetalleVentas['venta_id']) ? Ventas::searchForId($arrDetalleVentas['venta_id']) : new Ventas();
-        $this->estado = $arrDetalleVentas['estado'] ?? '';
-    }
-
-    public function __destruct() // Cierro Conexiones
-    {
-        /*
-        echo "<span style='color: #8b0000'>";
-        echo $this->getNombre()." se ha eliminado<br/>";
-        echo "</span>";
-         */
-    }
-
+    /* Relaciones */
+    private ?Compras $venta;
+    private ?Productos $producto;
 
     /**
-     * @return int|mixed
+     * Detalle Venta constructor. Recibe un array asociativo
+     * @param array $detalle_venta
      */
-    public function getId(): int
+    public function __construct(array $detalle_venta = [])
+    {
+        parent::__construct();
+        $this->setId($detalle_venta['id'] ?? NULL);
+        $this->setVentaId($detalle_venta['venta_id'] ?? 0);
+        $this->setProductoId($detalle_venta['producto_id'] ?? 0);
+        $this->setPrecioVenta($detalle_venta['precio_venta'] ?? 0.0);
+        $this->setCantidad($detalle_venta['cantidad'] ?? 0);
+    }
+
+    /**
+     *
+     */
+    function __destruct()
+    {
+        $this->Disconnect();
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getId(): ?int
     {
         return $this->id;
     }
 
     /**
-     * @param int|mixed $id
+     * @param int|null $id
      */
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }
 
     /**
-     * @return float|int|mixed
+     * @return float
      */
-    public function getValorUnitario(): float
+    public function getPrecioVenta(): float
     {
-        return $this->valor_unitario;
+        return $this->precio_venta;
     }
 
     /**
-     * @param float|int|mixed $valor_unitario
+     * @param float $valor_unitario
      */
-    public function setValorUnitario(float $valor_unitario): void
+    public function setPrecioVenta(float $precio_venta): void
     {
-        $this->valor_unitario = $valor_unitario;
+        $this->precio_venta = $precio_venta;
     }
 
     /**
-     * @return int|mixed
+     * @return int
      */
     public function getCantidad(): int
     {
@@ -84,7 +81,7 @@ class DetalleVentas extends BasicModel
     }
 
     /**
-     * @param int|mixed $cantidad
+     * @param int $cantidad
      */
     public function setCantidad(int $cantidad): void
     {
@@ -92,153 +89,182 @@ class DetalleVentas extends BasicModel
     }
 
     /**
-     * @return Productos|mixed
+     * @return int
      */
-    public function getProductoId(): Productos
+    public function getProductoId(): int
     {
         return $this->producto_id;
     }
 
     /**
-     * @param Productos|mixed $producto_id
+     * @param int $producto_id
      */
-    public function setProductoId(Productos $producto_id): void
+    public function setProductoId(int $producto_id): void
     {
         $this->producto_id = $producto_id;
     }
 
     /**
-     * @return Ventas|mixed
+     * @return int
      */
-    public function getVentaId(): Ventas
+    public function getVentaId(): int
     {
         return $this->venta_id;
     }
 
     /**
-     * @param \App\Models\Ventas|mixed $venta_id
+     * @param int $venta_id
      */
-    public function setVentaId(Ventas $venta_id): void
+    public function setVentaId(int $venta_id): void
     {
         $this->venta_id = $venta_id;
     }
 
     /**
-     * @return bool|mixed|string
+     * @return Compras|null
      */
-    public function getEstado(): string
+    public function getVenta(): ?Compras
     {
-        return $this->estado;
+        return $this->venta;
     }
 
     /**
-     * @param bool|mixed|string $estado
+     * @param Compras|null $venta
      */
-    public function setEstado(string $estado): void
+    public function setVenta(?Compras $venta): void
     {
-        $this->estado =$estado;
+        $this->venta = $venta;
     }
 
-
     /**
-     * @return mixed
+     * @return Productos|null
      */
-    public function save(): DetalleVentas
+    public function getProducto(): ?Productos
     {
-        $result = $this->insertRow("INSERT INTO `h&mcomputadores`.detalle_ventas VALUES (NULL, ?, ?, ?, ?, ?)", array(
-                $this->valor_unitario,
-                $this->cantidad,
-                $this->producto_id->getId(),
-                $this->venta_id->getId(),
-                $this->estado
-            )
-        );
-        $this->setId(($result) ? $this->getLastId() : null);
-        $this->Disconnect();
-        return $this;
+        return $this->producto;
     }
 
-
     /**
-     * @return mixed
+     * @param Productos|null $producto
      */
-    public function update()
+    public function setProducto(?Productos $producto): void
     {
-        $result = $this->updateRow("UPDATE `h&mcomputadores`.detalle_ventas SET valor_unitario = ?, cantidad = ?, producto_id= ?, venta_id = ?, estado = ? WHERE id = ?", array(
-                $this->valor_unitario,
-                $this->cantidad,
-                $this->producto_id->getId(),
-                $this->venta_id->getId(),
-                $this->estado,
-                $this->id
-            )
-        );
+        $this->producto = $producto;
+    }
+
+    protected function save(string $query, string $type = 'insert'): ?bool
+    {
+        if($type == 'deleted'){
+            $arrData = [ ':id' =>   $this->getId() ];
+        }else{
+            $arrData = [
+                ':id' =>   $this->getId(),
+                ':venta_id' =>   $this->getVentaId(),
+                ':producto_id' =>  $this->getProductoId(),
+                ':precio_venta' =>   $this->getPrecioVenta(),
+                ':cantidad' =>   $this->getCantidad()
+            ];
+        }
+
+        $this->Connect();
+        $result = $this->insertRow($query, $arrData);
         $this->Disconnect();
         return $result;
     }
 
+    function insert()
+    {
+        $query = "INSERT INTO h&mcomputadores.detalle_ventas VALUES (:id,:venta_id,:producto_id,:precio_venta,:cantidad)";
+        if($this->save($query)){
+            return $this->getProducto()->substractStock($this->getCantidad());
+        }
+        return false;
+    }
+
     /**
-     * @param $id
      * @return mixed
      */
-    public function deleted($id)
+    public function update() : bool
     {
-        $DetalleVentas = DetalleVentas::searchForId($id);//Buscando un Municipio por el ID
-        $DetalleVentas->setEstado("Inactivo"); //Cambia el estado del Usuario
-        return $DetalleVentas->update();                    //Guarda los cambios..
+        $query = "UPDATE h&mcomputadores.detalle_ventas SET 
+            venta_id = :venta_id, producto_id = :producto_id, precio_venta = :precio_venta, 
+            cantidad = :cantidad WHERE id = :id";
+        return $this->save($query);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function deleted() : bool
+    {
+        $query = "DELETE FROM detalle_ventas WHERE id = :id";
+        return $this->save($query, 'deleted');
     }
 
     /**
      * @param $query
      * @return mixed
      */
-
-    public static function search($query): array
+    public static function search($query) : ?array
     {
-        $arrDetalleVentas = array();
-        $tmp = new DetalleVentas();
-        $getrows = $tmp->getRows($query);
+        try {
+            $arrDetalleVenta = array();
+            $tmp = new DetalleCompras();
+            $tmp->Connect();
+            $getrows = $tmp->getRows($query);
+            $tmp->Disconnect();
 
-
-        foreach ($getrows as $deta) {
-            $DetalleVentas = new DetalleVentas();
-            $DetalleVentas->id = $deta['id'];
-            $DetalleVentas->valor_unitario = $deta['valor_unitario'];
-            $DetalleVentas->cantidad = $deta['cantidad'];
-            $DetalleVentas->producto_id = Productos::searchForId($deta['producto_id']);
-            $DetalleVentas->venta_id = Ventas::searchForId($deta['venta_id']);
-            $DetalleVentas->estado = $deta['estado'];
-            array_push($arrDetalleVentas, $DetalleVentas);
+            foreach ($getrows as $valor) {
+                $DetalleVenta = new DetalleCompras($valor);
+                array_push($arrDetalleVenta, $DetalleVenta);
+                unset($DetalleVenta);
+            }
+            return $arrDetalleVenta;
+        } catch (Exception $e) {
+            GeneralFunctions::logFile('Exception',$e, 'error');
         }
-        $tmp->Disconnect();
-        return $arrDetalleVentas;
+        return NULL;
     }
-
 
     /**
      * @param $id
      * @return mixed
      */
-    public static function searchForId($id)
+    public static function searchForId($id) : ?DetalleCompras
     {
-        $DetalleVentas = null;
-        if ($id > 0) {
-            $DetalleVentas = new DetalleVentas();
-            $getrow = $DetalleVentas->getRow("SELECT * FROM `h&mcomputadores`.detalle_ventas WHERE id =?", array($id));
-            $DetalleVentas->id = $getrow['id'];
-            $DetalleVentas->valor_unitario = $getrow['valor_unitario'];
-            $DetalleVentas->cantidad = $getrow['cantidad'];
-            $DetalleVentas->producto_id = Productos::searchForId($getrow['producto_id']);
-            $DetalleVentas->venta_id = Ventas::searchForId($getrow['venta_id']);
-            $DetalleVentas->estado = $getrow['estado'];
+        try {
+            if ($id > 0) {
+                $DetalleVenta = new DetalleCompras();
+                $DetalleVenta->Connect();
+                $getrow = $DetalleVenta->getRow("SELECT * FROM h&mcomputadores.detalle_ventas WHERE id = ?", array($id));
+                $DetalleVenta->Disconnect();
+                return ($getrow) ? new DetalleCompras($getrow) : null;
+            }else{
+                throw new Exception('Id de detalle venta Invalido');
+            }
+        } catch (Exception $e) {
+            GeneralFunctions::logFile('Exception',$e, 'error');
         }
-        $DetalleVentas->Disconnect();
-        return $DetalleVentas;
+        return NULL;
     }
 
-    static function DetalleVentaRegistrada(string $id){
-        $result = DetalleVentas::search("SELECT * FROM `h&mcomputadores`.detalle_ventas where id = " .$id);
-        if ( count ($result) > 0 ) {
+    /**
+     * @return mixed
+     */
+    public static function getAll() : array
+    {
+        return DetalleCompras::search("SELECT * FROM h&mcomputadores.detalle_ventas");
+    }
+
+    /**
+     * @param $venta_id
+     * @param $producto_id
+     * @return bool
+     */
+    public static function productoEnFactura($venta_id,$producto_id): bool
+    {
+        $result = DetalleCompras::search("SELECT id FROM h&mcomputadores.detalle_ventas where venta_id = '" . $venta_id. "' and producto_id = '" . $producto_id. "'");
+        if (count($result) > 0) {
             return true;
         } else {
             return false;
@@ -246,22 +272,27 @@ class DetalleVentas extends BasicModel
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public static function getAll()
-    {
-        return DetalleVentas::search("SELECT * FROM `h&mcomputadores`.detalle_ventas");
-    }
-
     public function __toString() : string
     {
-        $typeOutput = "\n";
-        return
-            "fecha:  " .$this->valor_unitario.
-            "cantidad:  " .$this->cantidad.
-            "producto:  " .$this->producto_id.
-            "venta:  " .$this->venta_id.
-            "Estado:  " .$this->getEstado(). $typeOutput;
+        return "Venta: ".$this->venta->getId().", Producto: ".$this->producto->getNombre().", Cantidad: $this->cantidad, Precio Venta: $this->precio_venta";
     }
 
+    /**
+     * Specify data which should be serialized to JSON
+     * @link https://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     * @since 5.4
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'venta_id' => $this->getVenta()->jsonSerialize(),
+            'producto_id' => $this->getProducto()->jsonSerialize(),
+            'precio_venta' => $this->getPrecioVenta(),
+            'cantidad' => $this->getCantidad()
+        ];
+    }
 }
