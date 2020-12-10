@@ -120,6 +120,7 @@ use App\Controllers\VentasController; ?>
                                                    style="margin-right: 5px;">
                                                     <i class="fas fa-tasks"></i> Gestionar Ventas
                                                 </a>
+
                                             </div>
                                         </div>
                                     </div>

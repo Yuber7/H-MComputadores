@@ -2,44 +2,46 @@
 
 
 namespace App\Models;
-require_once (__DIR__ .'/../../vendor/autoload.php');
-require_once ('Productos.php');
-require_once('BasicModel.php');
 
+use App\Models\Interfaces\Model;
+use Carbon\Carbon;
+use Exception;
+use JsonSerializable;
 
-use App\Models\Productos;
-
-class Fotos extends BasicModel
+class Fotos extends AbstractDBConnection implements Model, JsonSerializable
 {
     //Propiedades
     protected int $id;
     protected string $descripcion;
     protected string $ruta;
-    protected Productos $productos_id;
+    protected int $productos_id;
     protected string $estado;
 
-    //Metodo constructor
-    public function __construct($arrFotos = array())
+    /* Relaciones */
+    private Productos $producto;
+
+
+    /**
+     * Fotos constructor.
+     * @param array $foto
+     */
+    public function __construct(array $foto = [])
     {
-        //Propiedad recibida y asigna a una propiedad de la clase
         parent::__construct();
-        $this->id = $arrFotos['id'] ?? 0;
-        $this->descripcion = $arrFotos['descripcion'] ?? '';
-        $this->ruta = $arrFotos['ruta'] ?? '';
-        $this->productos_id = !empty($arrFotos['productos_id']) ? Productos::searchForId($arrFotos['productos_id']) : new Productos();
-        $this->estado = $arrFotos['estado'] ?? '';
-
+        $this->setId($foto['id'] ?? 0);
+        $this->setDescripcion($foto['descripcion'] ?? '');
+        $this->setRuta($foto['ruta'] ?? '');
+        $this->setProductosId($foto['producto_id'] ?? 0);
+        $this->setEstado($foto['estado'] ?? '');
     }
 
-
-    public function __destruct() // Cierro Conexiones
+    function __destruct()
     {
-        /*
-        echo "<span style='color: #8b0000'>";
-        echo $this->getNombre()." se ha eliminado<br/>";
-        echo "</span>";
-         */
+        if($this->isConnected){
+            $this->Disconnect();
+        }
     }
+
 
     /**
      * @return int
@@ -92,7 +94,7 @@ class Fotos extends BasicModel
     /**
      * @return Fotos|\App\Models\Productos|mixed
      */
-    public function getProductoId()
+    public function getProductosId()
     {
         return $this->productos_id;
     }
@@ -100,7 +102,7 @@ class Fotos extends BasicModel
     /**
      * @param Fotos|\App\Models\Productos|mixed $productos_id
      */
-    public function setProductoId($productos_id): void
+    public function setProductosId($productos_id): void
     {
         $this->productos_id = $productos_id;
     }
@@ -122,123 +124,140 @@ class Fotos extends BasicModel
         $this->estado = $estado;
     }
 
-
-
-    public function save(): Fotos
+    public function getProducto(): ?Productos
     {
-        $result = $this->insertRow("INSERT INTO `h&mcomputadores`.fotos VALUES (NULL, ?, ?, ?, ?)", array(
-                $this->descripcion,
-                $this->ruta,
-                $this->productos_id->getId(),
-                $this->estado
-            )
-        );
-        $this->setId(($result) ? $this->getLastId() : null);
-        $this->Disconnect();
-        return $this;
+        if(!empty($this->producto_id)){
+            $this->producto = Productos::searchForId($this->producto_id) ?? new Productos();
+            return $this->producto;
+        }
+        return null;
+    }
+
+    /**
+     * @param Productos $producto
+     */
+    public function setProducto(Productos $producto): void
+    {
+        $this->producto = $producto;
     }
 
 
-    public function update()
+    protected function save(string $query): ?bool
     {
-        $result = $this->updateRow("UPDATE `h&mcomputadores`.fotos SET descripcion = ?, ruta = ?, productos_id = ?, estado = ? WHERE id = ?", array(
-                $this->descripcion,
-                $this->ruta,
-                $this->productos_id->getId(),
-                $this->estado,
-                $this->id
-            )
-        );
+        $arrData = [
+            ':id' =>    $this->getId(),
+            ':descripcion' =>   $this->getDescripcion(),
+            ':ruta' =>  $this->getRuta(),
+            ':productos_id' =>   $this->getProductosId(),
+            ':estado' =>   $this->getEstado()
+        ];
+        $this->Connect();
+        $result = $this->insertRow($query, $arrData);
         $this->Disconnect();
         return $result;
     }
 
 
     /**
-     * @param $id
-     * @return mixed
+     * @return bool|null
      */
-    public function deleted($id)
+    function insert(): ?bool
     {
-        $Fotos = Categorias::searchForId($id); //Buscando un Municipio por el ID
-        $Fotos->setEstado("Inactivo"); //Cambia el estado del Usuario
-        return $Fotos->update();
+        $query = "INSERT INTO `h&mcomputadores`.fotos VALUES (:id, :descripcion, :ruta, :productos_id, :estado)";
+        return $this->save($query);
     }
 
+    /**
+     * @return bool|null
+     */
+    function update(): ?bool
+    {
+        $query = "UPDATE `h&mcomputadores`.fotos SET 
+            descripcion = :descripcion, ruta = :ruta, productos_id = :productos_id, 
+             estado = :estado WHERE id = :id";
+        return $this->save($query);
+    }
+
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    function deleted() : bool
+    {
+        $this->setEstado("Inactivo"); //Cambia el estado del Usuario
+        return $this->update();                    //Guarda los cambios..
+    }
 
     /**
      * @param $query
-     * @return mixed
+     * @return Fotos|array
+     * @throws Exception
      */
-    public static function search($query)
+    static function search($query): ?array
     {
-        $arrFotos = array();
-        $tmp = new Fotos();
-        $getrows = $tmp->getRows($query);
+        try {
+            $arrFotos = array();
+            $tmp = new Fotos();
+            $tmp->Connect();
+            $getrows = $tmp->getRows($query);
+            $tmp->Disconnect();
 
-        foreach ($getrows as $valor) {
-            $Fotos = new Fotos();
-            $Fotos->id = $valor['id'];
-            $Fotos->descripcion = $valor['descripcion'];
-            $Fotos->ruta = $valor['ruta'];
-            $Fotos->productos_id = Productos::searchForId($valor['productos_id']);
-            $Fotos->estado = $valor['estado'];
-            array_push($arrFotos, $Fotos);
+            foreach ($getrows as $valor) {
+                $Foto = new Fotos($valor);
+                array_push($arrFotos, $Foto);
+                unset($Foto);
+            }
+            return $arrFotos;
+        } catch (Exception $e) {
+            GeneralFunctions::logFile('Exception',$e, 'error');
         }
-        $tmp->Disconnect();
-        return $arrFotos;
-
+        return null;
     }
 
 
     /**
-     * @param $id
-     * @return mixed
+     * @return array
+     * @throws Exception
      */
-    public static function searchForId($id)
-    {
-        $Fotos = null;
-        if ($id > 0) {
-            $Fotos = new Fotos();
-            $getrow = $Fotos->getRow("SELECT * FROM `h&mcomputadores`.fotos WHERE id =?", array($id));
-            $Fotos->id = $getrow['id'];
-            $Fotos->descripcion = $getrow['descripcion'];
-            $Fotos->ruta = $getrow['ruta'];
-            $Fotos->productos_id = Productos::searchForId($getrow['productos_id']);
-            $Fotos->estado = $getrow['estado'];
-        }
-        $Fotos->Disconnect();
-        return $Fotos;
-    }
-
-
-    static function FotoRegistrada(string $ruta ){
-        $result = Fotos::search("SELECT * FROM `h&mcomputadores`.fotos where ruta = '" .$ruta."'");
-        if ( count ($result) > 0 ) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-
-    /**
-     * @return mixed
-     */
-    public static function getAll()
+    static function getAll(): ?array
     {
         return Fotos::search("SELECT * FROM `h&mcomputadores`.fotos");
     }
 
+    static function searchForId(int $id): ?object
+    {
+        try {
+            if ($id > 0) {
+                $Foto = new Fotos();
+                $Foto->Connect();
+                $getrow = $Foto->getRow("SELECT * FROM `h&mcomputadores`.fotos WHERE id =?", array($id));
+                $Foto->Disconnect();
+                return ($getrow) ? new Fotos($getrow) : null;
+            }else{
+                throw new Exception('Id de foto Invalido');
+            }
+        } catch (Exception $e) {
+            GeneralFunctions::logFile('Exception',$e, 'error');
+        }
+        return null;
+    }
 
-
+    /**
+     * @return string
+     */
     public function __toString() : string
     {
-        $typeOutput = "\n";
-        return
-            "descripcion:  " .$this->descripcion. $typeOutput.
-            "ruta:  " .$this->ruta. $typeOutput.
-            "estado:  " .$this->estado. $typeOutput;
+        return " Descripcion: $this->descripcion, Ruta: $this->ruta, productos_id: $this->productos_id, Estado: $this->estado";
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'descripcion' => $this->getDescripcion(),
+            'ruta' => $this->getRuta(),
+            'productos_id' => $this->getProductosId(),
+            'estado' => $this->getEstado(),
+        ];
     }
 
 }

@@ -2,50 +2,51 @@
 
 namespace App\Models;
 
-require_once (__DIR__ .'/../../vendor/autoload.php');
-require_once ('Categorias.php');
-require_once  ('BasicModel.php');
+use App\Models\Interfaces\Model;
+use Carbon\Carbon;
+use Exception;
+use JsonSerializable;
 
-use App\Models\Categorias;
-
-class Productos extends BasicModel
+class Productos extends AbstractDBConnection implements Model, JsonSerializable
 {
     //Propiedades
     protected int $id;
     protected string $nombre;
     protected string $marca;
-    protected Categorias $categoria_id;
+    protected int $categoria_id;
     protected string $referencia_fabrica;
     protected string $descripcion;
     protected int $stock;
     protected float $precio;
     protected string $estado;
 
+    private ?Categorias $categoria;
 
-    public function __construct($arrProductos = array())
+
+    public function __construct(array $producto = [])
     {
-        //Propiedad recibida y asigna a una propiedad de la clase
-        parent::__construct();
-        $this->id = $arrProductos['id'] ?? 0;
-        $this->nombre = $arrProductos['nombre'] ?? '';
-        $this->marca = $arrProductos['marca'] ?? '';
-        $this->categoria_id = !empty($arrProductos['categoria_id']) ? Categorias::searchForId($arrProductos['categoria_id']) : new Categorias();
-        $this->referencia_fabrica = $arrProductos['referencia_fabrica'] ?? '';
-        $this->descripcion = $arrProductos['descripcion'] ?? '';
-        $this->stock = $arrProductos['stock'] ?? 0;
-        $this->precio = $arrProductos['precio'] ?? 0;
-        $this->estado = $arrProductos['estado'] ?? '';
+        {
+            parent::__construct();
+            //Propiedad recibida y asigna a una propiedad de la clase
+            $this->setId($producto['id'] ?? 0);
+            $this->setNombre($producto['nombre'] ?? "");
+            $this->setMarca($producto['marca'] ?? "");
+            $this->setCategoriaId($producto['categoria_id'] ?? 0);
+            $this->setReferenciaFabrica($producto['referencia_fabrica'] ?? "");
+            $this->setDescripcion($producto['descripcion'] ?? "");
+            $this->setStock($producto['stock'] ?? 0);
+            $this->setPrecio($producto['precio'] ?? 0);
+            $this->setEstado($producto['estado'] ?? "");
+
+        }
     }
 
-    public function __destruct() // Cierro Conexiones
+    function __destruct()
     {
-        /*
-        echo "<span style='color: #8b0000'>";
-        echo $this->getNombre()." se ha eliminado<br/>";
-        echo "</span>";
-         */
+        if($this->isConnected){
+            $this->Disconnect();
+        }
     }
-
 
 
     /**
@@ -97,17 +98,17 @@ class Productos extends BasicModel
     }
 
     /**
-     * @return Categorias|mixed
+     * @return Categorias
      */
-    public function getCategoriaId(): Categorias
+    public function getCategoriaId(): int
     {
         return $this->categoria_id;
     }
 
     /**
-     * @param Categorias|mixed $categoria_id
+     * @param $categoria_id
      */
-    public function setCategoriaId(Categorias $categoria_id): void
+    public function setCategoriaId(int $categoria_id): void
     {
         $this->categoria_id = $categoria_id;
     }
@@ -192,148 +193,152 @@ class Productos extends BasicModel
         $this->estado = $estado;
     }
 
-    /**
-     * @return mixed
-     */
-    public function save() : Productos
-    {
-        $result = $this->insertRow( "INSERT INTO `h&mcomputadores`.productos VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)", array(
-                $this->nombre,
-                $this->marca,
-                $this->categoria_id->getId(),
-                $this->referencia_fabrica,
-                $this->descripcion,
-                $this->stock,
-                $this->precio,
-                $this->estado
-            )
-        );
-        $this->setId(($result) ? $this->getLastId() : null);
-        $this->Disconnect();
-        return $this;
-    }
 
-
-    /**
-     * @return mixed
-     */
-    public function update()
+    protected function save(string $query): ?bool
     {
-        $result = $this->updateRow( "UPDATE `h&mcomputadores`.productos SET nombre = ?, marca = ?, categoria_id = ?, referencia_fabrica = ?, descripcion = ?, stock = ?, precio = ?, estado = ? WHERE id = ?", array(
-                $this->nombre,
-                $this->marca,
-                $this->categoria_id->getId(),
-                $this->referencia_fabrica,
-                $this->descripcion,
-                $this->stock,
-                $this->precio,
-                $this->estado,
-                $this->id
-            )
-        );
+        $arrData = [
+            ':id' =>    $this->getId(),
+            ':nombre' =>   $this->getNombre(),
+            ':departamento_id' =>  $this->getMarca(),
+            ':categoria_id' =>   $this->getCategoriaId(),
+            ':referencia_fabrica' =>   $this->getReferenciaFabrica(),
+            ':descripcion' =>   $this->getDescripcion(),
+            ':stock' =>   $this->getStock(),
+            ':precio' =>   $this->getPrecio(),
+            ':estado' =>   $this->getEstado(),
+        ];
+        $this->Connect();
+        $result = $this->insertRow($query, $arrData);
         $this->Disconnect();
         return $result;
     }
 
+    /**
+     * @return bool|null
+     */
+    public function insert(): ?bool
+    {
+        $query = "INSERT INTO `h&mcomputadores`.productos VALUES (
+            :id, :nombre, :marca, :categoria_id, :referencia_id, :descripcion, :stock, :precio, :estado
+        )";
+        return $this->save($query);
+    }
+
+    public function update(): ?bool
+    {
+        $query = "UPDATE `h&mcomputadores`.productos SET 
+            nombre = :nombre, marca = :marca ,categoria_id = :categoria_id, referencia_fabrica = :referencia_fabrica, descripcion = :descripcion, stock = :stock, precio = :precio, estado = :estado WHERE id = :id";
+        return $this->save($query);
+    }
 
     /**
      * @param $id
-     * @return mixed
+     * @return bool
+     * @throws Exception
      */
-    public function deleted($id)
+    public function deleted(): bool
     {
-        $Productos = Categorias::searchForId($id); //Buscando un Municipio por el ID
-        $Productos->setEstado("Agotado"); //Cambia el estado del Usuario
-        return $Productos->update();                    //Guarda los cambios..
+        $this->setEstado("Agotado"); //Cambia el estado del Usuario
+        return $this->update();             //Guarda los cambios..
     }
 
 
     /**
      * @param $query
-     * @return mixed
+     * @return Productos|array
+     * @throws Exception
      */
-
-    public static function search($query) : array
+    public static function search($query) : ?array
     {
-        $arrProductos = array();
-        $tmp = new Productos();
-        $getrows = $tmp->getRows($query);
+        try {
+            $arrProductos = array();
+            $tmp = new Productos();
+            $tmp->Connect();
+            $getrows = $tmp->getRows($query);
+            $tmp->Disconnect();
 
-
-
-        foreach ($getrows as $info) {
-            $Productos = new Productos();
-            $Productos->id = $info['id'];
-            $Productos->nombre = $info['nombre'];
-            $Productos->marca = $info['marca'];
-            $Productos->categoria_id = Categorias::searchForId($info['categoria_id']);
-            $Productos->referencia_fabrica = $info['referencia_fabrica'];
-            $Productos->descripcion = $info['descripcion'];
-            $Productos->stock = $info['stock'];
-            $Productos->precio = $info['precio'];
-            $Productos->estado = $info['estado'];
-            array_push($arrProductos, $Productos);
+            foreach ($getrows as $valor) {
+                $producto = new Productos($valor);
+                array_push($arrProductos, $producto);
+                unset($producto);
+            }
+            return $arrProductos;
+        } catch (Exception $e) {
+            GeneralFunctions::logFile('Exception',$e, 'error');
         }
-        $tmp->Disconnect();
-        return $arrProductos;
+        return null;
     }
-
-
 
     /**
      * @param $id
-     * @return mixed
+     * @return Municipios
+     * @throws Exception
      */
-    public static function searchForId($id)
+    public static function searchForId(int $id): ?Productos
     {
-        $Productos = null;
-        if ($id > 0) {
-            $Productos = new Productos();
-            $getrow = $Productos->getRow("SELECT * FROM `h&mcomputadores`.productos WHERE id =?", array($id));
-            $Productos->id = $getrow['id'];
-            $Productos->nombre = $getrow['nombre'];
-            $Productos->marca = $getrow['marca'];
-            $Productos->categoria_id = Categorias::searchForId($getrow['categoria_id']);
-            $Productos->referencia_fabrica = $getrow['referencia_fabrica'];
-            $Productos->descripcion = $getrow['descripcion'];
-            $Productos->stock = $getrow['stock'];
-            $Productos->precio = $getrow['precio'];
-            $Productos->estado = $getrow['estado'];
+        try {
+            if ($id > 0) {
+                $tmpProducto = new Productos();
+                $tmpProducto->Connect();
+                $getrow = $tmpProducto->getRow("SELECT * FROM `h&mcomputadores`.productos WHERE id =?", array($id));
+                $tmpProducto->Disconnect();
+                return ($getrow) ? new Productos($getrow) : null;
+            }else{
+                throw new Exception('Id de Producto Invalido');
+            }
+        } catch (Exception $e) {
+            GeneralFunctions::logFile('Exception',$e, 'error');
         }
-        $Productos->Disconnect();
-        return $Productos;
-    }
-
-    static function ProductoRegistrado(string $nombre){
-        $nombre = trim(strtoupper($nombre));
-        $result = Productos::search("SELECT * FROM `h&mcomputadores`.productos where nombre = '".$nombre."'");
-        if ( count ($result) > 0 ) {
-            return true;
-        } else {
-            return false;
-        }
+        return null;
     }
 
     /**
-     * @return mixed
+     * @return array
+     * @throws Exception
      */
-    public static function getAll()
+    public static function getAll(): array
     {
         return Productos::search("SELECT * FROM `h&mcomputadores`.productos");
     }
 
+
+    /**
+     * @param $referencia_fabrica
+     * @return bool
+     * @throws Exception
+     */
+    public static function ProductoRegistrado ( $referencia_fabrica): bool
+    {
+        $result = Productos::search("SELECT * FROM `h&mcomputadores`.productos where referencia_fabrica = " .  $referencia_fabrica);
+        if ( !empty($result) && count ($result) > 0 ) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    /**
+     * @return string
+     */
     public function __toString() : string
     {
-        $typeOutput = "\n";
-        return
-            "Nombre:  " .$this->nombre.
-            "Marca:  " .$this->marca.
-            "categoria:  " .$this->categoria_id.
-            "referencia_fabrica:  " .$this->referencia_fabrica.
-            "descripcion:  " .$this->descripcion.
-            "stock:  " .$this->stock.
-            "precio:  " .$this->precio.
-            "Estado:  " .$this->getEstado(). $typeOutput;
+        return "nombre: $this->nombre, marca: $this->marca,  categoria_id: $this->categoria_id, referencia_fabrica: $this->referencia_fabrica, descripcion: $this->descripcion, stock: $this->stock, precio: $this->precio,  estado: $this->estado";
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->getId(),
+            'nombre' => $this->getNombre(),
+            'marca' => $this->getMarca(),
+            'categoria_id' => $this->getCategoriaId(),
+            'referencia_fabrica' => $this->getReferenciaFabrica(),
+            'descripcion' => $this->getDescripcion(),
+            'stock' => $this->getStock(),
+            'precio' => $this->getPrecio(),
+            'estado' => $this->getEstado(),
+        ];
     }
 
 
