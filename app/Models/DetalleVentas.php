@@ -3,21 +3,19 @@
 namespace App\Models;
 
 use App\Models\Interfaces\Model;
-use Carbon\Carbon;
 use Exception;
 use JsonSerializable;
 
 class DetalleVentas extends AbstractDBConnection implements Model, JsonSerializable
 {
     private ?int $id;
-    private float $valor_unitario;
-    private int $cantidad;
-    private int $producto_id;
     private int $venta_id;
-    private string $estado;
+    private int $producto_id;
+    private float $precio_venta;
+    private int $cantidad;
 
     /* Relaciones */
-    private ?Ventas $venta;
+    private ?Compras $venta;
     private ?Productos $producto;
 
     /**
@@ -28,11 +26,10 @@ class DetalleVentas extends AbstractDBConnection implements Model, JsonSerializa
     {
         parent::__construct();
         $this->setId($detalle_venta['id'] ?? NULL);
-        $this->setValorUnitario($detalle_venta['valor_unitario'] ?? 0.0);
-        $this->setCantidad($detalle_venta['cantidad'] ?? 0);
-        $this->setProductoId($detalle_venta['producto_id'] ?? 0);
         $this->setVentaId($detalle_venta['venta_id'] ?? 0);
-        $this->setEstado($venta['estado'] ?? 'Inactivo');
+        $this->setProductoId($detalle_venta['producto_id'] ?? 0);
+        $this->setPrecioVenta($detalle_venta['precio_venta'] ?? 0.0);
+        $this->setCantidad($detalle_venta['cantidad'] ?? 0);
     }
 
     /**
@@ -62,17 +59,17 @@ class DetalleVentas extends AbstractDBConnection implements Model, JsonSerializa
     /**
      * @return float
      */
-    public function getValorUnitario(): float
+    public function getPrecioVenta(): float
     {
-        return $this->valor_unitario;
+        return $this->precio_venta;
     }
 
     /**
      * @param float $valor_unitario
      */
-    public function setValorUnitario(float $valor_unitario): void
+    public function setPrecioVenta(float $precio_venta): void
     {
-        $this->valor_unitario = $valor_unitario;
+        $this->precio_venta = $precio_venta;
     }
 
     /**
@@ -124,33 +121,17 @@ class DetalleVentas extends AbstractDBConnection implements Model, JsonSerializa
     }
 
     /**
-     * @return string
+     * @return Compras|null
      */
-    public function getEstado(): string
-    {
-        return $this->estado;
-    }
-
-    /**
-     * @param string $estado
-     */
-    public function setEstado(string $estado): void
-    {
-        $this->estado = $estado;
-    }
-
-    /**
-     * @return Ventas|null
-     */
-    public function getVenta(): ?Ventas
+    public function getVenta(): ?Compras
     {
         return $this->venta;
     }
 
     /**
-     * @param Ventas|null $venta
+     * @param Compras|null $venta
      */
-    public function setVenta(?Ventas $venta): void
+    public function setVenta(?Compras $venta): void
     {
         $this->venta = $venta;
     }
@@ -178,11 +159,10 @@ class DetalleVentas extends AbstractDBConnection implements Model, JsonSerializa
         }else{
             $arrData = [
                 ':id' =>   $this->getId(),
-                ':valor_unitario' =>   $this->getValorUnitario(),
-                ':cantidad' =>   $this->getCantidad(),
-                ':producto_id' =>  $this->getProductoId(),
                 ':venta_id' =>   $this->getVentaId(),
-                ':estado' =>   $this->getEstado()
+                ':producto_id' =>  $this->getProductoId(),
+                ':precio_venta' =>   $this->getPrecioVenta(),
+                ':cantidad' =>   $this->getCantidad()
             ];
         }
 
@@ -194,7 +174,7 @@ class DetalleVentas extends AbstractDBConnection implements Model, JsonSerializa
 
     function insert()
     {
-        $query = "INSERT INTO h&mcomputadores.detalle_ventas VALUES (:id,:valor_unitario,:cantidad,:producto_id,:venta_id,:estado)";
+        $query = "INSERT INTO h&mcomputadores.detalle_ventas VALUES (:id,:venta_id,:producto_id,:precio_venta,:cantidad)";
         if($this->save($query)){
             return $this->getProducto()->substractStock($this->getCantidad());
         }
@@ -207,8 +187,8 @@ class DetalleVentas extends AbstractDBConnection implements Model, JsonSerializa
     public function update() : bool
     {
         $query = "UPDATE h&mcomputadores.detalle_ventas SET 
-            valor_unitario = :valor_unitario, cantidad = :cantidad, producto_id = :producto_id, 
-            venta_id = :venta_id, estado = :estado WHERE id = :id";
+            venta_id = :venta_id, producto_id = :producto_id, precio_venta = :precio_venta, 
+            cantidad = :cantidad WHERE id = :id";
         return $this->save($query);
     }
 
@@ -229,13 +209,13 @@ class DetalleVentas extends AbstractDBConnection implements Model, JsonSerializa
     {
         try {
             $arrDetalleVenta = array();
-            $tmp = new DetalleVentas();
+            $tmp = new DetalleCompras();
             $tmp->Connect();
             $getrows = $tmp->getRows($query);
             $tmp->Disconnect();
 
             foreach ($getrows as $valor) {
-                $DetalleVenta = new DetalleVentas($valor);
+                $DetalleVenta = new DetalleCompras($valor);
                 array_push($arrDetalleVenta, $DetalleVenta);
                 unset($DetalleVenta);
             }
@@ -250,15 +230,15 @@ class DetalleVentas extends AbstractDBConnection implements Model, JsonSerializa
      * @param $id
      * @return mixed
      */
-    public static function searchForId($id) : ?DetalleVentas
+    public static function searchForId($id) : ?DetalleCompras
     {
         try {
             if ($id > 0) {
-                $DetalleVenta = new DetalleVentas();
+                $DetalleVenta = new DetalleCompras();
                 $DetalleVenta->Connect();
                 $getrow = $DetalleVenta->getRow("SELECT * FROM h&mcomputadores.detalle_ventas WHERE id = ?", array($id));
                 $DetalleVenta->Disconnect();
-                return ($getrow) ? new DetalleVentas($getrow) : null;
+                return ($getrow) ? new DetalleCompras($getrow) : null;
             }else{
                 throw new Exception('Id de detalle venta Invalido');
             }
@@ -273,7 +253,7 @@ class DetalleVentas extends AbstractDBConnection implements Model, JsonSerializa
      */
     public static function getAll() : array
     {
-        return DetalleVentas::search("SELECT * FROM h&mcomputadores.detalle_ventas");
+        return DetalleCompras::search("SELECT * FROM h&mcomputadores.detalle_ventas");
     }
 
     /**
@@ -283,7 +263,7 @@ class DetalleVentas extends AbstractDBConnection implements Model, JsonSerializa
      */
     public static function productoEnFactura($venta_id,$producto_id): bool
     {
-        $result = DetalleVentas::search("SELECT id FROM h&mcomputadores.detalle_ventas where venta_id = '" . $venta_id. "' and producto_id = '" . $producto_id. "'");
+        $result = DetalleCompras::search("SELECT id FROM h&mcomputadores.detalle_ventas where venta_id = '" . $venta_id. "' and producto_id = '" . $producto_id. "'");
         if (count($result) > 0) {
             return true;
         } else {
@@ -296,7 +276,7 @@ class DetalleVentas extends AbstractDBConnection implements Model, JsonSerializa
      */
     public function __toString() : string
     {
-        return "Venta: ".$this->venta->getId().", Producto: ".$this->producto->getNombre().", Cantidad: $this->cantidad, Precio Venta: $this->valor_unitario";
+        return "Venta: ".$this->venta->getId().", Producto: ".$this->producto->getNombre().", Cantidad: $this->cantidad, Precio Venta: $this->precio_venta";
     }
 
     /**
@@ -309,11 +289,10 @@ class DetalleVentas extends AbstractDBConnection implements Model, JsonSerializa
     public function jsonSerialize()
     {
         return [
-            'valor_unitario' => $this->getValorUnitario(),
-            'cantidad' => $this->getCantidad(),
-            'producto_id' => $this->getProducto()->jsonSerialize(),
             'venta_id' => $this->getVenta()->jsonSerialize(),
-            'estado' => $this->getEstado()
+            'producto_id' => $this->getProducto()->jsonSerialize(),
+            'precio_venta' => $this->getPrecioVenta(),
+            'cantidad' => $this->getCantidad()
         ];
     }
 }

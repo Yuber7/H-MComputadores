@@ -3,7 +3,7 @@ require_once("../../../app/Controllers/VentasController.php");
 require_once("../../partials/routes.php");
 
 use App\Controllers\VentasController;
-use App\Models\Ventas;
+use App\Models\Compras;
 
 ?>
 <!DOCTYPE html>
@@ -109,7 +109,7 @@ use App\Models\Ventas;
                                             <tbody>
                                             <?php
                                             $arrVentas = VentasController::getAll();
-                                            /* @var $arrVentas Ventas[] */
+                                            /* @var $arrVentas Compras[] */
                                             foreach ($arrVentas as $ventas) {
                                                 ?>
                                                 <tr>

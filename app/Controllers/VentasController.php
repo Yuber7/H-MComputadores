@@ -7,7 +7,7 @@ require_once(__DIR__ . '/../Models/Personas.php');
 require_once(__DIR__ . '/../Models/GeneralFunctions.php');
 
 use App\Models\GeneralFunctions;
-use App\Models\Ventas;
+use App\Models\Compras;
 use Carbon\Carbon;
 
 if (!empty($_GET['action'])) { //VentasController.php?action=create
@@ -47,7 +47,7 @@ class VentasController
 
             //esta linea aun no funciona debemos dejar lo de registrar por otro tipo de dato no se puede por id
             //if (!Ventas::VentaRegistrada($arrayVentas['id'])) {
-                $Ventas = new Ventas($arrayVentas);
+                $Ventas = new Compras($arrayVentas);
                 if ($Ventas->save()) {
                     header("Location: ../../views/modules/ventas/index.php?accion=create&respuesta=correcto");
                 }
@@ -72,7 +72,7 @@ class VentasController
             $arrayVentas['estado'] = $_POST['estado'];
             $arrayVentas['id'] = $_POST['id'];
 
-            $Ventas = new Ventas($arrayVentas);
+            $Ventas = new Compras($arrayVentas);
             $Ventas->update();
 
             header("Location: ../../views/modules/ventas/show.php?id=" . $Ventas->getId() . "&respuesta=correcto");
@@ -85,7 +85,7 @@ class VentasController
     static public function searchForID($id)
     {
         try {
-            return Ventas::searchForId($id);
+            return Compras::searchForId($id);
         } catch (\Exception $e) {
             GeneralFunctions::console($e, 'error', 'errorStack');
             //header("Location: ../../views/modules/ventas/manager.php?respuesta=error");
@@ -95,7 +95,7 @@ class VentasController
     static public function getAll()
     {
         try {
-            return Ventas::getAll();
+            return Compras::getAll();
         } catch (\Exception $e) {
             GeneralFunctions::console($e, 'log', 'errorStack');
             //header("Location: ../Vista/modules/ventas/manager.php?respuesta=error");
@@ -115,15 +115,15 @@ class VentasController
         $arrVentas = array();
         if ($where != "") {
             $base = "SELECT * FROM `h&mcomputadores`.ventas WHERE ";
-            $arrVentas = Ventas::search($base . ' ' . $where);
+            $arrVentas = Compras::search($base . ' ' . $where);
         } else {
-            $arrVentas = Ventas::getAll();
+            $arrVentas = Compras::getAll();
         }
 
         $htmlSelect = "<select " . (($isMultiple) ? "multiple" : "") . " " . (($isRequired) ? "required" : "") . " id= '" . $id . "' name='" . $nombre . "' class='" . $class . "' style='width: 100%;'>";
         $htmlSelect .= "<option value='' >Seleccione</option>";
         if (count($arrVentas) > 0) {
-            /* @var $arrVentas Ventas[] */
+            /* @var $arrVentas Compras[] */
             foreach ($arrVentas as $venta)
                 if (!VentasController::ventaIsInArray($venta->getId(), $arrExcluir))
                     $htmlSelect .= "<option " . (($venta != "") ? (($defaultValue == $venta->getId()) ? "selected" : "") : "") . " value='" . $venta->getId() . "'>" .  $venta->getFecha() . "</option>";
@@ -147,7 +147,7 @@ class VentasController
     static public function activate()
     {
         try {
-            $ObjVenta = Ventas::searchForId($_GET['Id']);
+            $ObjVenta = Compras::searchForId($_GET['Id']);
             $ObjVenta->setEstado("Procesada");
             if ($ObjVenta->update()) {
                 header("Location: ../../views/modules/ventas/index.php");
@@ -164,7 +164,7 @@ class VentasController
     static public function inactivate()
     {
         try {
-            $ObjVenta = Ventas::searchForId($_GET['Id']);
+            $ObjVenta = Compras::searchForId($_GET['Id']);
             $ObjVenta->setEstado("Pendiente");
             if ($ObjVenta->update()) {
                 header("Location: ../../views/modules/ventas/index.php");

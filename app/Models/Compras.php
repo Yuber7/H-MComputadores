@@ -1,69 +1,75 @@
 <?php
+
 namespace App\Models;
 
-require_once (__DIR__ .'/../../vendor/autoload.php');
-require_once ('Personas.php');
-require_once  ('BasicModel.php');
-
-use App\Models\Personas;
+use App\Models\Interfaces\Model;
 use Carbon\Carbon;
+use Exception;
+use JsonSerializable;
 
-class Compras extends BasicModel
+class Compras extends AbstractDBConnection implements Model, JsonSerializable
 {
-    //Propiedades
-    protected int $id;
-    protected Carbon $fecha;
-    protected float $valor_total;
-    protected Personas $persona_id;
-    protected string $estado;
+    private ?int $id;
+    private Carbon $fecha;
+    private int $administrador_id;
+    private int $proveedor_id;
+    private float $valor_total;
+    private string $estado;
 
+    /* Relaciones */
+    private ?Personas $administrador;
+    private ?Personas $proveedor; //objeto del cliente
+    private ?array $detalleCompra;
 
-    public function __construct($arrCompras = array())
+    /**
+     * Compra constructor. Recibe un array asociativo
+     * @param array $compra
+     */
+    public function __construct(array $compra = [])
     {
-        //Propiedad recibida y asigna a una propiedad de la clase
         parent::__construct();
-        $this->id = $arrCompras['id'] ?? 0;
-        $this->fecha = $arrCompras['fecha'] ?? new Carbon();
-        $this->valor_total = $arrCompras['valor_total'] ?? 0;
-        $this->persona_id = !empty($arrCompras['persona_id']) ? Personas::searchForId($arrCompras['persona_id']) : new Personas();
-        $this->estado = $arrCompras['estado'] ?? '';
-    }
-
-    public function __destruct() // Cierro Conexiones
-    {
-        /*
-        echo "<span style='color: #8b0000'>";
-        echo $this->getNombre()." se ha eliminado<br/>";
-        echo "</span>";
-         */
+        $this->setId($compra['id'] ?? NULL);
+        $this->setFecha(!empty($compra['fecha']) ? Carbon::parse($compra['fecha']) : new Carbon());
+        $this->setAdministradorId($compra['administrador_id'] ?? 0);
+        $this->setProveedorId($compra['proveedor_id'] ?? 0);
+        $this->setValorTotal($compra['valor_total'] ?? 0);
+        $this->setEstado($compra['estado'] ?? 'Pendiente');
     }
 
     /**
-     * @return int|mixed
+     *
      */
-    public function getId()
+    function __destruct()
+    {
+        $this->Disconnect();
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getId(): ?int
     {
         return $this->id;
     }
 
     /**
-     * @param int|mixed $id
+     * @param int|null $id
      */
-    public function setId($id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }
 
     /**
-     * @return Carbon|mixed
+     * @return Carbon
      */
-    public function getFecha()
+    public function getFecha(): Carbon
     {
         return $this->fecha;
     }
 
     /**
-     * @param Carbon|mixed $fecha
+     * @param Carbon $fecha
      */
     public function setFecha(Carbon $fecha): void
     {
@@ -71,145 +77,259 @@ class Compras extends BasicModel
     }
 
     /**
-     * @return float|int|mixed
+     * @return float
      */
-    public function getValorTotal()
+    public function getValorTotal(): float
     {
         return $this->valor_total;
     }
 
     /**
-     * @param float|int|mixed $valor_total
+     * @param float $valor_total
      */
-    public function setValorTotal($valor_total): void
+    public function setValorTotal(float $valor_total): void
     {
         $this->valor_total = $valor_total;
     }
 
     /**
-     * @return \App\Models\Personas|mixed
+     * @return int
      */
-    public function getPersonaId()
+    public function getAdministradorId(): int
     {
-        return $this->persona_id;
+        return $this->administrador_id;
     }
 
     /**
-     * @param \App\Models\Personas|mixed $persona_id
+     * @param int $persona_id
      */
-    public function setPersonaId($persona_id): void
+    public function setAdministradorId(int $administrador_id): void
     {
-        $this->persona_id = $persona_id;
+        $this->$administrador_id = $administrador_id;
     }
 
     /**
-     * @return mixed|string
+     * @return int
      */
-    public function getEstado()
+    public function getProveedorId(): int
+    {
+        return $this->proveedor_id;
+    }
+
+    /**
+     * @param int cliente_id
+     */
+    public function setProveedorId(int $proveedor_id): void
+    {
+        $this->proveedor_id = $proveedor_id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEstado(): string
     {
         return $this->estado;
     }
 
     /**
-     * @param mixed|string $estado
+     * @param string $estado
      */
-    public function setEstado($estado): void
+    public function setEstado(string $estado): void
     {
         $this->estado = $estado;
     }
 
 
-    public function save(): Compras
+    /**
+     * @return Personas|null
+     */
+    public function getAdministrador(): ?Personas
     {
-        $result = $this->insertRow("INSERT INTO `h&mcomputadores`.Compras VALUES (NULL, ?, ?, ?, ?)", array(
-                $this->fecha->toDateString(), //YYYY-MM-DD,
-                $this->valor_total,
-                $this->persona_id->getId(),
-                $this->estado
-            )
-        );
-        $this->setId(($result) ? $this->getLastId() : null);
-        $this->Disconnect();
-        return $this;
+        if(!empty($this->administrador_id)){
+            $this->empleado = Personas::searchForId($this->administrador_id) ?? new Personas();
+            return $this->administrador;
+        }
+        return NULL;
     }
 
     /**
-     * @return mixed
+     * @return Personas|null
      */
-    public function update()
+    public function getProveedor(): ?Personas
     {
-        $result = $this->updateRow("UPDATE `h&mcomputadores`.Compras SET fecha = ?, valor_total = ?, persona_id= ?,  estado = ? WHERE id = ?", array(
-                $this->fecha->toDateString(),
-                $this->valor_total,
-                $this->persona_id->getId(),
-                $this->estado,
-                $this->id
-            )
-        );
+        if(!empty($this->proveedor_id)){
+            $this->proveedor = Personas::searchForId($this->proveedor_id) ?? new Personas();
+            return $this->proveedor;
+        }
+        return NULL;
+    }
+
+    /**
+     * @param Personas|null $cliente
+     */
+    public function setCliente(?Personas $cliente): void
+    {
+        $this->cliente = $cliente;
+    }
+
+    /**
+     * retorna un array de detalles compra que perteneces a una compra
+     * @return array
+     */
+    public function getDetalleCompra(): ?array
+    {
+
+        $this->detalleCompra = DetalleCompras::search('SELECT * FROM h&mcomputadores.detalle_compras where compra_id = '.$this->id);
+        return $this->detalleCompra;
+    }
+
+    /**
+     * @param string $query
+     * @return bool|null
+     */
+    protected function save(string $query): ?bool
+    {
+        $arrData = [
+            ':id' =>    $this->getId(),
+            ':fecha' =>  $this->getFecha()->toDateTimeString(), //YYYY-MM-DD HH:MM:SS
+            ':administrador_id' =>   $this->getAdministradorId(),
+            ':proveedor_id' =>   $this->getProveedorId(),
+            ':valor_total' =>   $this->getValorTotal(),
+            ':estado' =>   $this->getEstado()
+        ];
+        $this->Connect();
+        $result = $this->insertRow($query, $arrData);
         $this->Disconnect();
         return $result;
     }
 
-
     /**
-     * @param $id
-     * @return mixed
+     * @return bool|null
      */
-    public function deleted($id)
+    function insert(): ?bool
     {
-        $Compras = Compras::searchForId($id); //Buscando un Municipio por el ID
-        $Compras->setEstado("Pendiente"); //Cambia el estado del Usuario
-        return $Compras->update();                    //Guarda los cambios..
+        $query = "INSERT INTO h&mcomputadores.compras VALUES (:id,:fecha,:administrador_id,:proveedor_id,:valor_total,:estado)";
+        return $this->save($query);
     }
 
+    /**
+     * @return bool|null
+     */
+    public function update() : ?bool
+    {
+        $query = "UPDATE h&mcomputadores.compras SET 
+            fecha = :fecha, administrador_id = :administrador_id,
+            proveedor_id = :proveedor_id, valor_total = :valor_total,
+            estado = :estado WHERE id = :id";
+        return $this->save($query);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function deleted() : bool
+    {
+        $this->setEstado("Inactivo"); //Cambia el estado del Usuario
+        return $this->update();                    //Guarda los cambios..
+    }
 
     /**
      * @param $query
      * @return mixed
      */
-
-    public static function search($query): array
+    public static function search($query) : ?array
     {
-        $arrCompras = array();
-        $tmp = new Compras();
-        $getrows = $tmp->getRows($query);
+        try {
+            $arrCompras = array();
+            $tmp = new Compras();
+            $tmp->Connect();
+            $getrows = $tmp->getRows($query);
+            $tmp->Disconnect();
 
-        foreach ($getrows as $deta) {
-            $Compras = new Compras();
-            $Compras->id = $deta['id'];
-            $Compras->fecha = Carbon::parse($deta['fecha']);
-            $Compras->valor_total = $deta['valor_total'];
-            $Compras->persona_id = Personas::searchForId($deta['persona_id']);
-            $Compras->estado = $deta['estado'];
-            array_push($arrCompras, $Compras);
+            foreach ($getrows as $valor) {
+                $Compra = new Compras($valor);
+                array_push($arrCompras, $Compra);
+                unset($Compra);
+            }
+            return $arrCompras;
+        } catch (Exception $e) {
+            GeneralFunctions::logFile('Exception',$e, 'error');
         }
-        $tmp->Disconnect();
-        return $arrCompras;
+        return NULL;
     }
-
 
     /**
      * @param $id
-     * @return mixed
+     * @return Compras
+     * @throws Exception
      */
-    public static function searchForId($id)
+    public static function searchForId($id) : ?Compras
     {
-        $Compras = null;
-        if ($id > 0) {
-            $Compras = new Ventas();
-            $getrow = $Compras->getRow("SELECT * FROM `h&mcomputadores`.Compras WHERE id =?", array($id));
-            $Compras->id = $getrow['id'];
-            $Compras->fecha = Carbon::parse($getrow['fecha']);
-            $Compras->valor_total = $getrow['valor_total'];
-            $Compras->persona_id = Personas::searchForId($getrow['persona_id']);
-            $Compras->estado = $getrow['estado'];
+        try {
+            if ($id > 0) {
+                $Compra = new Compras();
+                $Compra->Connect();
+                $getrow = $Compra->getRow("SELECT * FROM h&mcomputadores.compras WHERE id =?", array($id));
+                $Compra->Disconnect();
+                return ($getrow) ? new Compras($getrow) : null;
+            }else{
+                throw new Exception('Id de compra Invalido');
+            }
+        } catch (Exception $e) {
+            GeneralFunctions::logFile('Exception',$e, 'error');
         }
-        $Compras->Disconnect();
-        return $Compras;
+        return NULL;
     }
 
-    public static function getAll()
+    /**
+     * @return array
+     * @throws Exception
+     */
+    public static function getAll() : array
     {
-        return Compras::search("SELECT * FROM `h&mcomputadores`.Compras");
+        return Compras::search("SELECT * FROM h&mcomputadores.compras");
+    }
+
+    /**
+     * @param $numeroSerie
+     * @return bool
+     * @throws Exception
+     */
+    public static function facturaRegistrada($fecha): bool
+    {
+        $fecha = trim(strtolower($fecha));
+        $result = Categorias::search("SELECT id FROM h&mcomputadores.compras where fecha = '" . $fecha. "'");
+        if ( !empty($result) && count ($result) > 0 ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString() : string
+    {
+        return "Fecha : $this->fecha, Administrador: ".$this->getAdministrador()->nombresCompletos().", Proveedor: ".$this->getProveedor()->nombresCompletos().", Estado: $this->estado";
+    }
+
+    /**
+     * Specify data which should be serialized to JSON
+     * @link https://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     * @since 5.4
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'fecha' => $this->getFecha()->toDateTimeString(),
+            'administrador' => $this->getAdministrador()->jsonSerialize(),
+            'proveedor' => $this->getProveedor()->jsonSerialize(),
+            'valor_total' => $this->getValorTotal(),
+            'estado' => $this->getEstado()
+        ];
     }
 }
