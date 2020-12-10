@@ -2,37 +2,39 @@
 
 
 namespace App\Models;
-require_once  ('BasicModel.php');
+
+use App\Models\Interfaces\Model;
+use Carbon\Carbon;
+use Exception;
+use JsonSerializable;
 
 
-class Departamentos extends BasicModel
+class Departamentos extends AbstractDBConnection implements Model, JsonSerializable
 {
     //Propiedades
     protected int $id;
     protected string $nombre;
     protected string $region;
-    protected bool $estado;
+    protected string $estado;
 
     //Metodo constructor
-    public function __construct($arrDepartamentos = array())
+    public function __construct(array $Departamento = [])
     {
         parent::__construct();
         //Propiedad recibida y asigna a una propiedad de la clase
-        $this->setId($arrDepartamentos['id'] ?? 0);
-        $this->setNombre($arrDepartamentos['nombre'] ?? "");
-        $this->setRegion($arrDepartamentos['region'] ?? "");
-        $this->setEstado($arrDepartamentos['estado'] ?? "");
+        $this->setId($Departamento['id'] ?? 0);
+        $this->setNombre($Departamento['nombre'] ?? "");
+        $this->setRegion($Departamento['region'] ?? "");
+        $this->setEstado($Departamento['estado'] ?? "");
 
     }
 
 
-    public function __destruct() // Cierro Conexiones
+    function __destruct()
     {
-        /*
-        echo "<span style='color: #8b0000'>";
-        echo $this->getNombre()." se ha eliminado<br/>";
-        echo "</span>";
-         */
+        if($this->isConnected){
+            $this->Disconnect();
+        }
     }
 
 
@@ -86,134 +88,155 @@ class Departamentos extends BasicModel
     }
 
     /**
-     * @return mixed|bool
+     * @return string
      */
     public function getEstado(): string
     {
-        return ($this->estado) ? "Activo" : "Inactivo";
+        return $this->estado;
     }
 
     /**
-     * @param mixed|bool $estado
+     * @param string $estado
      */
     public function setEstado(string $estado): void
     {
-        $this->estado = trim($estado) == "Activo";
+        $this->estado = $estado;
     }
 
 
-    public function save(): Departamentos
+    protected function save(string $query): ?bool
     {
-        $result = $this->insertRow("INSERT INTO `h&mcomputadores`.departamentos VALUES (NULL, ?, ?, ?)", array(
-                $this->getNombre(),
-                $this->getRegion(),
-                $this->getEstado()
-            )
-        );
-        $this->setId(($result) ? $this->getLastId() : null);
-        $this->Disconnect();
-        return $this;
-    }
-
-    public function update()
-    {
-        $result = $this->updateRow("UPDATE `h&mcomputadores`.departamentos SET nombre = ?, region = ?, estado = ? WHERE id = ?", array(
-                $this->getNombre(),
-                $this->getRegion(),
-                $this->getEstado(),
-                $this->getId()
-            )
-        );
+        $arrData = [
+            ':id' =>    $this->getId(),
+            ':nombre' =>   $this->getNombre(),
+            ':region' =>   $this->getRegion(),
+            ':estado' =>   $this->getEstado(),
+        ];
+        $this->Connect();
+        $result = $this->insertRow($query, $arrData);
         $this->Disconnect();
         return $result;
     }
 
+    /**
+     * @return bool|null
+     */
+    public function insert(): ?bool
+    {
+        $query = "INSERT INTO `h&mcomputadores`.departamentos VALUES (
+            :id,:nombre,:region,:estado
+        )";
+        return $this->save($query);
+    }
+
+    public function update(): ?bool
+    {
+        $query = "UPDATE `h&mcomputadores`.departamentos SET 
+            nombre = :nombre, region = :region, estado = :estado WHERE id = :id";
+        return $this->save($query);
+    }
 
     /**
      * @param $id
-     * @return mixed
+     * @return bool
+     * @throws Exception
      */
-    public function deleted($id)
+    public function deleted(): bool
     {
-        $result = $this->updateRow("UPDATE `h&mcomputadores`.departamentos SET estado = ? WHERE id = ?", array(
-                'Inactivo',
-                $this->getId()
-            )
-        );
-        $this->Disconnect();
-        return $this;
+        $this->setEstado("Inactivo"); //Cambia el estado del Usuario
+        return $this->update();             //Guarda los cambios..
     }
-
 
     /**
      * @param $query
-     * @return mixed
+     * @return Departamentos|array
+     * @throws Exception
      */
-    public static function search($query)
+    public static function search($query) : ?array
     {
-        $arrDepartamentos = array();
-        $tmp = new Departamentos();
-        $getrows = $tmp->getRows($query);
+        try {
+            $arrDepartamentos = array();
+            $tmp = new Departamentos();
+            $tmp->Connect();
+            $getrows = $tmp->getRows($query);
+            $tmp->Disconnect();
 
-        foreach ($getrows as $valor) {
-            $Departamentos = new Departamentos();
-            $Departamentos->setId($valor['id']);
-            $Departamentos->setNombre($valor['nombre']);
-            $Departamentos->setRegion($valor['region']);
-            $Departamentos->setEstado($valor['estado']);
-            $Departamentos->Disconnect();
-            array_push($arrDepartamentos, $Departamentos);
+            foreach ($getrows as $valor) {
+                $Departamento = new Departamentos($valor);
+                array_push($arrDepartamentos, $Departamento);
+                unset($Departamento);
+            }
+            return $arrDepartamentos;
+        } catch (Exception $e) {
+            GeneralFunctions::logFile('Exception',$e, 'error');
         }
-        $tmp->Disconnect();
-        return $arrDepartamentos;
-
+        return null;
     }
 
     /**
-     * @return mixed
+     * @param $id
+     * @return Departamentos
+     * @throws Exception
      */
-    public static function getAll()
+    public static function searchForId(int $id): ?Departamentos
+    {
+        try {
+            if ($id > 0) {
+                $tmpDepartamento = new Departamentos();
+                $tmpDepartamento->Connect();
+                $getrow = $tmpDepartamento->getRow("SELECT * FROM `h&mcomputadores`.departamentos WHERE id =?", array($id));
+                $tmpDepartamento->Disconnect();
+                return ($getrow) ? new Departamentos($getrow) : null;
+            }else{
+                throw new Exception('Id de Departamento Invalido');
+            }
+        } catch (Exception $e) {
+            GeneralFunctions::logFile('Exception',$e, 'error');
+        }
+        return null;
+    }
+
+    /**
+     * @return array
+     * @throws Exception
+     */
+    public static function getAll(): array
     {
         return Departamentos::search("SELECT * FROM `h&mcomputadores`.departamentos");
     }
 
     /**
-     * @param $id
-     * @return mixed
+     * @param $nombre
+     * @return bool
+     * @throws Exception
      */
-    public static function searchForId($id)
+    public static function DepartamentoRegistrado ($nombre): bool
     {
-        $Departamentos = null;
-        if ($id > 0) {
-            $Departamentos = new Departamentos();
-            $getrow = $Departamentos->getRow("SELECT * FROM `h&mcomputadores`.departamentos WHERE id =?", array($id));
-            $Departamentos->setId($getrow['id']);
-            $Departamentos->setNombre($getrow['nombre']);
-            $Departamentos->setRegion($getrow['region']);
-            $Departamentos->setEstado($getrow['estado']);
-        }
-        $Departamentos->Disconnect();
-        return $Departamentos;
-    }
-
-
-    static function DepartamentosRegistrado(string $nombre ){
-        $result = Departamentos::search("SELECT * FROM `h&mcomputadores`.departamentos where nombre = " .$nombre);
-        if ( count ($result) > 0 ) {
+        $result = Departamentos::search("SELECT * FROM `h&mcomputadores`.departamentos where nombre = " . $nombre);
+        if ( !empty($result) && count ($result) > 0 ) {
             return true;
         } else {
             return false;
         }
+
     }
 
+    /**
+     * @return string
+     */
     public function __toString() : string
     {
-        $typeOutput = "\n";
-        return
-            "nombre:  " .$this->getNombre(). $typeOutput.
-            "region:  " .$this->getRegion(). $typeOutput.
-            "estado:  " .$this->getEstado(). $typeOutput;
+        return "Nombre: $this->nombre, Region: $this->region,  Estado: $this->estado";
     }
 
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->getId(),
+            'nombre' => $this->getNombre(),
+            'region' => $this->getRegion(),
+            'estado' => $this->getEstado(),
+        ];
+    }
 }
 
