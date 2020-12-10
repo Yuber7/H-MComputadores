@@ -163,7 +163,7 @@ class Fotos extends AbstractDBConnection implements Model, JsonSerializable
      */
     function insert(): ?bool
     {
-        $query = "INSERT INTO `h&mcomputadores`.fotos VALUES (:id, :descripcion, :ruta, :productos_id, :estado)";
+        $query = "INSERT INTO h&mcomputadores.fotos VALUES (:id, :descripcion, :ruta, :productos_id, :estado)";
         return $this->save($query);
     }
 
