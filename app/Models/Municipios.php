@@ -3,38 +3,43 @@
 
 namespace App\Models;
 
-require_once (__DIR__ .'/../../vendor/autoload.php');
-require_once ('Departamentos.php');
-require_once('BasicModel.php');
-
+use App\Models\Interfaces\Model;
 use Carbon\Carbon;
-use App\Models\Departamentos;
+use Exception;
+use JsonSerializable;
 
-class Municipios extends BasicModel
+    class Municipios extends AbstractDBConnection implements Model, JsonSerializable
 {
     protected int $id;
     protected string $nombre;
-    protected Departamentos $departamento_id;
+    protected int $departamento_id;
     protected string $acortado;
-    protected bool $estado;
+    protected string $estado;
+
+        /* Relaciones */
+        private ?Departamentos $Departamento;
 
 
-        public function __construct($Municipios = array())
-    {
-        parent::__construct();
-        $this->id = $Municipio['id'] ?? 0;
-        $this->nombre = $Municipios['nombre'] ?? '';
-        $this->departamento_id = !empty($Municipios['departamento_id']) ? Departamentos::searchForId($Municipios['departamento_id']) : new Departamentos();
-        $this->acortado = $Municipios['acortado'] ?? '';
-        $this->estado = $Municipios['estado'] ?? '';
-    }
+        //Metodo constructor
+        public function __construct(array $municipio = [])
+        {
+            parent::__construct();
+            //Propiedad recibida y asigna a una propiedad de la clase
+            $this->setId($municipio['id'] ?? 0);
+            $this->setNombre($municipio['nombre'] ?? "");
+            $this->setDepartamentoId($municipio['departamento_id'] ?? 0);
+            $this->setAcortado($municipio['acortado'] ?? "");
+            $this->setEstado($municipio['estado'] ?? "");
+
+        }
 
 
-    public function __destruct()
-    {
-        parent::__destruct();
-    }
-
+        function __destruct()
+        {
+            if($this->isConnected){
+                $this->Disconnect();
+            }
+        }
 
 
     /**
@@ -70,17 +75,17 @@ class Municipios extends BasicModel
     }
 
     /**
-     * @return int|mixed|null
+     * @return int
      */
-    public function getDepartamentoId() : Departamentos
+    public function getDepartamentoId(): int
     {
         return $this->departamento_id;
     }
 
     /**
-     * @param int|mixed|null $departamento_id
+     * @param int $departamento_id
      */
-    public function setDepartamentoId(Departamentos $departamento_id): void
+    public function setDepartamentoId(int $departamento_id): void
     {
         $this->departamento_id = $departamento_id;
     }
@@ -102,117 +107,159 @@ class Municipios extends BasicModel
     }
 
     /**
-     * @return bool|mixed|string
+     * @return string
      */
     public function getEstado(): string
     {
-        return ($this->estado) ? "Activo" : "Inactivo";
+        return $this->estado;
     }
 
     /**
-     * @param bool|mixed|string $estado
+     * @param string $estado
      */
     public function setEstado(string $estado): void
     {
-        $this->estado = trim($estado) == "Activo";
+        $this->estado = $estado;
     }
 
-    public function save() : bool
-    {
-        $result = $this->insertRow("INSERT INTO `h&mcomputadores`.municipios VALUES (NULL, ?, ?, ?, ?)", array(
-                $this->nombre,
-                $this->departamento_id->getId(),
-                $this->acortado,
-                $this->estado
-            )
-        );
-        $this->setId(($result) ? $this->getLastId() : null);
-        $this->Disconnect();
-        return $result;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function update() : bool
-    {
-        $result = $this->updateRow("UPDATE `h&mcomputadores`.municipios SET nombre = ?, departamento_id = ?, acortado = ?, estado = ? WHERE id = ?", array(
-                $this->nombre,
-                $this->departamento_id->getId(),
-                $this->acortado,
-                $this->estado,
-                $this->id
-            )
-        );
-        $this->Disconnect();
-        return $result;
-    }
-
-    /**
-     * @param $id
-     * @return mixed
-     */
-    public function deleted($id) : bool
-    {
-        $Municipios = Municipios::searchForId($id); //Buscando un Municipio por el ID
-        $Municipios->setEstado("Inactivo"); //Cambia el estado del Usuario
-        return $Municipios->update();                    //Guarda los cambios..
-    }
-
-
-    public static function search($query) : array
-    {
-        $arrMunicipios = array();
-        $tmp = new Municipios();
-        $getrows = $tmp->getRows($query);
-
-        foreach ($getrows as $ubicacion) {
-            $Municipios = new Municipios();
-            $Municipios->id = $ubicacion['id'];
-            $Municipios->nombre = $ubicacion['nombre'];
-            $Municipios->departamento_id = Departamentos::searchForId($ubicacion['departamento_id']);
-            $Municipios->acortado = $ubicacion['acortado'];
-            $Municipios->estado = $ubicacion['estado'];
-            $Municipios->Disconnect();
-            array_push($arrMunicipios, $Municipios);
+        protected function save(string $query): ?bool
+        {
+            $arrData = [
+                ':id' =>    $this->getId(),
+                ':nombre' =>   $this->getNombre(),
+                ':departamento_id' =>  $this->getDepartamentoId(),
+                ':acortado' =>   $this->getAcortado(),
+                ':estado' =>   $this->getEstado(),
+            ];
+            $this->Connect();
+            $result = $this->insertRow($query, $arrData);
+            $this->Disconnect();
+            return $result;
         }
 
-        $tmp->Disconnect();
-        return $arrMunicipios;
-    }
 
-    public static function searchForId($id) : Municipios
-    {
-        $Municipios = null;
-        if ($id > 0) {
-            $Municipios = new Municipios();
-            $getrow = $Municipios->getRow("SELECT * FROM `h&mcomputadores`.municipios WHERE id =?", array($id));
-            $Municipios->id = $getrow['id'];
-            $Municipios->nombre = $getrow['nombre'];
-            $Municipios->departamento_id = Departamentos::searchForId($getrow['departamento_id']);
-            $Municipios->acortado = $getrow['acortado'];
-            $Municipios->estado = $getrow['estado'];
-            $Municipios->Disconnect();
+        /**
+         * @return bool|null
+         */
+        public function insert(): ?bool
+        {
+            $query = "INSERT INTO `h&mcomputadores`.municipios VALUES (
+            :id,:nombre,:departamento_id,:acortado,:estado
+        )";
+            return $this->save($query);
         }
 
-        return $Municipios;
-    }
+        public function update(): ?bool
+        {
+            $query = "UPDATE `h&mcomputadores`.municipios SET 
+            nombre = :nombre, departamento_id = :departamento_id ,acortado = :acortado, estado = :estado WHERE id = :id";
+            return $this->save($query);
+        }
 
-    /**
-     * @return mixed
-     */
-    public static function getAll() : array
-    {
-        return Municipios::search("SELECT * FROM `h&mcomputadores`.municipios");
-    }
+        /**
+         * @param $id
+         * @return bool
+         * @throws Exception
+         */
+        public function deleted(): bool
+        {
+            $this->setEstado("Inactivo"); //Cambia el estado del Usuario
+            return $this->update();             //Guarda los cambios..
+        }
 
-    /**
-     * @return string
-     */
-    public function __toString() : string
-    {
-        return "nombre: $this->nombre, departamento_id: $this->departamento_id->nombre(),  acortado: $this->acortado, Estado: $this->estado";
-    }
 
+        /**
+         * @param $query
+         * @return Municipios|array
+         * @throws Exception
+         */
+        public static function search($query) : ?array
+        {
+            try {
+                $arrMunicipios = array();
+                $tmp = new Municipios();
+                $tmp->Connect();
+                $getrows = $tmp->getRows($query);
+                $tmp->Disconnect();
+
+                foreach ($getrows as $valor) {
+                    $Municipio = new Municipios($valor);
+                    array_push($arrMunicipios, $Municipio);
+                    unset($Municipio);
+                }
+                return $arrMunicipios;
+            } catch (Exception $e) {
+                GeneralFunctions::logFile('Exception',$e, 'error');
+            }
+            return null;
+        }
+
+
+        /**
+         * @param $id
+         * @return Municipios
+         * @throws Exception
+         */
+        public static function searchForId(int $id): ?Municipios
+        {
+            try {
+                if ($id > 0) {
+                    $tmpMunicipio = new Municipios();
+                    $tmpMunicipio->Connect();
+                    $getrow = $tmpMunicipio->getRow("SELECT * FROM `h&mcomputadores`.municipios WHERE id =?", array($id));
+                    $tmpMunicipio->Disconnect();
+                    return ($getrow) ? new Municipios($getrow) : null;
+                }else{
+                    throw new Exception('Id de Municipio Invalido');
+                }
+            } catch (Exception $e) {
+                GeneralFunctions::logFile('Exception',$e, 'error');
+            }
+            return null;
+        }
+
+        /**
+         * @return array
+         * @throws Exception
+         */
+        public static function getAll(): array
+        {
+            return Municipios::search("SELECT * FROM `h&mcomputadores`.municipios");
+        }
+
+        /**
+         * @param $acortado
+         * @return bool
+         * @throws Exception
+         */
+        public static function MunicipioRegistrado ($acortado): bool
+        {
+            $result = Municipios::search("SELECT * FROM `h&mcomputadores`.municipios where acortado = " . $acortado);
+            if ( !empty($result) && count ($result) > 0 ) {
+                return true;
+            } else {
+                return false;
+            }
+
+        }
+
+        /**
+         * @return string
+         */
+        public function __toString() : string
+        {
+            return "Nombre: $this->nombre, departamento_id: $this->departamento_id, acortado: $this->acortado  Estado: $this->estado";
+        }
+
+        public function jsonSerialize()
+        {
+            return [
+                'id' => $this->getId(),
+                'nombre' => $this->getNombre(),
+                'departamento_id' => $this->getDepartamentoId(),
+                'acortado' => $this->getAcortado(),
+                'estado' => $this->getEstado(),
+            ];
+        }
 
 }

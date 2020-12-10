@@ -1,35 +1,40 @@
 <?php
 
-
 namespace App\Models;
-require_once  ('BasicModel.php');
 
-class Categorias extends BasicModel
+use App\Models\Interfaces\Model;
+use Exception;
+use JsonSerializable;
+
+class Categorias extends AbstractDBConnection implements Model, JsonSerializable
 {
     //Propiedades
-    protected int $id;
+    protected ?int $id;
     protected string $nombre;
     protected string $descripcion;
-    protected bool $estado;
+    protected string $estado;
 
-    //Metodo constructor
-    public function __construct($arrCategorias = array())
+    /* Relaciones */
+    private ?array $productosCategoria;
+
+    /**
+     * Categorias constructor. Recibe un array asociativo
+     * @param array $categoria
+     */
+    public function __construct(array $categoria = [])
     {
-        //Propiedad recibida y asigna a una propiedad de la clase
         parent::__construct();
-        $this->setId($arrCategorias['id'] ?? 0);
-        $this->setNombre($arrCategorias['nombre'] ?? "");
-        $this->setDescripcion($arrCategorias['descripcion'] ?? "");
-        $this->setEstado($arrCategorias['estado'] ?? "");
+        $this->setId($categoria['id'] ?? NULL);
+        $this->setNombre($categoria['nombre'] ?? '');
+        $this->setDescripcion($categoria['descripcion'] ?? '');
+        $this->setEstado($categoria['estado'] ?? '');
     }
 
-    public function __destruct() // Cierro Conexiones
+    function __destruct()
     {
-        /*
-        echo "<span style='color: #8b0000'>";
-        echo $this->getNombre()." se ha eliminado<br/>";
-        echo "</span>";
-         */
+        if($this->isConnected){
+            $this->Disconnect();
+        }
     }
 
     /**
@@ -96,116 +101,163 @@ class Categorias extends BasicModel
         $this->estado = trim($estado) == "Activo";
     }
 
-    public function save(): Categorias
+    /* Relaciones */
+    /**
+     * retorna un array de productos que pertenecen a una categoria
+     * @return array
+     */
+    public function getProductosCategoria(): ?array
     {
-        $result = $this->insertRow("INSERT INTO `h&mcomputadores`.categorias VALUES (NULL, ?, ?, ?)", array(
-                $this->getNombre(),
-                $this->getDescripcion(),
-                $this->getEstado()
-            )
-        );
-        $this->Disconnect();
-        return $this;
+        $this->productosCategoria = Productos::search("SELECT * FROM h&mcomputadores.productos WHERE categoria_id = ".$this->id." and estado = 'Activo'");
+        return $this->productosCategoria;
     }
 
-    public function update()
+    /**
+     * @param string $query
+     * @return bool|null
+     */
+    public function save(string $query): ?bool
     {
-        $result = $this->updateRow("UPDATE `h&mcomputadores`.categorias SET nombre = ?, descripcion = ?, estado = ? WHERE id = ?", array(
-                $this->getNombre(),
-                $this->getDescripcion(),
-                $this->getEstado(),
-                $this->getId()
-            )
-        );
+        $arrData = [
+            ':id' =>    $this->getId(),
+            ':nombre' =>   $this->getNombre(),
+            ':descripcion' =>   $this->getDescripcion(),
+            ':estado' =>   $this->getEstado()
+        ];
+        $this->Connect();
+        $result = $this->insertRow($query, $arrData);
         $this->Disconnect();
         return $result;
     }
 
+    /**
+     * @return bool|null
+     */
+    function insert(): ?bool
+    {
+        $query = "INSERT INTO h&mcomputadores.categorias VALUES (:id,:nombre,:descripcion,:estado)";
+        return $this->save($query);
+    }
 
     /**
-     * @param $id
-     * @return mixed
+     * @return bool|null
      */
-    public function deleted($id)
+    public function update(): ?bool
     {
-        $result = $this->updateRow("UPDATE `h&mcomputadores`.categorias SET estado = ? WHERE id = ?", array(
-                'Inactivo',
-                $this->getId()
-            )
-        );
-        $this->Disconnect();
-        return $this;
+        $query = "UPDATE weber.categorias SET 
+            nombre = :nombre, descripcion = :descripcion,
+            estado = :estado WHERE id = :id";
+        return $this->save($query);
+    }
+
+
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    public function deleted(): bool
+    {
+        $this->setEstado("Inactivo"); //Cambia el estado del Usuario
+        return $this->update();                    //Guarda los cambios..
     }
 
 
     /**
      * @param $query
-     * @return mixed
+     * @return Categorias|array
+     * @throws Exception
      */
-    public static function search($query)
+    public static function search($query) : ?array
     {
-        $arrCategorias = array();
-        $tmp = new Categorias();
-        $getrows = $tmp->getRows($query);
+        try {
+            $arrCategorias = array();
+            $tmp = new Categorias();
+            $tmp->Connect();
+            $getrows = $tmp->getRows($query);
+            $tmp->Disconnect();
 
-        foreach ($getrows as $valor) {
-            $Categorias = new Categorias();
-            $Categorias->setId($valor['id']);
-            $Categorias->setNombre($valor['nombre']);
-            $Categorias->setDescripcion($valor['descripcion']);
-            $Categorias->setEstado($valor['estado']);
-            $Categorias->Disconnect();
-            array_push($arrCategorias, $Categorias);
+            foreach ($getrows as $valor) {
+                $Categoria = new Categorias($valor);
+                array_push($arrCategorias, $Categoria);
+                unset($Categoria);
+            }
+            return $arrCategorias;
+        } catch (Exception $e) {
+            GeneralFunctions::logFile('Exception',$e, 'error');
         }
-        $tmp->Disconnect();
-        return $arrCategorias;
-
-    }
-
-    /**
-     * @return mixed
-     */
-    public static function getAll()
-    {
-        return Categorias::search("SELECT * FROM `h&mcomputadores`.categorias");
+        return null;
     }
 
     /**
      * @param $id
-     * @return mixed
+     * @return Categorias
+     * @throws Exception
      */
-    public static function searchForId($id)
+    public static function searchForId($id) : ?Categorias
     {
-        $Categorias = null;
-        if ($id > 0) {
-            $Categorias = new Categorias();
-            $getrow = $Categorias->getRow("SELECT * FROM `h&mcomputadores`.categorias WHERE id =?", array($id));
-            $Categorias->setId($getrow['id']);
-            $Categorias->setNombre($getrow['nombre']);
-            $Categorias->setDescripcion($getrow['descripcion']);
-            $Categorias->setEstado($getrow['estado']);
+        try {
+            if ($id > 0) {
+                $Categoria = new Categorias();
+                $Categoria->Connect();
+                $getrow = $Categoria->getRow("SELECT * FROM h&mcomputadores.categorias WHERE id =?", array($id));
+                $Categoria->Disconnect();
+                return ($getrow) ? new Categorias($getrow) : null;
+            }else{
+                throw new Exception('Id de categoria Invalido');
+            }
+        } catch (Exception $e) {
+            GeneralFunctions::logFile('Exception',$e, 'error');
         }
-        $Categorias->Disconnect();
-        return $Categorias;
+        return null;
     }
 
+    /**
+     * @return array
+     * @throws Exception
+     */
+    public static function getAll() : ?array
+    {
+        return Categorias::search("SELECT * FROM h&mcomputadores.categorias");
+    }
 
-    static function CategoriaRegistrada(string $nombre ){
-        $result = Categorias::search("SELECT * FROM `h&mcomputadores`.categorias where nombre = '" .$nombre. "'");
-        if ( count ($result) > 0 ) {
+    /**
+     * @param $nombre
+     * @return bool
+     * @throws Exception
+     */
+    public static function categoriaRegistrada($nombre): bool
+    {
+        $nombre = trim(strtolower($nombre));
+        $result = Categorias::search("SELECT id FROM h&mcomputadores.categorias where nombre = '" . $nombre. "'");
+        if ( !empty($result) && count ($result) > 0 ) {
             return true;
         } else {
             return false;
         }
     }
 
+    /**
+     * @return string
+     */
     public function __toString() : string
     {
-        $typeOutput = "\n";
-        return
-            "nombre:  " .$this->getNombre(). $typeOutput.
-            "descripcion:  " .$this->getDescripcion(). $typeOutput.
-            "estado:  " .$this->getEstado(). $typeOutput;
+        return "Nombre: $this->nombre, Descripción: $this->descripcion, Estado: $this->estado";
     }
 
+
+    /**
+     * Specify data which should be serialized to JSON
+     * @link https://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     * @since 5.4
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'nombre' => $this->getNombre(),
+            'descripcion' => $this->getDescripcion(),
+            'estado' => $this->getEstado()
+        ];
+    }
 }
