@@ -2,105 +2,78 @@
 
 namespace App\Controllers;
 
-require(__DIR__ . '/../../vendor/autoload.php'); //Requerido para convertir un objeto en Array
-require_once(__DIR__ . '/../Models/Fotos.php');
-require_once(__DIR__ . '/../Models/GeneralFunctions.php');
+require(__DIR__ . '/../../vendor/autoload.php');
 
-use App\Models\GeneralFunctions;
 use App\Models\Fotos;
-
-if (!empty($_GET['action'])) { //PersonasController.php?action=create
-    FotosController::main($_GET['action']);
-}
+use App\Models\GeneralFunctions;
 
 class FotosController
 {
 
-    static function main($action)
+    private array $dataFotos;
+
+    public function __construct(array $_FORM)
     {
-        if ($action == "create") {
-            FotosController::create();
-        } else if ($action == "edit") {
-            FotosController::edit();
-        } else if ($action == "searchForID") {
-            FotosController::searchForID($_REQUEST['idFotos']);
-        } else if ($action == "searchAll") {
-            FotosController::getAll();
-        }  else if ($action == "activate") {
-            FotosController::activate();
-        } else if ($action == "inactivate") {
-            FotosController::inactivate();
-        }
+        $this->dataFotos = array();
+        $this->dataFotos['id'] = $_FORM['id'] ?? NULL;
+        $this->dataFotos['nombre'] = $_FORM['nombre'] ?? '';
+        $this->dataFotos['descripcion'] = $_FORM['descripcion'] ?? '';
+        $this->dataFotos['producto_id'] = $_FORM['producto_id'] ?? 0;
+        $this->dataFotos['ruta'] = $_FORM['nameFoto'] ?? '';
+        $this->dataFotos['estado'] = $_FORM['estado'] ?? 'Activo';
     }
 
-    static public function create()
+
+    static public function search(array $data)
     {
         try {
-            $arrayFotos = array();
-            $arrayFotos['descripcion'] = $_POST['descripcion'];
-            $arrayFotos['ruta'] = $_POST['ruta'];
-            $arrayFotos['productos_id'] = $_POST['productos_id'];
-            $arrayFotos['estado'] = $_POST['estado'];
-
-            if (!Fotos::FotoRegistrada($arrayFotos['ruta'])) {
-                $Fotos = new Fotos ($arrayFotos);
-                if ($Fotos->save()) {
-                    header("Location: ../../views/modules/fotos/index.php?accion=create&respuesta=correcto");
-                }
-            } else {
-                header("Location: ../../views/modules/fotos/create.php?respuesta=error&mensaje=Persona ya registrada");
+            $result = Fotos::search($data['query']);
+            if (!empty($data['request']) and $data['request'] === 'ajax' and !empty($result)) {
+                header('Content-type: application/json; charset=utf-8');
+                $result = json_encode($result->jsonSerialize());
             }
-        } catch (Exception $e) {
-            GeneralFunctions::console($e, 'error', 'errorStack');
-            //header("Location: ../../views/modules/usuarios/create.php?respuesta=error&mensaje=" . $e->getMessage());
-        }
-    }
-
-    static public function edit()
-    {
-        try {
-            $arrayFotos = array();
-            $arrayFotos['descripcion'] = $_POST['descripcion'];
-            $arrayFotos['ruta'] = $_POST['ruta'];
-            $arrayFotos['productos_id'] = $_POST['productos_id'];
-            $arrayFotos['estado'] = $_POST['estado'];
-            $arrayFotos['id'] = $_POST['id'];
-
-
-            $Fotos = new Fotos ($arrayFotos);
-            $Fotos ->update();
-
-            header("Location: ../../views/modules/fotos/show.php?id=" . $Fotos->getId() . "&respuesta=correcto");
+            return $result;
         } catch (\Exception $e) {
-            GeneralFunctions::console($e, 'error', 'errorStack');
-            //header("Location: ../../views/modules/fotos/edit.php?respuesta=error&mensaje=".$e->getMessage());
+            GeneralFunctions::logFile('Exception', $e, 'error');
         }
+        return null;
     }
 
-    static public function searchForID($id)
+
+    static public function searchForID(array $data)
     {
         try {
-            return Fotos::searchForId($id);
+            $result = Fotos::searchForId($data['id']);
+            if (!empty($data['request']) and $data['request'] === 'ajax' and !empty($result)) {
+                header('Content-type: application/json; charset=utf-8');
+                $result = json_encode($result->jsonSerialize());
+            }
+            return $result;
         } catch (\Exception $e) {
-            GeneralFunctions::console($e, 'error', 'errorStack');
-            //header("Location: ../../views/modules/fotos/manager.php?respuesta=error");
+            GeneralFunctions::logFile('Exception', $e, 'error');
         }
+        return null;
     }
 
-    static public function getAll()
+    static public function getAll(array $data = null)
     {
         try {
-            return Fotos::getAll();
+            $result = Fotos::getAll();
+            if (!empty($data['request']) and $data['request'] === 'ajax') {
+                header('Content-type: application/json; charset=utf-8');
+                $result = json_encode($result);
+            }
+            return $result;
         } catch (\Exception $e) {
-            GeneralFunctions::console($e, 'log', 'errorStack');
-            //header("Location: ../Vista/modules/personas/manager.php?respuesta=error");
+            GeneralFunctions::logFile('Exception', $e, 'error');
         }
+        return null;
     }
 
-    static public function activate()
+    static public function activate(int $id)
     {
         try {
-            $ObjFoto = Fotos::searchForId($_GET['Id']);
+            $ObjFoto = Fotos::searchForId($id);
             $ObjFoto->setEstado("Activo");
             if ($ObjFoto->update()) {
                 header("Location: ../../views/modules/fotos/index.php");
@@ -108,15 +81,14 @@ class FotosController
                 header("Location: ../../views/modules/fotos/index.php?respuesta=error&mensaje=Error al guardar");
             }
         } catch (\Exception $e) {
-            GeneralFunctions::console($e, 'error', 'errorStack');
-            //header("Location: ../../views/modules/personas/index.php?respuesta=error&mensaje=".$e->getMessage());
+            GeneralFunctions::logFile('Exception', $e, 'error');
         }
     }
 
-    static public function inactivate()
+    static public function inactivate(int $id)
     {
         try {
-            $ObjFoto = Fotos::searchForId($_GET['Id']);
+            $ObjFoto = Fotos::searchForId($id);
             $ObjFoto->setEstado("Inactivo");
             if ($ObjFoto->update()) {
                 header("Location: ../../views/modules/fotos/index.php");
@@ -124,8 +96,106 @@ class FotosController
                 header("Location: ../../views/modules/fotos/index.php?respuesta=error&mensaje=Error al guardar");
             }
         } catch (\Exception $e) {
-            GeneralFunctions::console($e, 'error', 'errorStack');
-            //header("Location: ../../views/modules/productos/index.php?respuesta=error");
+            GeneralFunctions::logFile('Exception', $e, 'error');
+        }
+    }
+
+    static public function selectFoto(array $params = [])
+    {
+        $params['isMultiple'] = $params['isMultiple'] ?? false;
+        $params['isRequired'] = $params['isRequired'] ?? true;
+        $params['id'] = $params['id'] ?? "foto_id";
+        $params['name'] = $params['name'] ?? "foto_id";
+        $params['defaultValue'] = $params['defaultValue'] ?? "";
+        $params['class'] = $params['class'] ?? "form-control";
+        $params['where'] = $params['where'] ?? "";
+        $params['arrExcluir'] = $params['arrExcluir'] ?? array();
+        $params['request'] = $params['request'] ?? 'html';
+
+        $arrFoto = array();
+        if ($params['where'] != "") {
+            $base = "SELECT * FROM fotos WHERE ";
+            $arrFoto = Fotos::search($base . $params['where']);
+        } else {
+            $arrFoto = Fotos::getAll();
+        }
+
+        $htmlSelect = "<select " . (($params['isMultiple']) ? "multiple" : "") . " " . (($params['isRequired']) ? "required" : "") . " id= '" . $params['id'] . "' name='" . $params['name'] . "' class='" . $params['class'] . "'>";
+        $htmlSelect .= "<option value='' >Seleccione</option>";
+        if (count($arrFoto) > 0) {
+            /* @var $arrFoto Fotos[] */
+            foreach ($arrFoto as $foto)
+                if (!FotosController::fotoIsInArray($foto->getId(), $params['arrExcluir']))
+                    $htmlSelect .= "<option " . (($foto != "") ? (($params['defaultValue'] == $foto->getId()) ? "selected" : "") : "") . " value='" . $foto->getId() . "'>" . $foto->getNombre() . "</option>";
+        }
+        $htmlSelect .= "</select>";
+        return $htmlSelect;
+    }
+
+    public static function fotoIsInArray($idFoto, $ArrFotos)
+    {
+        if (count($ArrFotos) > 0) {
+            foreach ($ArrFotos as $Foto) {
+                if ($Foto->getId() == $idFoto) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+// creo que esta es la parte de subir las fotos
+    public function create($withFiles)
+    {
+        try {
+            if (!empty($withFiles)) {
+                $fotoProducto = $withFiles['foto'];
+                $resultUpload = GeneralFunctions::subirArchivo($fotoProducto, "views/public/uploadFiles/photos/products/");
+
+                if ($resultUpload != false) {
+                    $this->dataFotos['ruta'] = $resultUpload;
+                    $Foto = new Fotos ($this->dataFotos);
+                    if ($Foto->insert()) {
+                        unset($_SESSION['frmFotos']);
+                        header("Location: ../../views/modules/fotos/index.php?respuesta=success&mensaje=Foto Creada Correctamente");
+                    }
+                }
+            } else {
+                GeneralFunctions::logFile('Error foto no encontrada');
+                header("Location: ../../views/modules/fotos/create.php?respuesta=error&mensaje=Foto no encontrada");
+            }
+        } catch (\Exception $e) {
+            GeneralFunctions::logFile('Exception', $e, 'error');
+        }
+    }
+
+
+    //editar foto
+    public function edit($withFiles = null)
+    {
+        try {
+            if (!empty($withFiles)) {
+                $rutaFoto = $withFiles['foto'];
+                if ($rutaFoto['error'] == 0) { //Si la foto se selecciono correctamente
+                    $resultUpload = GeneralFunctions::subirArchivo($rutaFoto, "views/public/uploadFiles/photos/products/");
+                    if ($resultUpload != false) {
+                        GeneralFunctions::eliminarArchivo("views/public/uploadFiles/photos/products/" . $this->dataFotos['ruta']);
+                        $this->dataFotos['ruta'] = $resultUpload;
+                    }
+                }
+            }
+            if (!empty($this->dataFotos['ruta'])) {
+                $foto = new Fotos($this->dataFotos);
+                if ($foto->update()) {
+                    unset($_SESSION['frmFotos']);
+                }
+                header("Location: ../../views/modules/fotos/show.php?id=" . $foto->getId() . "&respuesta=success&mensaje=Foto Actualizada");
+            } else {
+                GeneralFunctions::logFile('Error Foto Vaciá: ');
+            }
+
+        } catch (\Exception $e) {
+            GeneralFunctions::logFile('Exception', $e, 'error');
         }
     }
 

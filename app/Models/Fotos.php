@@ -4,7 +4,6 @@
 namespace App\Models;
 
 use App\Models\Interfaces\Model;
-use Carbon\Carbon;
 use Exception;
 use JsonSerializable;
 
@@ -12,9 +11,10 @@ class Fotos extends AbstractDBConnection implements Model, JsonSerializable
 {
     //Propiedades
     protected int $id;
+    protected string $nombre;
     protected string $descripcion;
+    protected int $producto_id;
     protected string $ruta;
-    protected int $productos_id;
     protected string $estado;
 
     /* Relaciones */
@@ -28,11 +28,12 @@ class Fotos extends AbstractDBConnection implements Model, JsonSerializable
     public function __construct(array $foto = [])
     {
         parent::__construct();
-        $this->setId($foto['id'] ?? 0);
+        $this->setId($foto['id'] ?? NULL);
+        $this->setNombre($foto['nombre'] ?? '');
         $this->setDescripcion($foto['descripcion'] ?? '');
+        $this->setProductoId($foto['producto_id'] ?? 0);
         $this->setRuta($foto['ruta'] ?? '');
-        $this->setProductosId($foto['producto_id'] ?? 0);
-        $this->setEstado($foto['estado'] ?? '');
+        $this->setEstado($foto['estado'] ?? 'Activo');
     }
 
     function __destruct()
@@ -60,6 +61,23 @@ class Fotos extends AbstractDBConnection implements Model, JsonSerializable
     }
 
     /**
+     * @return string|null
+     */
+    public function getNombre(): ?string
+    {
+        return ucwords($this->nombre);
+    }
+
+    /**
+     * @param string|null $nombre
+     */
+    public function setNombre(?string $nombre): void
+    {
+        $this->nombre = trim(mb_strtolower($nombre, 'UTF-8'));
+    }
+
+
+    /**
      * @return string
      */
     public function getDescripcion(): string
@@ -75,6 +93,25 @@ class Fotos extends AbstractDBConnection implements Model, JsonSerializable
         $this->descripcion = $descripcion;
     }
 
+
+
+    /**
+     * @return int
+     */
+    public function getProductoId(): int
+    {
+        return $this->producto_id;
+    }
+
+    /**
+     * @param int $producto_id
+     */
+    public function setProductoId(int $producto_id): void
+    {
+        $this->producto_id = $producto_id;
+    }
+
+
     /**
      * @return string
      */
@@ -89,22 +126,6 @@ class Fotos extends AbstractDBConnection implements Model, JsonSerializable
     public function setRuta(string $ruta): void
     {
         $this->ruta = $ruta;
-    }
-
-    /**
-     * @return Fotos|\App\Models\Productos|mixed
-     */
-    public function getProductosId()
-    {
-        return $this->productos_id;
-    }
-
-    /**
-     * @param Fotos|\App\Models\Productos|mixed $productos_id
-     */
-    public function setProductosId($productos_id): void
-    {
-        $this->productos_id = $productos_id;
     }
 
 
@@ -123,6 +144,8 @@ class Fotos extends AbstractDBConnection implements Model, JsonSerializable
     {
         $this->estado = $estado;
     }
+
+
 
     public function getProducto(): ?Productos
     {
@@ -146,9 +169,10 @@ class Fotos extends AbstractDBConnection implements Model, JsonSerializable
     {
         $arrData = [
             ':id' =>    $this->getId(),
+            ':nombre' =>   $this->getNombre(),
             ':descripcion' =>   $this->getDescripcion(),
+            ':producto_id' =>   $this->getProductoId(),
             ':ruta' =>  $this->getRuta(),
-            ':productos_id' =>   $this->getProductosId(),
             ':estado' =>   $this->getEstado()
         ];
         $this->Connect();
@@ -163,7 +187,7 @@ class Fotos extends AbstractDBConnection implements Model, JsonSerializable
      */
     function insert(): ?bool
     {
-        $query = "INSERT INTO h&mcomputadores.fotos VALUES (:id, :descripcion, :ruta, :productos_id, :estado)";
+        $query = "INSERT INTO `h&mcomputadores`.fotos VALUES (:id, :nombre, :descripcion, :producto_id, :ruta, :estado)";
         return $this->save($query);
     }
 
@@ -173,8 +197,8 @@ class Fotos extends AbstractDBConnection implements Model, JsonSerializable
     function update(): ?bool
     {
         $query = "UPDATE `h&mcomputadores`.fotos SET 
-            descripcion = :descripcion, ruta = :ruta, productos_id = :productos_id, 
-             estado = :estado WHERE id = :id";
+           nombre = :nombre, descripcion = :descripcion, producto_id = :producto_id, 
+            ruta = :ruta, estado = :estado WHERE id = :id";
         return $this->save($query);
     }
 
@@ -184,13 +208,13 @@ class Fotos extends AbstractDBConnection implements Model, JsonSerializable
      */
     function deleted() : bool
     {
-        $this->setEstado("Inactivo"); //Cambia el estado del Usuario
+        $this->setEstado('Inactivo'); //Cambia el estado del Usuario
         return $this->update();                    //Guarda los cambios..
     }
 
     /**
      * @param $query
-     * @return Fotos|array
+     * @return Usuarios|array
      * @throws Exception
      */
     static function search($query): ?array
@@ -247,18 +271,26 @@ class Fotos extends AbstractDBConnection implements Model, JsonSerializable
      */
     public function __toString() : string
     {
-        return " Descripcion: $this->descripcion, Ruta: $this->ruta, productos_id: $this->productos_id, Estado: $this->estado";
+        return "nombre: $this->nombre, descripcion: $this->descripcion, producto_id: $this->producto_id, ruta: $this->ruta, estado: $this->estado";
     }
 
+
+    /**
+     * Specify data which should be serialized to JSON
+     * @link https://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     * @since 5.4
+     */
     public function jsonSerialize()
     {
         return [
+            'nombre' => $this->getNombre(),
             'descripcion' => $this->getDescripcion(),
+            'producto_id' => $this->getProductoId(),
             'ruta' => $this->getRuta(),
-            'productos_id' => $this->getProductosId(),
             'estado' => $this->getEstado(),
         ];
     }
-
 }
 
