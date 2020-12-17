@@ -11,7 +11,7 @@ use JsonSerializable;
 class Departamentos extends AbstractDBConnection implements Model, JsonSerializable
 {
     //Propiedades
-    protected int $id;
+    protected ?int $id;
     protected string $nombre;
     protected string $region;
     protected string $estado;
@@ -56,7 +56,7 @@ class Departamentos extends AbstractDBConnection implements Model, JsonSerializa
     /**
      * @param int $id
      */
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }

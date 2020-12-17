@@ -1,12 +1,20 @@
 <?php
 require("../../partials/routes.php");
+require_once("../../partials/check_login.php");
 require("../../../app/Controllers/PersonasController.php");
 
-use App\Controllers\PersonasController; ?>
+use App\Controllers\PersonasController;
+use App\Models\GeneralFunctions;
+use App\Models\Personas;
+
+$nameModel = "Persona";
+$pluralModel = $nameModel . 's';
+$frmSession = $_SESSION['frm' . $pluralModel] ?? NULL;
+?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?= $_ENV['TITLE_SITE'] ?> | Datos de la Persona</title>
+    <title><?= $_ENV['TITLE_SITE'] ?> | Datos del <?= $nameModel ?></title>
     <?php require("../../partials/head_imports.php"); ?>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -24,12 +32,14 @@ use App\Controllers\PersonasController; ?>
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Informacion de la Persona</h1>
+                        <h1>Informacion del <?= $nameModel ?></h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/">H&M</a></li>
-                            <li class="breadcrumb-item active">Inicio</li>
+                            <li class="breadcrumb-item"><a
+                                        href="<?= $baseURL; ?>/views/"><?= $_ENV['ALIASE_SITE'] ?></a></li>
+                            <li class="breadcrumb-item"><a href="index.php"><?= $pluralModel ?></a></li>
+                            <li class="breadcrumb-item active">Ver</li>
                         </ol>
                     </div>
                 </div>
@@ -38,44 +48,28 @@ use App\Controllers\PersonasController; ?>
 
         <!-- Main content -->
         <section class="content">
-
-            <?php if (!empty($_GET['respuesta'])) { ?>
-                <?php if ($_GET['respuesta'] == "error") { ?>
-                    <div class="alert alert-danger alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                        <h5><i class="icon fas fa-ban"></i> Error!</h5>
-                        Error al consultar la persona: <?= ($_GET['mensaje']) ?? "" ?>
-                    </div>
-                <?php } ?>
-            <?php } else if (empty($_GET['id'])) { ?>
-                <div class="alert alert-danger alert-dismissible">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                    <h5><i class="icon fas fa-ban"></i> Error!</h5>
-                    Faltan criterios de busqueda <?= ($_GET['mensaje']) ?? "" ?>
-                </div>
-            <?php } ?>
-
+            <!-- Generar Mensajes de alerta -->
+            <?= (!empty($_GET['respuesta'])) ? GeneralFunctions::getAlertDialog($_GET['respuesta'], $_GET['mensaje']) : ""; ?>
+            <?= (empty($_GET['id'])) ? GeneralFunctions::getAlertDialog('error', 'Faltan Criterios de Búsqueda') : ""; ?>
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
                         <!-- Horizontal Form -->
                         <div class="card card-green">
                             <?php if (!empty($_GET["id"]) && isset($_GET["id"])) {
-                                $DataPersonas
-                                    = PersonasController::searchForID($_GET["id"]);
-                                if (!empty($DataPersonas
-                                )) {
+                                $DataPersona = PersonasController::searchForID(["id" => $_GET["id"]]);
+                                /* @var $DataPersona Personas */
+                                if (!empty($DataPersona)) {
                                     ?>
                                     <div class="card-header">
                                         <h3 class="card-title"><i class="fas fa-info"></i> &nbsp; Ver Información
-                                            de <?= $DataPersonas
-                                                ->getNombre() ?></h3>
+                                            de <?= $DataPersona->getNombre() ?></h3>
                                         <div class="card-tools">
                                             <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
                                                     data-source="show.php" data-source-selector="#card-refresh-content"
                                                     data-load-on-init="false"><i class="fas fa-sync-alt"></i></button>
                                             <button type="button" class="btn btn-tool" data-card-widget="maximize"><i
-                                                    class="fas fa-expand"></i></button>
+                                                        class="fas fa-expand"></i></button>
                                             <button type="button" class="btn btn-tool" data-card-widget="collapse"
                                                     data-toggle="tooltip" title="Collapse">
                                                 <i class="fas fa-minus"></i></button>
@@ -85,63 +79,48 @@ use App\Controllers\PersonasController; ?>
                                         </div>
                                     </div>
                                     <div class="card-body">
-                                        <p>
-                                            <strong><i class="fas fa-book mr-1"></i> Nombre y Apellido</strong>
-                                        <p class="text-muted">
-                                            <?=
-                                            $DataPersonas->getNombre() . " " . $DataPersonas->getApellido() ?>
-                                        </p>
-                                        <hr>
-
-                                        <strong><i class="fas fa-user mr-1"></i> Documento</strong>
-                                        <p class="text-muted"><?=
-                                            $DataPersonas->getTipo_documento() . ": " . $DataPersonas->getDocumento() ?></p>
-                                        <hr>
-
-                                        <strong><i class="fas fa-phone mr-1"></i> Telefono</strong>
-                                        <p class="text-muted">
-                                            <?= $DataPersonas->getTelefono() ?></p>
-                                        <hr>
-
-                                        <!--este esta F-->
-                                        <strong><i class="fas fa-map-marked-alt mr-1"></i> Municipio</strong>
-                                        <p class="text-muted"><?php echo $DataPersonas->getMunicipioId()->getNombre(); ?></p>
-                                        <hr>
-
-                                        <strong><i class="fas fa-map-marker-alt mr-1"></i> Direccion</strong>
-                                        <p class="text-muted"><?= $DataPersonas->getDireccion() ?></p>
-                                        <hr>
-
-                                        <strong><i class="fas fa-envelope mr-1"></i> Correo Electronico</strong>
-                                        <p class="text-muted">
-                                            <?= $DataPersonas->getEmail() ?></p>
-                                        <hr>
-
-                                        <strong><i class="fas fa-key mr-1"></i> Usuario </strong>
-                                        <p class="text-muted">
-                                            <?= $DataPersonas->getUser() ?></p>
-                                        <hr>
-
-
-                                        <strong><i class="fas fa-key mr-1"></i> Contaseña </strong>
-                                        <p class="text-muted">
-                                            <?= $DataPersonas->getPassword() ?></p>
-                                        <hr>
-
-                                        <strong><i class="far fa-file-alt mr-1"></i> Estado y Rol</strong>
-                                        <p class="text-muted">
-                                            <?= $DataPersonas->getEstado() . " - " . $DataPersonas->getRol() ?></p>
-                                        </p>
-
-
-
+                                        <div class="row">
+                                            <div class="col-sm-10">
+                                                <p>
+                                                    <strong><i class="fas fa-book mr-1"></i> Nombres y
+                                                        Apellidos</strong>
+                                                <p class="text-muted">
+                                                    <?= $DataPersona->getNombre() . " " . $DataPersona->getApellido() ?>
+                                                </p>
+                                                <hr>
+                                                <strong><i class="fas fa-user mr-1"></i> Documento</strong>
+                                                <p class="text-muted"><?= $DataPersona->getTipoDocumento() . ": " . $DataPersona->getDocumento() ?></p>
+                                                <hr>
+                                                <strong><i class="fas fa-phone mr-1"></i> Telefono</strong>
+                                                <p class="text-muted"><?= $DataPersona->getTelefono() ?></p>
+                                                <hr>
+                                                <strong><i class="fas fa-map-marker-alt mr-1"></i> Direccion</strong>
+                                                <p class="text-muted"><?= $DataPersona->getDireccion() ?>
+                                                    , <?= $DataPersona->getMunicipio()->getNombre() ?>
+                                                    - <?= $DataPersona->getMunicipio()->getDepartamento()->getNombre() ?></p>
+                                                <hr>
+                                                <strong><i class="fas fa-phone mr-1"></i> Email</strong>
+                                                <p class="text-muted"><?= $DataPersona->getEmail() ?></p>
+                                                <hr>
+                                                <strong><i class="far fa-file-alt mr-1"></i> Estado y Rol</strong>
+                                                <p class="text-muted"><?= $DataPersona->getEstado() . " - " . $DataPersona->getRol() ?></p>
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="card-footer">
                                         <div class="row">
                                             <div class="col-auto mr-auto">
                                                 <a role="button" href="index.php" class="btn btn-success float-right"
                                                    style="margin-right: 5px;">
-                                                    <i class="fas fa-tasks"></i> Gestionar Personas
+                                                    <i class="fas fa-tasks"></i> Gestionar <?= $pluralModel ?>
+                                                </a>
+                                            </div>
+                                            <div class="col-auto">
+                                                <a role="button" href="edit.php?id=<?= $DataPersona->getId(); ?>"
+                                                   class="btn btn-primary float-right"
+                                                   style="margin-right: 5px;">
+                                                    <i class="fas fa-edit"></i> Editar <?= $pluralModel ?>
                                                 </a>
                                             </div>
                                         </div>

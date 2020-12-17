@@ -46,9 +46,9 @@ class Personas extends AbstractDBConnection implements Model, JsonSerializable
         $this->setRol($persona['rol'] ?? '');
         $this->setMunicipioId($persona['municipio_id'] ?? 0);
         $this->setDireccion($persona['direccion'] ?? '');
-        $this->setEmail($persona['email'] ?? null);
-        $this->setUser($persona['user'] ?? null);
-        $this->setPassword($persona['password'] ?? null);
+        $this->setEmail($persona['email'] ?? '');
+        $this->setUser($persona['user'] ?? '');
+        $this->setPassword($persona['password'] ?? '');
         $this->setEstado($persona['estado'] ?? '');
     }
 
@@ -335,7 +335,7 @@ class Personas extends AbstractDBConnection implements Model, JsonSerializable
      */
     public function insert(): ?bool
     {
-        $query = "INSERT INTO h&mcomputadores.personas VALUES (
+        $query = "INSERT INTO `h&mcomputadores`.personas VALUES (
             :id,:nombres,:apellidos,:tipo_documento,:documento,
             :telefono,:direccion,:municipio_id,:fecha_nacimiento,:user,
             :password,:foto,:rol,:estado,:created_at,:updated_at
@@ -348,7 +348,7 @@ class Personas extends AbstractDBConnection implements Model, JsonSerializable
      */
     public function update(): ?bool
     {
-        $query = "UPDATE h&mcomputadores.personas SET 
+        $query = "UPDATE `h&mcomputadores`.personas SET 
             nombre = :nombre, apellido = :apellido, tipo_documento = :tipo_documento, 
             documento = :documento, telefono = :telefono, rol = :rol, municipio_id = :municipio_id,
             direccion = :direccion, email = :email, user = :user,  
@@ -405,7 +405,7 @@ class Personas extends AbstractDBConnection implements Model, JsonSerializable
             if ($id > 0) {
                 $tmpUsuario = new Personas();
                 $tmpUsuario->Connect();
-                $getrow = $tmpUsuario->getRow("SELECT * FROM h&mcomputadores.personas WHERE id =?", array($id));
+                $getrow = $tmpUsuario->getRow("SELECT * FROM `h&mcomputadores`.personas WHERE id =?", array($id));
                 $tmpUsuario->Disconnect();
                 return ($getrow) ? new Personas($getrow) : null;
             }else{
@@ -423,7 +423,7 @@ class Personas extends AbstractDBConnection implements Model, JsonSerializable
      */
     public static function getAll(): array
     {
-        return Personas::search("SELECT * FROM h&mcomputadores.personas");
+        return Personas::search("SELECT * FROM `h&mcomputadores`.personas");
     }
 
     /**
@@ -433,7 +433,7 @@ class Personas extends AbstractDBConnection implements Model, JsonSerializable
      */
     public static function personaRegistrada($documento): bool
     {
-        $result = Personas::search("SELECT * FROM h&mcomputadores.personas where documento = " . $documento);
+        $result = Personas::search("SELECT * FROM `h&mcomputadores`.personas where documento = " . $documento);
         if ( !empty($result) && count ($result) > 0 ) {
             return true;
         } else {

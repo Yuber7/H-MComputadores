@@ -64,7 +64,7 @@ class Productos extends AbstractDBConnection implements Model, JsonSerializable
     /**
      * @param int|mixed $id
      */
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }
@@ -364,7 +364,7 @@ class Productos extends AbstractDBConnection implements Model, JsonSerializable
      */
     public function __toString() : string
     {
-        return "nombre: $this->nombre, marca: $this->marca,  categoria_id: $this->categoria_id, referencia_fabrica: $this->referencia_fabrica, descripcion: $this->descripcion, stock: $this->stock, precio: $this->precio,  estado: $this->estado";
+        return "nombre: $this->nombre, marca: $this->marca,  categoria_id: $this->categoria_id, porcentaje_ganancia: $this->porcentaje_ganancia, descripcion: $this->descripcion, stock: $this->stock, precio: $this->precio,  estado: $this->estado";
     }
 
     //funciones con el objetivo de calcular el stock

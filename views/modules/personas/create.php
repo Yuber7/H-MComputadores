@@ -1,14 +1,20 @@
 <?php
-
-use App\Controllers\MunicipiosController;
-require_once ("../../../app/Controllers/MunicipiosController.php");
 require("../../partials/routes.php");
-?>
+require_once("../../partials/check_login.php");
 
+use App\Controllers\DepartamentosController;
+use App\Controllers\MunicipiosController;
+use App\Models\GeneralFunctions;
+use Carbon\Carbon;
+
+$nameModel = "Persona";
+$pluralModel = $nameModel.'s';
+$frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
+?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?= $_ENV['TITLE_SITE'] ?> | Crear Persona</title>
+    <title><?= $_ENV['TITLE_SITE'] ?> | Crear <?= $nameModel ?></title>
     <?php require("../../partials/head_imports.php"); ?>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -19,6 +25,7 @@ require("../../partials/routes.php");
 
     <?php require("../../partials/sliderbar_main_menu.php"); ?>
 
+
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
@@ -26,12 +33,13 @@ require("../../partials/routes.php");
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Crear una Persona</h1>
+                        <h1>Crear un Nuevo <?= $nameModel ?></h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/">Persona</a></li>
-                            <li class="breadcrumb-item active">Inicio</li>
+                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/"><?= $_ENV['ALIASE_SITE'] ?></a></li>
+                            <li class="breadcrumb-item"><a href="index.php"><?= $pluralModel ?></a></li>
+                            <li class="breadcrumb-item active">Crear</li>
                         </ol>
                     </div>
                 </div>
@@ -40,141 +48,171 @@ require("../../partials/routes.php");
 
         <!-- Main content -->
         <section class="content">
-            <?php if (!empty($_GET['respuesta'])) { ?>
-                <?php if ($_GET['respuesta'] != "correcto") { ?>
-                    <div class="alert alert-danger alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                        <h5><i class="icon fas fa-ban"></i> Error!</h5>
-                        Error al crear la persona: <?= $_GET['mensaje'] ?>
-                    </div>
-                <?php } ?>
-            <?php } ?>
+            <!-- Generar Mensaje de alerta -->
+            <?= (!empty($_GET['respuesta'])) ? GeneralFunctions::getAlertDialog($_GET['respuesta'], $_GET['mensaje']) : ""; ?>
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
                         <!-- Horizontal Form -->
                         <div class="card card-info">
                             <div class="card-header">
-                                <h3 class="card-title"><i class="fas fa-user"></i> &nbsp; Información de la persona</h3>
+                                <h3 class="card-title"><i class="fas fa-user"></i> &nbsp; Información del <?= $nameModel ?></h3>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
                                             data-source="create.php" data-source-selector="#card-refresh-content"
                                             data-load-on-init="false"><i class="fas fa-sync-alt"></i></button>
                                     <button type="button" class="btn btn-tool" data-card-widget="maximize"><i
-                                            class="fas fa-expand"></i></button>
+                                                class="fas fa-expand"></i></button>
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
-                                            class="fas fa-minus"></i></button>
+                                                class="fas fa-minus"></i></button>
                                 </div>
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">
                                 <!-- form start -->
-                                <form class="form-horizontal" method="post" id="frmCreatePersonas"
-                                      name="frmCreatePersona"
-                                      action="../../../app/Controllers/PersonasController.php?action=create">
-                                    <div class="form-group row">
-                                        <label for="nombre" class="col-sm-2 col-form-label">Nombre</label>
+                                <form class="form-horizontal" enctype="multipart/form-data" method="post" id="frmCreate<?= $nameModel ?>"
+                                      name="frmCreate<?= $nameModel ?>"
+                                      action="../../../app/Controllers/MainController.php?controller=<?= $pluralModel ?>&action=create">
+                                    <div class="row">
                                         <div class="col-sm-10">
-                                            <input required type="text" class="form-control" id="nombre" name="nombre"
-                                                   placeholder="Ingrese su nombre">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="apellido" class="col-sm-2 col-form-label">Apellido</label>
-                                        <div class="col-sm-10">
-                                            <input required type="text" class="form-control" id="apellido"
-                                                   name="apellido" placeholder="Ingrese su apellido">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="tipo_documento" class="col-sm-2 col-form-label">Tipo
-                                            Documento</label>
-                                        <div class="col-sm-10">
-                                            <select id="tipo_documento" name="tipo_documento" class="custom-select">
-                                                <option value="CC">Cedula de Ciudadania</option>
-                                                <option value="CE">Cedula de Extranjeria</option>
-                                                <option value="TI">Tarjeta de Identidad</option>
-                                                <option value="NIT">Nit Empresa</option>
-                                                <option value="REG">Registro Civil</option>
-                                                <option value="PAS">Pasaporte</option>
-
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="documento" class="col-sm-2 col-form-label">Documento</label>
-                                        <div class="col-sm-10">
-                                            <input required type="number" minlength="6" class="form-control"
-                                                   id="documento" name="documento" placeholder="Ingrese su documento">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="telefono" class="col-sm-2 col-form-label">Telefono</label>
-                                        <div class="col-sm-10">
-                                            <input required type="number" minlength="6" class="form-control"
-                                                   id="telefono" name="telefono" placeholder="Ingrese su telefono">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="rol" class="col-sm-2 col-form-label">Rol</label>
-                                        <div class="col-sm-10">
-                                            <select id="rol" name="rol" class="custom-select">
-                                                <option value="Administrador">Administrador</option>
-                                                <option value="Proveedor">Proveedor</option>
-                                                <option value="Cliente">Cliente</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="municipio_id" class="col-sm-2 col-form-label">Municipio</label>
-                                        <div class="col-sm-10">
-                                            <?= MunicipiosController::selectMunicipios(false,
-                                                true,
-                                                'municipio_id',
-                                                'municipio_id',
-                                                '',
-                                                'form-control select2bs4 select2-info',
-                                                "estado = 'Activo'")
-                                            ?>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="direccion" class="col-sm-2 col-form-label">Direccion</label>
-                                        <div class="col-sm-10">
-                                            <input required type="text" class="form-control" id="direccion"
-                                                   name="direccion" placeholder="Ingrese su direccion">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="email" class="col-sm-2 col-form-label">Correo Electonico</label>
-                                        <div class="col-sm-10">
-                                            <input type="email" minlength="6" class="form-control"
-                                                   id="email" name="email" placeholder="Ingrese su correo electonico">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="user" class="col-sm-2 col-form-label">Usuario:</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" minlength="6" class="form-control"
-                                                   id="user" name="user" placeholder="Ingrese su Usuario  - opcional">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="password" class="col-sm-2 col-form-label">Contraseña</label>
-                                        <div class="col-sm-10">
-                                            <input type="password" minlength="6" class="form-control"
-                                                   id="password" name="password" placeholder="Ingrese una contraseña - opcional">
-                                        </div>
-                                    </div>
-                                        <div class="form-group row">
-                                            <label for="estado" class="col-sm-2 col-form-label">Estado</label>
-                                            <div class="col-sm-10">
-                                                <select id="estado" name="estado" class="custom-select">
-                                                    <option value="activo">Activo</option>
-                                                    <option value="inactivo">Inactivo</option>
-                                                </select>
+                                            <div class="form-group row">
+                                                <label for="nombre" class="col-sm-2 col-form-label">Nombres</label>
+                                                <div class="col-sm-10">
+                                                    <input required type="text" class="form-control" id="nombre" name="nombre"
+                                                           placeholder="Ingrese sus nombres" value="<?= $frmSession['nombre'] ?? '' ?>">
+                                                </div>
                                             </div>
+                                            <div class="form-group row">
+                                                <label for="apellido" class="col-sm-2 col-form-label">Apellidos</label>
+                                                <div class="col-sm-10">
+                                                    <input required type="text" class="form-control" id="apellido"
+                                                           name="apellido" placeholder="Ingrese sus apellidos"
+                                                           value="<?= $frmSession['apellido'] ?? '' ?>">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="tipo_documento" class="col-sm-2 col-form-label">
+                                                    Tipo Documento</label>
+                                                <div class="col-sm-10">
+                                                    <select id="tipo_documento" name="tipo_documento" class="custom-select">
+                                                        <option <?= (!empty($frmSession['tipo_documento']) && $frmSession['tipo_documento'] == "C.C") ? "selected" : ""; ?> value="C.C">Cedula de Ciudadania</option>
+                                                        <option <?= (!empty($frmSession['tipo_documento']) && $frmSession['tipo_documento'] == "C.E") ? "selected" : ""; ?> value="C.E">Cedula de Extranjeria</option>
+                                                        <option <?= (!empty($frmSession['tipo_documento']) && $frmSession['tipo_documento'] == "T.I") ? "selected" : ""; ?> value="T.I">Tarjeta de Identidad</option>
+                                                        <option <?= (!empty($frmSession['tipo_documento']) && $frmSession['tipo_documento'] == "NIT") ? "selected" : ""; ?> value="NIT">NIT</option>
+                                                        <option <?= (!empty($frmSession['tipo_documento']) && $frmSession['tipo_documento'] == "REG") ? "selected" : ""; ?> value="REG">Registro Civil</option>
+                                                        <option <?= (!empty($frmSession['tipo_documento']) && $frmSession['tipo_documento'] == "PAS") ? "selected" : ""; ?> value="PAS">Pasaporte</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="documento" class="col-sm-2 col-form-label">Documento</label>
+                                                <div class="col-sm-10">
+                                                    <input required type="number" minlength="6" class="form-control"
+                                                           id="documento" name="documento" placeholder="Ingrese su documento"
+                                                           value="<?= $frmSession['documento'] ?? '' ?>">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="telefono" class="col-sm-2 col-form-label">Telefono</label>
+                                                <div class="col-sm-10">
+                                                    <input required type="number" minlength="6" class="form-control"
+                                                           id="telefono" name="telefono" placeholder="Ingrese su telefono"
+                                                           value="<?= $frmSession['telefono'] ?? '' ?>">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="rol" class="col-sm-2 col-form-label">Rol</label>
+                                                <div class="col-sm-10">
+                                                    <select required id="rol" name="rol" class="custom-select">
+                                                        <option <?= (!empty($frmSession['rol']) && $frmSession['rol'] == "Administrador") ? "selected" : ""; ?> value="Administrador">Administrador</option>
+                                                        <option <?= (!empty($frmSession['rol']) && $frmSession['rol'] == "Proveedor") ? "selected" : ""; ?> value="Proveedor">Proveedor</option>
+                                                        <option <?= (!empty($frmSession['rol']) && $frmSession['rol'] == "Cliente") ? "selected" : ""; ?> value="Cliente">Cliente</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="municipio_id" class="col-sm-2 col-form-label">Municipio</label>
+                                                <div class="col-sm-5">
+                                                    <?= DepartamentosController::selectDepartamentos(
+                                                        array(
+                                                            'id' => 'departamento_id',
+                                                            'name' => 'departamento_id',
+                                                            'defaultValue' => '15', //Boyacá
+                                                            'class' => 'form-control select2bs4 select2-info',
+                                                            'where' => "estado = 'Activo'"
+                                                        )
+                                                    )
+                                                    ?>
+                                                </div>
+                                                <div class="col-sm-5 ">
+                                                    <?= MunicipiosController::selectMunicipios(array (
+                                                        'id' => 'municipio_id',
+                                                        'name' => 'municipio_id',
+                                                        'defaultValue' => (!empty($frmSession['municipio_id'])) ? $frmSession['municipio_id'] : '',
+                                                        'class' => 'form-control select2bs4 select2-info',
+                                                        'where' => "departamento_id = 15 and estado = 'Activo'"))
+                                                    ?>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="direccion" class="col-sm-2 col-form-label">Direccion</label>
+                                                <div class="col-sm-10">
+                                                    <input required type="text" class="form-control" id="direccion"
+                                                           name="direccion" placeholder="Ingrese su direccion"
+                                                           value="<?= $frmSession['direccion'] ?? '' ?>">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="email" class="col-sm-2 col-form-label">Email</label>
+                                                <div class="col-sm-10">
+                                                    <input required type="email" class="form-control" id="email"
+                                                           name="email" placeholder="Ingrese su Email"
+                                                           value="<?= $frmSession['email'] ?? '' ?>">
+                                                </div>
+                                            </div>
+                                            <?php if ($_SESSION['UserInSession']['rol'] == 'Administrador'){ ?>
+                                                <div class="form-group row">
+                                                    <label for="user" class="col-sm-2 col-form-label">Usuario</label>
+                                                    <div class="col-sm-10">
+                                                        <input type="text" class="form-control" id="user" name="user"
+                                                               placeholder="Ingrese su Usuario" value="<?= $frmSession['user'] ?? '' ?>">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="password" class="col-sm-2 col-form-label">Password</label>
+                                                    <div class="col-sm-10">
+                                                        <input type="password" class="form-control" id="password" name="password" placeholder="Ingrese su Usuario">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="estado" class="col-sm-2 col-form-label">Estado</label>
+                                                    <div class="col-sm-10">
+                                                        <select required id="estado" name="estado" class="custom-select">
+                                                            <option <?= ( !empty($frmSession['estado']) && $frmSession['estado'] == "Activo") ? "selected" : ""; ?> value="Activo">Activo</option>
+                                                            <option <?= ( !empty($frmSession['estado']) && $frmSession['estado'] == "Inactivo") ? "selected" : ""; ?> value="Inactivo">Inactivo</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            <?php } ?>
                                         </div>
+<!--                                        <div class="col-sm-2">-->
+<!--                                            <div class="info-box">-->
+<!--                                                <div class="imageupload panel panel-primary">-->
+<!--                                                    <div class="panel-heading clearfix">-->
+<!--                                                        <h5 class="panel-title pull-left">Foto de Perfil</h5>-->
+<!--                                                    </div>-->
+<!--                                                    <div class="file-tab panel-body">-->
+<!--                                                        <label class="btn btn-default btn-file">-->
+<!--                                                            <span>Seleccionar</span>-->
+<!--                                                             The file is stored here. -->
+<!--                                                            <input type="file" id="foto" name="foto">-->
+<!--                                                        </label>-->
+<!--                                                        <button type="button" class="btn btn-default">Eliminar</button>-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+                                    </div>
 
                                     <hr>
                                     <button type="submit" class="btn btn-info">Enviar</button>
@@ -199,5 +237,26 @@ require("../../partials/routes.php");
 </div>
 <!-- ./wrapper -->
 <?php require('../../partials/scripts.php'); ?>
+<script>
+    $(function() {
+        $('#departamento_id').on('change', function() {
+            $.post("../../../app/Controllers/MainController.php?controller=Municipios&action=selectMunicipios", {
+                isMultiple: false,
+                isRequired: true,
+                id: "municipio_id",
+                nombre: "municipio_id",
+                defaultValue: "",
+                class: "form-control select2bs4 select2-info",
+                where: "departamento_id = "+$('#departamento_id').val()+" and estado = 'Activo'",
+                request: 'ajax'
+            }, function(e) {
+                if (e)
+                    console.log(e);
+                $("#municipio_id").html(e).select2({ height: '100px'});
+            });
+        });
+        $('.btn-file span').html('Seleccionar');
+    });
+</script>
 </body>
 </html>
