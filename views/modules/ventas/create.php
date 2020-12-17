@@ -4,7 +4,7 @@ require("../../partials/routes.php");
 
 use App\Controllers\ProductosController;
 use App\Controllers\PersonasController;
-use App\Controllers\VentasController;
+use App\Controllers\ComprasController;
 use App\Models\DetalleCompras;
 use App\Models\GeneralFunctions;
 use Carbon\Carbon;

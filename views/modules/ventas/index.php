@@ -2,7 +2,7 @@
 require_once("../../../app/Controllers/VentasController.php");
 require_once("../../partials/routes.php");
 
-use App\Controllers\VentasController;
+use App\Controllers\ComprasController;
 use App\Models\Compras;
 
 ?>
@@ -108,7 +108,7 @@ use App\Models\Compras;
                                             </thead>
                                             <tbody>
                                             <?php
-                                            $arrVentas = VentasController::getAll();
+                                            $arrVentas = ComprasController::getAll();
                                             /* @var $arrVentas Compras[] */
                                             foreach ($arrVentas as $ventas) {
                                                 ?>

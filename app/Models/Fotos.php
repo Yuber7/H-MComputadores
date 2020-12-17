@@ -10,7 +10,7 @@ use JsonSerializable;
 class Fotos extends AbstractDBConnection implements Model, JsonSerializable
 {
     //Propiedades
-    protected int $id;
+    protected ?int $id;
     protected string $nombre;
     protected string $descripcion;
     protected int $producto_id;
@@ -22,7 +22,7 @@ class Fotos extends AbstractDBConnection implements Model, JsonSerializable
 
 
     /**
-     * Fotos constructor.
+     * fotos constructor.
      * @param array $foto
      */
     public function __construct(array $foto = [])
@@ -47,7 +47,7 @@ class Fotos extends AbstractDBConnection implements Model, JsonSerializable
     /**
      * @return int
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -55,7 +55,7 @@ class Fotos extends AbstractDBConnection implements Model, JsonSerializable
     /**
      * @param int $id
      */
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }

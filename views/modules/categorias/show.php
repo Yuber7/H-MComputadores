@@ -1,12 +1,20 @@
 <?php
 require("../../partials/routes.php");
+require_once("../../partials/check_login.php");
 require("../../../app/Controllers/CategoriasController.php");
 
-use App\Controllers\CategoriasController; ?>
+use App\Controllers\CategoriasController;
+use App\Models\Categorias;
+use App\Models\GeneralFunctions;
+
+$nameModel = "Categoria";
+$pluralModel = $nameModel.'s';
+$frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
+?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?= $_ENV['TITLE_SITE'] ?> | Datos de la categoria</title>
+    <title><?= $_ENV['TITLE_SITE'] ?> | Datos del <?= $nameModel ?></title>
     <?php require("../../partials/head_imports.php"); ?>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -24,12 +32,13 @@ use App\Controllers\CategoriasController; ?>
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Informacion de la categoria</h1>
+                        <h1>Información del <?= $nameModel ?></h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/">H&M</a></li>
-                            <li class="breadcrumb-item active">Inicio</li>
+                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/"><?= $_ENV['ALIASE_SITE'] ?></a></li>
+                            <li class="breadcrumb-item"><a href="index.php"><?= $pluralModel ?></a></li>
+                            <li class="breadcrumb-item active">Ver</li>
                         </ol>
                     </div>
                 </div>
@@ -38,41 +47,28 @@ use App\Controllers\CategoriasController; ?>
 
         <!-- Main content -->
         <section class="content">
-
-            <?php if (!empty($_GET['respuesta'])) { ?>
-                <?php if ($_GET['respuesta'] == "error") { ?>
-                    <div class="alert alert-danger alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                        <h5><i class="icon fas fa-ban"></i> Error!</h5>
-                        Error al consultar la categoria: <?= ($_GET['mensaje']) ?? "" ?>
-                    </div>
-                <?php } ?>
-            <?php } else if (empty($_GET['id'])) { ?>
-                <div class="alert alert-danger alert-dismissible">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                    <h5><i class="icon fas fa-ban"></i> Error!</h5>
-                    Faltan criterios de busqueda <?= ($_GET['mensaje']) ?? "" ?>
-                </div>
-            <?php } ?>
-
+            <!-- Generar Mensajes de alerta -->
+            <?= (!empty($_GET['respuesta'])) ? GeneralFunctions::getAlertDialog($_GET['respuesta'], $_GET['mensaje']) : ""; ?>
+            <?= (empty($_GET['id'])) ? GeneralFunctions::getAlertDialog('error', 'Faltan Criterios de Búsqueda') : ""; ?>
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
                         <!-- Horizontal Form -->
                         <div class="card card-green">
                             <?php if (!empty($_GET["id"]) && isset($_GET["id"])) {
-                                $DataCategorias = CategoriasController::searchForID($_GET["id"]);
-                                if (!empty($DataCategorias)) {
+                                $DataCategoria = CategoriasController::searchForID(["id" => $_GET["id"]]);
+                                /* @var $DataCategoria Categorias */
+                                if (!empty($DataCategoria)) {
                                     ?>
                                     <div class="card-header">
-                                        <h3 class="card-title"><i class="fas fa-info"></i> &nbsp; Ver Información
-                                            de <?= $DataCategorias->getNombre() ?></h3>
+                                        <h3 class="card-title"><i class="fas fa-box"></i> &nbsp; Ver Información
+                                            de <?= $DataCategoria->getNombre() ?? '' ?></h3>
                                         <div class="card-tools">
                                             <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
                                                     data-source="show.php" data-source-selector="#card-refresh-content"
                                                     data-load-on-init="false"><i class="fas fa-sync-alt"></i></button>
                                             <button type="button" class="btn btn-tool" data-card-widget="maximize"><i
-                                                    class="fas fa-expand"></i></button>
+                                                        class="fas fa-expand"></i></button>
                                             <button type="button" class="btn btn-tool" data-card-widget="collapse"
                                                     data-toggle="tooltip" title="Collapse">
                                                 <i class="fas fa-minus"></i></button>
@@ -82,28 +78,35 @@ use App\Controllers\CategoriasController; ?>
                                         </div>
                                     </div>
                                     <div class="card-body">
-                                        <p>
-                                            <strong><i class="fas fa-signature mr-1"></i> Nombre </strong>
-                                        <p class="text-muted">
-                                            <?= $DataCategorias->getNombre() ?>
-                                        </p>
-                                        <hr>
-
-                                        <strong><i class="fas fa-keyboard mr-1"></i> Descripción</strong>
-                                        <p class="text-muted"><?= $DataCategorias->getDescripcion() ?></p>
-                                        <hr>
-
-                                        <strong><i class="far fa-file-alt mr-1"></i> Estado </strong>
-                                        <p class="text-muted"><?= $DataCategorias->getEstado() ?></p>
-                                        </p>
-
+                                        <div class="row">
+                                            <div class="col-sm-10">
+                                                <p>
+                                                    <strong><i class="fas fa-book mr-1"></i> Nombre</strong>
+                                                <p class="text-muted">
+                                                    <?= $DataCategoria->getNombre() ?>
+                                                </p>
+                                                <hr>
+                                                <strong><i class="fas fa-align-justify mr-1"></i> Descripción</strong>
+                                                <p class="text-muted"><?= $DataCategoria->getDescripcion() ?></p>
+                                                <hr>
+                                                <strong><i class="far fa-file-alt mr-1"></i> Estado</strong>
+                                                <p class="text-muted"><?= $DataCategoria->getEstado() ?></p>
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="card-footer">
                                         <div class="row">
                                             <div class="col-auto mr-auto">
                                                 <a role="button" href="index.php" class="btn btn-success float-right"
                                                    style="margin-right: 5px;">
-                                                    <i class="fas fa-tasks"></i> Gestionar Categorias
+                                                    <i class="fas fa-tasks"></i> Gestionar <?= $pluralModel ?>
+                                                </a>
+                                            </div>
+                                            <div class="col-auto">
+                                                <a role="button" href="edit.php?id=<?= $DataCategoria->getId(); ?>" class="btn btn-primary float-right"
+                                                   style="margin-right: 5px;">
+                                                    <i class="fas fa-edit"></i> Editar <?= $nameModel ?>
                                                 </a>
                                             </div>
                                         </div>
@@ -120,10 +123,10 @@ use App\Controllers\CategoriasController; ?>
                                 <?php }
                             } ?>
                         </div>
-                        <!-- /.card -->
                     </div>
                 </div>
             </div>
+            <!-- /.card -->
         </section>
         <!-- /.content -->
     </div>

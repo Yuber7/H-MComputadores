@@ -1,15 +1,20 @@
 <?php
 require_once("../../../app/Controllers/CategoriasController.php");
 require_once("../../partials/routes.php");
+require_once("../../partials/check_login.php");
 
 use App\Controllers\CategoriasController;
+use App\Models\GeneralFunctions;
 use App\Models\Categorias;
 
+$nameModel = "Categoria";
+$pluralModel = $nameModel.'s';
+$frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?= $_ENV['TITLE_SITE'] ?> | Gestionar Categorias</title>
+    <title><?= $_ENV['TITLE_SITE'] ?> | Gestión de <?= $plcategoría ?></title>
     <?php require("../../partials/head_imports.php"); ?>
     <!-- DataTables -->
     <link rel="stylesheet" href="<?= $adminlteURL ?>/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
@@ -35,8 +40,8 @@ use App\Models\Categorias;
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/">H&M</a></li>
-                            <li class="breadcrumb-item active">Inicio</li>
+                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/"><?= $_ENV['ALIASE_SITE'] ?></a></li>
+                            <li class="breadcrumb-item active"><?= $pluralModel ?></li>
                         </ol>
                     </div>
                 </div>
@@ -45,28 +50,15 @@ use App\Models\Categorias;
 
         <!-- Main content -->
         <section class="content">
-
-            <?php if (!empty($_GET['respuesta']) && !empty($_GET['accion'])) { ?>
-                <?php if ($_GET['respuesta'] == "correcto") { ?>
-                    <div class="alert alert-success alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                        <h5><i class="icon fas fa-check"></i> Correcto!</h5>
-                        <?php if ($_GET['accion'] == "create") { ?>
-                            La categoria ha sido creado con exito!
-                        <?php } else if ($_GET['accion'] == "update") { ?>
-                            Los datos de la categoria han sido actualizados correctamente!
-                        <?php } ?>
-                    </div>
-                <?php } ?>
-            <?php } ?>
-
+            <!-- Generar Mensajes de alerta -->
+            <?= (!empty($_GET['respuesta'])) ? GeneralFunctions::getAlertDialog($_GET['respuesta'], $_GET['mensaje']) : ""; ?>
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
                         <!-- Default box -->
                         <div class="card card-dark">
                             <div class="card-header">
-                                <h3 class="card-title"><i class="fas fa-map-pin"></i>  Gestionar Categorias</h3>
+                                <h3 class="card-title"><i class="fas fa-boxes"></i> &nbsp; Gestionar <?= $pluralModel ?></h3>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
                                             data-source="index.php" data-source-selector="#card-refresh-content"
@@ -87,17 +79,17 @@ use App\Models\Categorias;
                                     <div class="col-auto">
                                         <a role="button" href="create.php" class="btn btn-primary float-right"
                                            style="margin-right: 5px;">
-                                            <i class="fas fa-plus"></i> Crear Categoria
+                                            <i class="fas fa-plus"></i> Crear <?= $nameModel ?>
                                         </a>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col">
-                                        <table id="tblCategorias" class="datatable table table-bordered table-striped">
+                                        <table id="tbl<?= $pluralModel ?>" class="datatable table table-bordered table-striped">
                                             <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Nombre</th>
+                                                <th>Nombres</th>
                                                 <th>Descripción</th>
                                                 <th>Estado</th>
                                                 <th>Acciones</th>
@@ -107,31 +99,35 @@ use App\Models\Categorias;
                                             <?php
                                             $arrCategorias = CategoriasController::getAll();
                                             /* @var $arrCategorias Categorias[] */
-                                            foreach ($arrCategorias as $Categorias) {
+                                            foreach ($arrCategorias as $categoria) {
                                                 ?>
                                                 <tr>
-                                                    <td><?php echo $Categorias->getId(); ?></td>
-                                                    <td><?php echo $Categorias->getNombre(); ?></td>
-                                                    <td><?php echo $Categorias->getDescripcion(); ?></td>
-                                                    <td><?php echo $Categorias->getEstado(); ?></td>
+                                                    <td><?= $categoria->getId(); ?></td>
+                                                    <td><?= $categoria->getNombre(); ?></td>
+                                                    <td><?= $categoria->getDescripcion(); ?></td>
+                                                    <td><?= $categoria->getEstado(); ?></td>
                                                     <td>
-                                                        <a href="edit.php?id=<?php echo $Categorias->getId(); ?>"
+                                                        <a href="edit.php?id=<?= $categoria->getId(); ?>"
                                                            type="button" data-toggle="tooltip" title="Actualizar"
                                                            class="btn docs-tooltip btn-primary btn-xs"><i
                                                                     class="fa fa-edit"></i></a>
-                                                        <a href="show.php?id=<?php echo $Categorias->getId(); ?>"
+                                                        <a href="show.php?id=<?= $categoria->getId(); ?>"
                                                            type="button" data-toggle="tooltip" title="Ver"
                                                            class="btn docs-tooltip btn-warning btn-xs"><i
                                                                     class="fa fa-eye"></i></a>
-                                                        <?php if ($Categorias->getEstado() != "Activo") { ?>
-                                                            <a href="../../../app/Controllers/CategoriasController.php?action=activate&Id=<?php echo $Categorias->getId(); ?>"
-                                                               type="button" data-toggle="tooltip" title="Activo"
+                                                        <a href="../productos/index.php?idCategoria=<?= $categoria->getId(); ?>"
+                                                           type="button" data-toggle="tooltip" title="Ver Productos"
+                                                           class="btn docs-tooltip btn-success btn-xs"><i
+                                                                    class="fa fa-sitemap"></i></a>
+                                                        <?php if ($categoria->getEstado() != "Activo") { ?>
+                                                            <a href="../../../app/Controllers/MainController.php?controller=<?= $pluralModel ?>&action=activate&id=<?= $categoria->getId(); ?>"
+                                                               type="button" data-toggle="tooltip" title="Activar"
                                                                class="btn docs-tooltip btn-success btn-xs"><i
                                                                         class="fa fa-check-square"></i></a>
                                                         <?php } else { ?>
                                                             <a type="button"
-                                                               href="../../../app/Controllers/CategoriasController.php?action=inactivate&Id=<?php echo $Categorias->getId(); ?>"
-                                                               data-toggle="tooltip" title="Inactivo"
+                                                               href="../../../app/Controllers/MainController.php?controller=<?= $pluralModel ?>&action=inactivate&id=<?= $categoria->getId(); ?>"
+                                                               data-toggle="tooltip" title="Inactivar"
                                                                class="btn docs-tooltip btn-danger btn-xs"><i
                                                                         class="fa fa-times-circle"></i></a>
                                                         <?php } ?>
@@ -143,7 +139,7 @@ use App\Models\Categorias;
                                             <tfoot>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Nombre</th>
+                                                <th>Nombres</th>
                                                 <th>Descripción</th>
                                                 <th>Estado</th>
                                                 <th>Acciones</th>
@@ -172,41 +168,7 @@ use App\Models\Categorias;
 </div>
 <!-- ./wrapper -->
 <?php require('../../partials/scripts.php'); ?>
-<!-- DataTables -->
-<script src="<?= $adminlteURL ?>/plugins/datatables/jquery.dataTables.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-responsive/js/dataTables.responsive.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-responsive/js/responsive.bootstrap4.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-buttons/js/dataTables.buttons.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-buttons/js/buttons.bootstrap4.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/jszip/jszip.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/pdfmake/pdfmake.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-buttons/js/buttons.html5.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-buttons/js/buttons.print.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-buttons/js/buttons.colVis.js"></script>
-
-<script>
-    $(function () {
-        $('.datatable').DataTable({
-            "dom": 'Bfrtip',
-            "paging": true,
-            "lengthChange": true,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "autoWidth": true,
-            "language": {
-                "url": "../../public/Spanish.json" //Idioma
-            },
-            "buttons": [
-                'copy', 'print', 'excel', 'pdf'
-            ],
-            "pagingType": "full_numbers",
-            "responsive": true,
-            "stateSave": true, //Guardar la configuracion del usuario
-        });
-    });
-</script>
-
+<!-- Scripts requeridos para las datatables -->
+<?php require('../../partials/datatables_scripts.php'); ?>
 </body>
 </html>
