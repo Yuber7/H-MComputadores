@@ -72,6 +72,12 @@ class DetalleVentas extends AbstractDBConnection implements Model, JsonSerializa
         $this->precio_venta = $precio_venta;
     }
 
+    public function getTotalProducto() : float
+    {
+        return $this->getPrecioVenta() * $this->getCantidad();
+    }
+
+
     /**
      * @return int
      */

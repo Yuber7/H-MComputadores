@@ -11,7 +11,7 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
 {
     private ?int $id;
     private Carbon $fecha;
-    private int $administrador_id;
+    protected int $administrador_id;
     private int $cliente_id;
     private float $valor_total;
     private string $forma_pago;
@@ -91,7 +91,17 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
      */
     public function setValorTotal(float $valor_total): void
     {
-        $this->valor_total = $valor_total;
+        $total = 0;
+        if($this->getId() != null){
+            $arrDetallesVenta = $this->getDetalleVenta();
+            if(!empty($arrDetallesVenta)){
+                /* @var $arrDetallesVenta DetalleVentas[] */
+                foreach ($arrDetallesVenta as $DetalleVenta){
+                    $total += $DetalleVenta->getTotalProducto();
+                }
+            }
+        }
+        $this->valor_total = $total;
     }
 
     /**
@@ -103,7 +113,7 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
     }
 
     /**
-     * @param int $persona_id
+     * @param int $administrador_id
      */
     public function setAdministradorId(int $administrador_id): void
     {
@@ -163,13 +173,14 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
      */
     public function getDetalleVenta(): ?array
     {
+        $this->detalleVenta = DetalleCompras::search('SELECT * FROM `h&mcomputadores`.detalle_ventas where venta_id = '.$this->id);
         return $this->detalleVenta;
     }
 
     /**
      * @return Personas|null
      */
-    public function getAdministrador(): ?Personas
+    public function getAdministradorVenta(): ?Personas
     {
         if(!empty($this->administrador_id)){
             $this->administrador = Personas::searchForId($this->administrador_id) ?? new Personas();
@@ -184,7 +195,7 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
     public function getCliente(): ?Personas
     {
         if(!empty($this->cliente_id)){
-            $this->empleado = Personas::searchForId($this->cliente_id) ?? new Personas();
+            $this->cliente = Personas::searchForId($this->cliente_id) ?? new Personas();
             return $this->cliente;
         }
         return NULL;
@@ -225,7 +236,7 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
      */
     function insert(): ?bool
     {
-        $query = "INSERT INTO h&mcomputadores.ventas VALUES (:id,:fecha,:administrador_id,:cliente_id,:valor_total,:forma_pago,:estado)";
+        $query = "INSERT INTO `h&mcomputadores`.ventas VALUES (:id,:fecha,:administrador_id,:cliente_id,:valor_total,:forma_pago,:estado)";
         return $this->save($query);
     }
 
@@ -234,7 +245,7 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
      */
     public function update() : ?bool
     {
-        $query = "UPDATE h&mcomputadores.ventas SET 
+        $query = "UPDATE `h&mcomputadores`.ventas SET 
             fecha = :fecha,administrador_id = :administrador_id,
             cliente_id = :cliente_id, valor_total = :valor_total, 
             forma_pago = :forma_pago,estado = :estado WHERE id = :id";
@@ -258,13 +269,13 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
     {
         try {
             $arrVentas = array();
-            $tmp = new Compras();
+            $tmp = new Ventas();
             $tmp->Connect();
             $getrows = $tmp->getRows($query);
             $tmp->Disconnect();
 
             foreach ($getrows as $valor) {
-                $Venta = new Compras($valor);
+                $Venta = new Ventas($valor);
                 array_push($arrVentas, $Venta);
                 unset($Venta);
             }
@@ -277,18 +288,18 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
 
     /**
      * @param $id
-     * @return Compras
+     * @return Ventas
      * @throws Exception
      */
-    public static function searchForId($id) : ?Compras
+    public static function searchForId($id) : ?Ventas
     {
         try {
             if ($id > 0) {
-                $Venta = new Compras();
+                $Venta = new Ventas();
                 $Venta->Connect();
-                $getrow = $Venta->getRow("SELECT * FROM h&mcomputadores.ventas WHERE id =?", array($id));
+                $getrow = $Venta->getRow("SELECT * FROM `h&mcomputadores`.ventas WHERE id =?", array($id));
                 $Venta->Disconnect();
-                return ($getrow) ? new Compras($getrow) : null;
+                return ($getrow) ? new Ventas($getrow) : null;
             }else{
                 throw new Exception('Id de venta Invalido');
             }
@@ -304,7 +315,7 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
      */
     public static function getAll() : array
     {
-        return Compras::search("SELECT * FROM h&mcomputadores.ventas");
+        return Ventas::search("SELECT * FROM `h&mcomputadores`.ventas");
     }
 
     /**
@@ -315,7 +326,7 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
     public static function facturaRegistrada($fecha): bool
     {
         $fecha = trim(strtolower($fecha));
-        $result = Categorias::search("SELECT id FROM h&mcomputadores.ventas where fecha = '" . $fecha. "'");
+        $result = Categorias::search("SELECT id FROM `h&mcomputadores`.ventas where fecha = '" . $fecha. "'");
         if ( !empty($result) && count ($result) > 0 ) {
             return true;
         } else {
@@ -342,7 +353,7 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
     {
         return [
             'fecha' => $this->getFecha()->toDateTimeString(),
-            'administrador' => $this->getAdministrador()->jsonSerialize(),
+            'administrador' => $this->getAdministradorVenta()->jsonSerialize(),
             'cliente' => $this->getCliente()->jsonSerialize(),
             'valor_total' => $this->getValorTotal(),
             'forma_pago' => $this->getFormaPago(),

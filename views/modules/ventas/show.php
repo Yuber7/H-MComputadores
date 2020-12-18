@@ -1,12 +1,20 @@
 <?php
 require("../../partials/routes.php");
+require_once("../../partials/check_login.php");
 require("../../../app/Controllers/VentasController.php");
 
-use App\Controllers\ComprasController; ?>
+use App\Controllers\VentasController;
+use App\Models\Ventas;
+use App\Models\GeneralFunctions;
+
+$nameModel = "Venta";
+$pluralModel = $nameModel.'s';
+$frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
+?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?= $_ENV['TITLE_SITE'] ?> | Datos de la Venta</title>
+    <title><?= $_ENV['TITLE_SITE'] ?> | Datos de la <?= $nameModel ?></title>
     <?php require("../../partials/head_imports.php"); ?>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -24,12 +32,13 @@ use App\Controllers\ComprasController; ?>
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Informacion de la Venta</h1>
+                        <h1>Información de la <?= $nameModel ?></h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/">H&M</a></li>
-                            <li class="breadcrumb-item active">Inicio</li>
+                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/"><?= $_ENV['ALIASE_SITE'] ?></a></li>
+                            <li class="breadcrumb-item"><a href="index.php"><?= $pluralModel ?></a></li>
+                            <li class="breadcrumb-item active">Ver</li>
                         </ol>
                     </div>
                 </div>
@@ -38,42 +47,29 @@ use App\Controllers\ComprasController; ?>
 
         <!-- Main content -->
         <section class="content">
-
-            <?php if (!empty($_GET['respuesta'])) { ?>
-                <?php if ($_GET['respuesta'] == "error") { ?>
-                    <div class="alert alert-danger alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                        <h5><i class="icon fas fa-ban"></i> Error!</h5>
-                        Error al consultar la Venta: <?= ($_GET['mensaje']) ?? "" ?>
-                    </div>
-                <?php } ?>
-            <?php } else if (empty($_GET['id'])) { ?>
-                <div class="alert alert-danger alert-dismissible">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                    <h5><i class="icon fas fa-ban"></i> Error!</h5>
-                    Faltan criterios de busqueda <?= ($_GET['mensaje']) ?? "" ?>
-                </div>
-            <?php } ?>
-
+            <!-- Generar Mensajes de alerta -->
+            <?= (!empty($_GET['respuesta'])) ? GeneralFunctions::getAlertDialog($_GET['respuesta'], $_GET['mensaje']) : ""; ?>
+            <?= (empty($_GET['id'])) ? GeneralFunctions::getAlertDialog('error', 'Faltan Criterios de Búsqueda') : ""; ?>
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
                         <!-- Horizontal Form -->
                         <div class="card card-green">
                             <?php if (!empty($_GET["id"]) && isset($_GET["id"])) {
-                                $DataVentas = ComprasController::searchForID($_GET["id"]);
-                                if (!empty($DataVentas
-                                )) {
+                                $DataVentas = VentasController::searchForID(["id" => $_GET["id"]]);
+                                /* @var $DataVentas Ventas */
+                                if (!empty($DataVentas)) {
                                     ?>
                                     <div class="card-header">
-                                        <h3 class="card-title"><i class="fas fa-info"></i> &nbsp; Ver Información
-                                            de la venta N°<?= $DataVentas->getId() ?></h3>
+                                        <h3 class="card-title"><i class="fas fa-shopping-cart"></i> &nbsp; Ver
+                                            Información de <?= $DataVentas->getId() ?>
+                                            -<?= $DataVentas->getId() ?></h3>
                                         <div class="card-tools">
                                             <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
                                                     data-source="show.php" data-source-selector="#card-refresh-content"
                                                     data-load-on-init="false"><i class="fas fa-sync-alt"></i></button>
                                             <button type="button" class="btn btn-tool" data-card-widget="maximize"><i
-                                                    class="fas fa-expand"></i></button>
+                                                        class="fas fa-expand"></i></button>
                                             <button type="button" class="btn btn-tool" data-card-widget="collapse"
                                                     data-toggle="tooltip" title="Collapse">
                                                 <i class="fas fa-minus"></i></button>
@@ -84,33 +80,27 @@ use App\Controllers\ComprasController; ?>
                                     </div>
                                     <div class="card-body">
                                         <p>
-                                            <strong><i class="fas fa-book mr-1"></i> Fecha</strong>
+
+                                            <strong><i class="fas fa-calendar mr-1"></i> Fecha</strong>
                                         <p class="text-muted">
-                                            <?= $DataVentas->getFecha() ?>
+                                            <?= $DataVentas->getFecha() . "-" . $DataVentas->getId(); ?>
                                         </p>
                                         <hr>
-
-                                        <strong><i class="fas fa-user mr-1"></i> Valor Total</strong>
-                                        <p class="text-muted"><?=
-                                            $DataVentas->getValorTotal()?></p>
+                                        <strong><i class="fas fa-user-ninja mr-1"></i> Administrador</strong>
+                                        <p class="text-muted"><?= $DataVentas->getAdministradorVenta()->getNombre() . " " . $DataVentas->getAdministradorVenta()->getApellido() ?></p>
                                         <hr>
-
-                                        <strong><i class="fas fa-phone mr-1"></i> Persona</strong>
-                                        <p class="text-muted">
-                                            <?= $DataVentas->getPersonaId()->getNombre() ?></p>
+                                        <strong><i class="far fa-user mr-1"></i> Cliente</strong>
+                                        <p class="text-muted"><?= $DataVentas->getCliente()->getNombre() . " " . $DataVentas->getCliente()->getApellido() ?></p>
                                         <hr>
-
-                                        <strong><i class="fas fa-phone mr-1"></i> Descripcion</strong>
-                                        <p class="text-muted">
-                                            <?= $DataVentas->getFormaPago() ?></p>
+                                        <strong><i class="far fa-calendar mr-1"></i> Valor Total</strong>
+                                        <p class="text-muted"><?= GeneralFunctions::formatCurrency($DataVentas->getValorTotal()); ?></p>
                                         <hr>
-
-                                        <strong><i class="far fa-file-alt mr-1"></i> Estado </strong>
-                                        <p class="text-muted">
-                                            <?= $DataVentas->getEstado() ?></p>
+                                        <strong><i class="fas fa-money-bill mr-1"></i> Forma Pago</strong>
+                                        <p class="text-muted"><?= $DataVentas->getFormaPago(); ?></p>
+                                        <hr>
+                                        <strong><i class="fas fa-cog mr-1"></i> Estado</strong>
+                                        <p class="text-muted"><?= $DataVentas->getEstado(); ?></p>
                                         </p>
-
-
 
                                     </div>
                                     <div class="card-footer">
@@ -118,9 +108,14 @@ use App\Controllers\ComprasController; ?>
                                             <div class="col-auto mr-auto">
                                                 <a role="button" href="index.php" class="btn btn-success float-right"
                                                    style="margin-right: 5px;">
-                                                    <i class="fas fa-tasks"></i> Gestionar Ventas
+                                                    <i class="fas fa-tasks"></i> Gestionar <?= $pluralModel ?>
                                                 </a>
-
+                                            </div>
+                                            <div class="col-auto">
+                                                <a role="button" href="create.php" class="btn btn-primary float-right"
+                                                   style="margin-right: 5px;">
+                                                    <i class="fas fa-plus"></i> Crear <?= $nameModel ?>
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
@@ -136,10 +131,10 @@ use App\Controllers\ComprasController; ?>
                                 <?php }
                             } ?>
                         </div>
-                        <!-- /.card -->
                     </div>
                 </div>
             </div>
+            <!-- /.card -->
         </section>
         <!-- /.content -->
     </div>

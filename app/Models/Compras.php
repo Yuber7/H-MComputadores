@@ -89,7 +89,17 @@ class Compras extends AbstractDBConnection implements Model, JsonSerializable
      */
     public function setValorTotal(float $valor_total): void
     {
-        $this->valor_total = $valor_total;
+        $total = 0;
+        if($this->getId() != null){
+            $arrDetallesCompra = $this->getDetalleCompra();
+            if(!empty($arrDetallesCompra)){
+                /* @var $arrDetallesCompra DetalleCompras[] */
+                foreach ($arrDetallesCompra as $DetalleCompra){
+                    $total += $DetalleCompra->getTotalProducto();
+                }
+            }
+        }
+        $this->valor_total = $total;
     }
 
     /**
@@ -147,7 +157,7 @@ class Compras extends AbstractDBConnection implements Model, JsonSerializable
     public function getAdministrador(): ?Personas
     {
         if(!empty($this->administrador_id)){
-            $this->empleado = Personas::searchForId($this->administrador_id) ?? new Personas();
+            $this->administrador = Personas::searchForId($this->administrador_id) ?? new Personas();
             return $this->administrador;
         }
         return NULL;
@@ -180,7 +190,7 @@ class Compras extends AbstractDBConnection implements Model, JsonSerializable
     public function getDetalleCompra(): ?array
     {
 
-        $this->detalleCompra = DetalleCompras::search('SELECT * FROM h&mcomputadores.detalle_compras where compra_id = '.$this->id);
+        $this->detalleCompra = DetalleCompras::search('SELECT * FROM `h&mcomputadores`.detalle_compras where compra_id = '.$this->id);
         return $this->detalleCompra;
     }
 
@@ -209,7 +219,7 @@ class Compras extends AbstractDBConnection implements Model, JsonSerializable
      */
     function insert(): ?bool
     {
-        $query = "INSERT INTO h&mcomputadores.compras VALUES (:id,:fecha,:administrador_id,:proveedor_id,:valor_total,:estado)";
+        $query = "INSERT INTO `h&mcomputadores`.compras VALUES (:id,:fecha,:administrador_id,:proveedor_id,:valor_total,:estado)";
         return $this->save($query);
     }
 
@@ -218,7 +228,7 @@ class Compras extends AbstractDBConnection implements Model, JsonSerializable
      */
     public function update() : ?bool
     {
-        $query = "UPDATE h&mcomputadores.compras SET 
+        $query = "UPDATE `h&mcomputadores`.compras SET 
             fecha = :fecha, administrador_id = :administrador_id,
             proveedor_id = :proveedor_id, valor_total = :valor_total,
             estado = :estado WHERE id = :id";
@@ -230,7 +240,7 @@ class Compras extends AbstractDBConnection implements Model, JsonSerializable
      */
     public function deleted() : bool
     {
-        $this->setEstado("Inactivo"); //Cambia el estado del Usuario
+        $this->setEstado("Recibido"); //Cambia el estado del Usuario
         return $this->update();                    //Guarda los cambios..
     }
 
@@ -270,7 +280,7 @@ class Compras extends AbstractDBConnection implements Model, JsonSerializable
             if ($id > 0) {
                 $Compra = new Compras();
                 $Compra->Connect();
-                $getrow = $Compra->getRow("SELECT * FROM h&mcomputadores.compras WHERE id =?", array($id));
+                $getrow = $Compra->getRow("SELECT * FROM `h&mcomputadores`.compras WHERE id =?", array($id));
                 $Compra->Disconnect();
                 return ($getrow) ? new Compras($getrow) : null;
             }else{
@@ -288,7 +298,7 @@ class Compras extends AbstractDBConnection implements Model, JsonSerializable
      */
     public static function getAll() : array
     {
-        return Compras::search("SELECT * FROM h&mcomputadores.compras");
+        return Compras::search("SELECT * FROM `h&mcomputadores`.compras");
     }
 
     /**
@@ -299,7 +309,7 @@ class Compras extends AbstractDBConnection implements Model, JsonSerializable
     public static function facturaRegistrada($fecha): bool
     {
         $fecha = trim(strtolower($fecha));
-        $result = Categorias::search("SELECT id FROM h&mcomputadores.compras where fecha = '" . $fecha. "'");
+        $result = Categorias::search("SELECT id FROM `h&mcomputadores`.compras where fecha = '" . $fecha. "'");
         if ( !empty($result) && count ($result) > 0 ) {
             return true;
         } else {
