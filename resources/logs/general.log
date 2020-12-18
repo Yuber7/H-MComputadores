@@ -2766,3 +2766,448 @@
 
 )
   
+[2020-12-17T03:50:09.088273+00:00] General.ERROR: Exception  
+[2020-12-17T03:50:09.110379+00:00] General.ERROR: Archivo: C:\laragon\www\H-MComputadores\app\Models\AbstractDBConnection.php  
+[2020-12-17T03:50:09.110600+00:00] General.ERROR: Line: 101  
+[2020-12-17T03:50:09.110732+00:00] General.ERROR: Mensaje: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '&mcomputadores.compras' at line 1  
+[2020-12-17T03:50:09.124074+00:00] General.ERROR: Array
+(
+    [0] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\AbstractDBConnection.php
+            [line] => 101
+            [function] => execute
+            [class] => PDOStatement
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => Array
+                        (
+                        )
+
+                )
+
+        )
+
+    [1] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Compras.php
+            [line] => 247
+            [function] => getRows
+            [class] => App\Models\AbstractDBConnection
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => SELECT * FROM h&mcomputadores.compras
+                )
+
+        )
+
+    [2] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Compras.php
+            [line] => 291
+            [function] => search
+            [class] => App\Models\Compras
+            [type] => ::
+            [args] => Array
+                (
+                    [0] => SELECT * FROM h&mcomputadores.compras
+                )
+
+        )
+
+    [3] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Controllers\ComprasController.php
+            [line] => 72
+            [function] => getAll
+            [class] => App\Models\Compras
+            [type] => ::
+            [args] => Array
+                (
+                )
+
+        )
+
+    [4] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\views\modules\ventas\index.php
+            [line] => 111
+            [function] => getAll
+            [class] => App\Controllers\ComprasController
+            [type] => ::
+            [args] => Array
+                (
+                )
+
+        )
+
+)
+  
+[2020-12-18T00:50:58.157825+00:00] General.ERROR: Exception  
+[2020-12-18T00:50:58.202541+00:00] General.ERROR: Archivo: C:\laragon\www\H-MComputadores\app\Models\AbstractDBConnection.php  
+[2020-12-18T00:50:58.203052+00:00] General.ERROR: Line: 101  
+[2020-12-18T00:50:58.203484+00:00] General.ERROR: Mensaje: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '&mcomputadores.ventas' at line 1  
+[2020-12-18T00:50:58.203809+00:00] General.ERROR: Array
+(
+    [0] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\AbstractDBConnection.php
+            [line] => 101
+            [function] => execute
+            [class] => PDOStatement
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => Array
+                        (
+                        )
+
+                )
+
+        )
+
+    [1] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Compras.php
+            [line] => 247
+            [function] => getRows
+            [class] => App\Models\AbstractDBConnection
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => SELECT * FROM h&mcomputadores.ventas
+                )
+
+        )
+
+    [2] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Ventas.php
+            [line] => 317
+            [function] => search
+            [class] => App\Models\Compras
+            [type] => ::
+            [args] => Array
+                (
+                    [0] => SELECT * FROM h&mcomputadores.ventas
+                )
+
+        )
+
+    [3] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Controllers\VentasController.php
+            [line] => 72
+            [function] => getAll
+            [class] => App\Models\Ventas
+            [type] => ::
+            [args] => Array
+                (
+                )
+
+        )
+
+    [4] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\views\modules\ventas\index.php
+            [line] => 103
+            [function] => getAll
+            [class] => App\Controllers\VentasController
+            [type] => ::
+            [args] => Array
+                (
+                )
+
+        )
+
+)
+  
+[2020-12-18T02:36:03.420278+00:00] General.ERROR: Exception  
+[2020-12-18T02:36:03.420918+00:00] General.ERROR: Archivo: C:\laragon\www\H-MComputadores\app\Models\AbstractDBConnection.php  
+[2020-12-18T02:36:03.421052+00:00] General.ERROR: Line: 101  
+[2020-12-18T02:36:03.421171+00:00] General.ERROR: Mensaje: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '&mcomputadores.detalle_compras where compra_id = 2' at line 1  
+[2020-12-18T02:36:03.421321+00:00] General.ERROR: Array
+(
+    [0] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\AbstractDBConnection.php
+            [line] => 101
+            [function] => execute
+            [class] => PDOStatement
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => Array
+                        (
+                        )
+
+                )
+
+        )
+
+    [1] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\DetalleCompras.php
+            [line] => 224
+            [function] => getRows
+            [class] => App\Models\AbstractDBConnection
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => SELECT * FROM h&mcomputadores.detalle_compras where compra_id = 2
+                )
+
+        )
+
+    [2] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Compras.php
+            [line] => 193
+            [function] => search
+            [class] => App\Models\DetalleCompras
+            [type] => ::
+            [args] => Array
+                (
+                    [0] => SELECT * FROM h&mcomputadores.detalle_compras where compra_id = 2
+                )
+
+        )
+
+    [3] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Compras.php
+            [line] => 94
+            [function] => getDetalleCompra
+            [class] => App\Models\Compras
+            [type] => ->
+            [args] => Array
+                (
+                )
+
+        )
+
+    [4] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Compras.php
+            [line] => 35
+            [function] => setValorTotal
+            [class] => App\Models\Compras
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => 36111
+                )
+
+        )
+
+    [5] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Compras.php
+            [line] => 261
+            [function] => __construct
+            [class] => App\Models\Compras
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => Array
+                        (
+                            [id] => 2
+                            [fecha] => 2020-11-01 00:00:00
+                            [administrador_id] => 4
+                            [cliente_id] => 2
+                            [valor_total] => 36111
+                            [forma_pago] => Efectivo
+                            [estado] => Pendiente
+                        )
+
+                )
+
+        )
+
+    [6] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Ventas.php
+            [line] => 317
+            [function] => search
+            [class] => App\Models\Compras
+            [type] => ::
+            [args] => Array
+                (
+                    [0] => SELECT * FROM `h&mcomputadores`.ventas
+                )
+
+        )
+
+    [7] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Controllers\VentasController.php
+            [line] => 72
+            [function] => getAll
+            [class] => App\Models\Ventas
+            [type] => ::
+            [args] => Array
+                (
+                )
+
+        )
+
+    [8] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\views\modules\ventas\index.php
+            [line] => 104
+            [function] => getAll
+            [class] => App\Controllers\VentasController
+            [type] => ::
+            [args] => Array
+                (
+                )
+
+        )
+
+)
+  
+[2020-12-18T03:14:33.252492+00:00] General.ERROR: Exception  
+[2020-12-18T03:14:33.253059+00:00] General.ERROR: Archivo: C:\laragon\www\H-MComputadores\app\Models\AbstractDBConnection.php  
+[2020-12-18T03:14:33.253206+00:00] General.ERROR: Line: 101  
+[2020-12-18T03:14:33.253320+00:00] General.ERROR: Mensaje: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '&mcomputadores.detalle_compras where compra_id = 1' at line 1  
+[2020-12-18T03:14:33.253445+00:00] General.ERROR: Array
+(
+    [0] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\AbstractDBConnection.php
+            [line] => 101
+            [function] => execute
+            [class] => PDOStatement
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => Array
+                        (
+                        )
+
+                )
+
+        )
+
+    [1] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\DetalleCompras.php
+            [line] => 224
+            [function] => getRows
+            [class] => App\Models\AbstractDBConnection
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => SELECT * FROM h&mcomputadores.detalle_compras where compra_id = 1
+                )
+
+        )
+
+    [2] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Compras.php
+            [line] => 193
+            [function] => search
+            [class] => App\Models\DetalleCompras
+            [type] => ::
+            [args] => Array
+                (
+                    [0] => SELECT * FROM h&mcomputadores.detalle_compras where compra_id = 1
+                )
+
+        )
+
+    [3] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Compras.php
+            [line] => 94
+            [function] => getDetalleCompra
+            [class] => App\Models\Compras
+            [type] => ->
+            [args] => Array
+                (
+                )
+
+        )
+
+    [4] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Compras.php
+            [line] => 35
+            [function] => setValorTotal
+            [class] => App\Models\Compras
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => 36111
+                )
+
+        )
+
+    [5] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Compras.php
+            [line] => 261
+            [function] => __construct
+            [class] => App\Models\Compras
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => Array
+                        (
+                            [id] => 1
+                            [fecha] => 2020-11-01 00:00:00
+                            [administrador_id] => 4
+                            [proveedor_id] => 2
+                            [valor_total] => 36111
+                            [estado] => Pendiente
+                        )
+
+                )
+
+        )
+
+    [6] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Compras.php
+            [line] => 301
+            [function] => search
+            [class] => App\Models\Compras
+            [type] => ::
+            [args] => Array
+                (
+                    [0] => SELECT * FROM `h&mcomputadores`.compras
+                )
+
+        )
+
+    [7] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Controllers\ComprasController.php
+            [line] => 72
+            [function] => getAll
+            [class] => App\Models\Compras
+            [type] => ::
+            [args] => Array
+                (
+                )
+
+        )
+
+    [8] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\views\modules\compras\index.php
+            [line] => 104
+            [function] => getAll
+            [class] => App\Controllers\ComprasController
+            [type] => ::
+            [args] => Array
+                (
+                )
+
+        )
+
+)
+  

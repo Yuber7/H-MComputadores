@@ -76,19 +76,19 @@ class Personas extends AbstractDBConnection implements Model, JsonSerializable
     }
 
     /**
-     * @return string
+     * @return mixed|string
      */
     public function getNombre(): string
     {
-        return $this->nombre;
+        return ucwords($this->nombre);
     }
 
     /**
-     * @param string $nombre
+     * @param mixed|string $nombre
      */
     public function setNombre(string $nombre): void
     {
-        $this->nombre = $nombre;
+        $this->nombre = trim(mb_strtolower($nombre, 'UTF-8'));
     }
 
     /**
