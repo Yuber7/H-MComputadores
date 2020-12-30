@@ -1,15 +1,20 @@
 <?php
 require_once("../../../app/Controllers/PersonasController.php");
 require_once("../../partials/routes.php");
+require_once("../../partials/check_login.php");
 
 use App\Controllers\PersonasController;
+use App\Models\GeneralFunctions;
 use App\Models\Personas;
 
+$nameModel = "Persona";
+$pluralModel = $nameModel.'s';
+$frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?= $_ENV['TITLE_SITE'] ?> | Gestionar Personas</title>
+    <title><?= $_ENV['TITLE_SITE'] ?> | Gestión de <?= $pluralModel ?></title>
     <?php require("../../partials/head_imports.php"); ?>
     <!-- DataTables -->
     <link rel="stylesheet" href="<?= $adminlteURL ?>/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
@@ -35,8 +40,8 @@ use App\Models\Personas;
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/">H&M</a></li>
-                            <li class="breadcrumb-item active">Inicio</li>
+                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/"><?= $_ENV['ALIASE_SITE'] ?></a></li>
+                            <li class="breadcrumb-item active"><?= $pluralModel ?></li>
                         </ol>
                     </div>
                 </div>
@@ -45,28 +50,15 @@ use App\Models\Personas;
 
         <!-- Main content -->
         <section class="content">
-
-            <?php if (!empty($_GET['respuesta']) && !empty($_GET['accion'])) { ?>
-                <?php if ($_GET['respuesta'] == "correcto") { ?>
-                    <div class="alert alert-success alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                        <h5><i class="icon fas fa-check"></i> Correcto!</h5>
-                        <?php if ($_GET['accion'] == "create") { ?>
-                            La persona ha sido creada con exito!
-                        <?php } else if ($_GET['accion'] == "update") { ?>
-                            Los datos de la persona han sido actualizados correctamente!
-                        <?php } ?>
-                    </div>
-                <?php } ?>
-            <?php } ?>
-
+            <!-- Generar Mensajes de alerta -->
+            <?= (!empty($_GET['respuesta'])) ? GeneralFunctions::getAlertDialog($_GET['respuesta'], $_GET['mensaje']) : ""; ?>
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
                         <!-- Default box -->
                         <div class="card card-dark">
                             <div class="card-header">
-                                <h3 class="card-title"><i class="fas fa-user"></i>  Gestionar Personas</h3>
+                                <h3 class="card-title"><i class="fas fa-user"></i> &nbsp; Gestionar <?= $pluralModel ?></h3>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
                                             data-source="index.php" data-source-selector="#card-refresh-content"
@@ -87,68 +79,63 @@ use App\Models\Personas;
                                     <div class="col-auto">
                                         <a role="button" href="create.php" class="btn btn-primary float-right"
                                            style="margin-right: 5px;">
-                                            <i class="fas fa-plus"></i> Crear Persona
+                                            <i class="fas fa-plus"></i> Crear <?= $nameModel ?>
                                         </a>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col">
-                                        <table id="tblPersonas" class="datatable table table-bordered table-striped">
+                                        <table id="tbl<?= $pluralModel ?>" class="datatable table table-bordered table-striped">
                                             <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Nombre</th>
-                                                <th>Apellido</th>
+                                                <th>Nombres</th>
+                                                <th>Apellidos</th>
                                                 <th>Tipo Doc.</th>
                                                 <th>Documento</th>
                                                 <th>Telefono</th>
                                                 <th>Rol</th>
-                                                <th>Municipio id</th>
                                                 <th>Direccion</th>
                                                 <th>Email</th>
-                                                <th>Usuario</th>
                                                 <th>Estado</th>
                                                 <th>Acciones</th>
-
                                             </tr>
                                             </thead>
                                             <tbody>
                                             <?php
                                             $arrPersonas = PersonasController::getAll();
                                             /* @var $arrPersonas Personas[] */
-                                            foreach ($arrPersonas as $personas) {
+                                            foreach ($arrPersonas as $persona) {
                                                 ?>
                                                 <tr>
-                                                    <td><?php echo $personas->getId(); ?></td>
-                                                    <td><?php echo $personas->getNombre(); ?></td>
-                                                    <td><?php echo $personas->getApellido(); ?></td>
-                                                    <td><?php echo $personas->getTipo_documento(); ?></td>
-                                                    <td><?php echo $personas->getDocumento(); ?></td>
-                                                    <td><?php echo $personas->getTelefono(); ?></td>
-                                                    <td><?php echo $personas->getRol(); ?></td>
-                                                    <td><?php echo $personas->getMunicipioId()->getNombre(); ?> - <?php echo $personas->getMunicipioId()->getId(); ?> </td>
-                                                    <td><?php echo $personas->getDireccion(); ?></td>
-                                                    <td><?php echo $personas->getEmail(); ?></td>
-                                                    <td><?php echo $personas->getUser(); ?></td>
-                                                    <td><?php echo $personas->getEstado(); ?></td>
+                                                    <td><?= $persona->getId(); ?></td>
+                                                    <td><?= $persona->getNombre(); ?></td>
+                                                    <td><?= $persona->getApellido(); ?></td>
+                                                    <td><?= $persona->getTipoDocumento(); ?></td>
+                                                    <td><?= $persona->getDocumento(); ?></td>
+                                                    <td><?= $persona->getTelefono(); ?></td>
+                                                    <td><?= $persona->getRol(); ?></td>
+                                                    <td><?= $persona->getDireccion(); ?>, <?= $persona->getMunicipio()->getNombre(); ?></td>
+                                                    <td><?= $persona->getEmail(); ?></td>
+                                                    <td><?= $persona->getEstado(); ?></td>
                                                     <td>
-                                                        <a href="edit.php?id=<?php echo $personas->getId(); ?>"
+                                                        <a href="edit.php?id=<?php echo $persona->getId(); ?>"
                                                            type="button" data-toggle="tooltip" title="Actualizar"
                                                            class="btn docs-tooltip btn-primary btn-xs"><i
                                                                     class="fa fa-edit"></i></a>
-                                                        <a href="show.php?id=<?php echo $personas->getId(); ?>"
+                                                        <a href="show.php?id=<?php echo $persona->getId(); ?>"
                                                            type="button" data-toggle="tooltip" title="Ver"
                                                            class="btn docs-tooltip btn-warning btn-xs"><i
                                                                     class="fa fa-eye"></i></a>
-                                                        <?php if ($personas->getEstado() != "Activo") { ?>
-                                                            <a href="../../../app/Controllers/PersonasController.php?action=Activo&Id=<?php echo $personas->getId(); ?>"
-                                                               type="button" data-toggle="tooltip" title="Activo"
+                                                        <?php if ($persona->getEstado() != "Activo") { ?>
+                                                            <a href="../../../app/Controllers/MainController.php?controller=<?= $pluralModel ?>&action=activate&id=<?= $persona->getId(); ?>"
+                                                               type="button" data-toggle="tooltip" title="Activar"
                                                                class="btn docs-tooltip btn-success btn-xs"><i
                                                                         class="fa fa-check-square"></i></a>
                                                         <?php } else { ?>
                                                             <a type="button"
-                                                               href="../../../app/Controllers/PersonasController.php?action=Inactivo&Id=<?php echo $personas->getId(); ?>"
-                                                               data-toggle="tooltip" title="Inactivo"
+                                                               href="../../../app/Controllers/MainController.php?controller=<?= $pluralModel ?>&action=inactivate&id=<?= $persona->getId(); ?>"
+                                                               data-toggle="tooltip" title="Inactivar"
                                                                class="btn docs-tooltip btn-danger btn-xs"><i
                                                                         class="fa fa-times-circle"></i></a>
                                                         <?php } ?>
@@ -160,16 +147,14 @@ use App\Models\Personas;
                                             <tfoot>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Nombre</th>
-                                                <th>Apellido</th>
+                                                <th>Nombres</th>
+                                                <th>Apellidos</th>
                                                 <th>Tipo Doc.</th>
                                                 <th>Documento</th>
                                                 <th>Telefono</th>
                                                 <th>Rol</th>
-                                                <th>Municipio id</th>
                                                 <th>Direccion</th>
                                                 <th>Email</th>
-                                                <th>Usuario</th>
                                                 <th>Estado</th>
                                                 <th>Acciones</th>
                                             </tr>
@@ -197,41 +182,8 @@ use App\Models\Personas;
 </div>
 <!-- ./wrapper -->
 <?php require('../../partials/scripts.php'); ?>
-<!-- DataTables -->
-<script src="<?= $adminlteURL ?>/plugins/datatables/jquery.dataTables.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-responsive/js/dataTables.responsive.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-responsive/js/responsive.bootstrap4.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-buttons/js/dataTables.buttons.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-buttons/js/buttons.bootstrap4.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/jszip/jszip.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/pdfmake/pdfmake.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-buttons/js/buttons.html5.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-buttons/js/buttons.print.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-buttons/js/buttons.colVis.js"></script>
-
-<script>
-    $(function () {
-        $('.datatable').DataTable({
-            "dom": 'Bfrtip',
-            "paging": true,
-            "lengthChange": true,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "autoWidth": true,
-            "language": {
-                "url": "../../public/Spanish.json" //Idioma
-            },
-            "buttons": [
-                'copy', 'print', 'excel', 'pdf'
-            ],
-            "pagingType": "full_numbers",
-            "responsive": true,
-            "stateSave": true, //Guardar la configuracion del usuario
-        });
-    });
-</script>
+<!-- Scripts requeridos para las datatables -->
+<?php require('../../partials/datatables_scripts.php'); ?>
 
 </body>
 </html>

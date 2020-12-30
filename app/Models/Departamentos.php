@@ -4,7 +4,6 @@
 namespace App\Models;
 
 use App\Models\Interfaces\Model;
-use Carbon\Carbon;
 use Exception;
 use JsonSerializable;
 
@@ -12,20 +11,28 @@ use JsonSerializable;
 class Departamentos extends AbstractDBConnection implements Model, JsonSerializable
 {
     //Propiedades
-    protected int $id;
+    protected ?int $id;
     protected string $nombre;
     protected string $region;
     protected string $estado;
 
+
+    /* Relaciones */
+    private ?array $MunicipiosDepartamento;
+
+    /**
+     * Departamentos constructor. Recibe un array asociativo
+     * @param array $departamento
+     */
     //Metodo constructor
     public function __construct(array $Departamento = [])
     {
         parent::__construct();
         //Propiedad recibida y asigna a una propiedad de la clase
-        $this->setId($Departamento['id'] ?? 0);
-        $this->setNombre($Departamento['nombre'] ?? "");
-        $this->setRegion($Departamento['region'] ?? "");
-        $this->setEstado($Departamento['estado'] ?? "");
+        $this->setId($Departamento['id'] ?? NULL);
+        $this->setNombre($Departamento['nombre'] ?? '');
+        $this->setRegion($Departamento['region'] ?? '');
+        $this->setEstado($Departamento['estado'] ?? '');
 
     }
 
@@ -49,7 +56,7 @@ class Departamentos extends AbstractDBConnection implements Model, JsonSerializa
     /**
      * @param int $id
      */
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }
@@ -103,49 +110,22 @@ class Departamentos extends AbstractDBConnection implements Model, JsonSerializa
         $this->estado = $estado;
     }
 
-
-    protected function save(string $query): ?bool
-    {
-        $arrData = [
-            ':id' =>    $this->getId(),
-            ':nombre' =>   $this->getNombre(),
-            ':region' =>   $this->getRegion(),
-            ':estado' =>   $this->getEstado(),
-        ];
-        $this->Connect();
-        $result = $this->insertRow($query, $arrData);
-        $this->Disconnect();
-        return $result;
-    }
-
+    /* Relaciones */
     /**
-     * @return bool|null
+     * retorna un array de municipios que perteneces a un departamento
+     * @return array
      */
-    public function insert(): ?bool
+    public function getMunicipiosDepartamento(): ?array
     {
-        $query = "INSERT INTO `h&mcomputadores`.departamentos VALUES (
-            :id,:nombre,:region,:estado
-        )";
-        return $this->save($query);
+        if(!empty($this-> MunicipiosDepartamento)){
+            $this-> MunicipiosDepartamento = Municipios::search("SELECT * FROM `h&mcomputadores`.municipios WHERE departamento_id = ".$this->id);
+            return $this-> MunicipiosDepartamento;
+        }
+        return null;
     }
 
-    public function update(): ?bool
-    {
-        $query = "UPDATE `h&mcomputadores`.departamentos SET 
-            nombre = :nombre, region = :region, estado = :estado WHERE id = :id";
-        return $this->save($query);
-    }
 
-    /**
-     * @param $id
-     * @return bool
-     * @throws Exception
-     */
-    public function deleted(): bool
-    {
-        $this->setEstado("Inactivo"); //Cambia el estado del Usuario
-        return $this->update();             //Guarda los cambios..
-    }
+
 
     /**
      * @param $query
@@ -205,21 +185,6 @@ class Departamentos extends AbstractDBConnection implements Model, JsonSerializa
         return Departamentos::search("SELECT * FROM `h&mcomputadores`.departamentos");
     }
 
-    /**
-     * @param $nombre
-     * @return bool
-     * @throws Exception
-     */
-    public static function DepartamentoRegistrado ($nombre): bool
-    {
-        $result = Departamentos::search("SELECT * FROM `h&mcomputadores`.departamentos where nombre = " . $nombre);
-        if ( !empty($result) && count ($result) > 0 ) {
-            return true;
-        } else {
-            return false;
-        }
-
-    }
 
     /**
      * @return string
@@ -238,5 +203,11 @@ class Departamentos extends AbstractDBConnection implements Model, JsonSerializa
             'estado' => $this->getEstado(),
         ];
     }
+
+    protected function save(string $query): ?bool { return null; }
+    function insert(){ }
+    function update() { }
+    function deleted() { }
+
 }
 

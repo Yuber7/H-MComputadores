@@ -1,142 +1,137 @@
 <?php
+
 namespace App\Controllers;
 
-require(__DIR__ . '/../../vendor/autoload.php'); //Requerido para convertir un objeto en Array
-require_once(__DIR__ . '/../Models/Ventas.php');
-require_once(__DIR__ . '/../Models/Personas.php');
-require_once(__DIR__ . '/../Models/GeneralFunctions.php');
-
+require (__DIR__.'/../../vendor/autoload.php');
 use App\Models\GeneralFunctions;
-use App\Models\Compras;
+use App\Models\Ventas;
 use Carbon\Carbon;
 
-if (!empty($_GET['action'])) { //VentasController.php?action=create
-    VentasController::main($_GET['action']);
-}
+class VentasController{
 
-class VentasController
-{
+    private array $dataVenta;
 
-    static function main($action)
+    public function __construct(array $_FORM)
     {
-        if ($action == "create") {
-            VentasController::create();
-        } else if ($action == "edit") {
-            VentasController::edit();
-        } else if ($action == "searchForID") {
-            VentasController::searchForID($_REQUEST['idVentas']);
-        } else if ($action == "searchAll") {
-            VentasController::getAll();
-        } else if ($action == "Procesada") {
-            VentasController::activate();
-        } else if ($action == "Pendiente") {
-            VentasController::inactivate();
-        }
+        $this->dataVenta = array();
+        $this->dataVenta['id'] = $_FORM['id'] ?? NULL;
+        $this->dataVenta['fecha'] = !empty($_FORM['fecha']) ? Carbon::parse($_FORM['fecha']) : new Carbon();
+        $this->dataVenta['administrador_id'] = $_FORM['administrador_id'] ?? 0;
+        $this->dataVenta['cliente_id'] = $_FORM['cliente_id'] ?? 0;
+        $this->dataVenta['valor_total'] = $_FORM['valor_total'] ?? 0;
+        $this->dataVenta['forma_pago'] = $_FORM['forma_pago'] ?? '';
+        $this->dataVenta['estado'] = $_FORM['estado'] ?? 'Pendiente';
     }
 
-
-    static public function create()
-    {
+    public function create() {
         try {
-            $arrayVentas = array();
-            $arrayVentas['fecha'] = Carbon::parse($_POST['fecha']);
-            $arrayVentas['valor_total'] = $_POST['valor_total'];
-            $arrayVentas['persona_id'] = $_POST['persona_id'];
-            $arrayVentas['forma_pago'] = $_POST['forma_pago'];
-            $arrayVentas['estado'] = $_POST['estado'];
-
-            //esta linea aun no funciona debemos dejar lo de registrar por otro tipo de dato no se puede por id
-            //if (!Ventas::VentaRegistrada($arrayVentas['id'])) {
-                $Ventas = new Compras($arrayVentas);
-                if ($Ventas->save()) {
-                    header("Location: ../../views/modules/ventas/index.php?accion=create&respuesta=correcto");
-                }
-            /*} else {
-                header("Location: ../../views/modules/ventas/create.php?respuesta=error&mensaje=Venta ya registrada");
-            }*/
-        } catch (Exception $e) {
-            GeneralFunctions::console($e, 'error', 'errorStack');
-            //header("Location: ../../views/modules/usuarios/create.php?respuesta=error&mensaje=" . $e->getMessage());
-        }
-    }
-
-
-    static public function edit()
-    {
-        try {
-            $arrayVentas = array();
-            $arrayVentas['fecha'] = Carbon::parse($_POST['fecha']);
-            $arrayVentas['valor_total'] = $_POST['valor_total'];
-            $arrayVentas['persona_id'] = $_POST['persona_id'];
-            $arrayVentas['forma_pago'] = $_POST['forma_pago'];
-            $arrayVentas['estado'] = $_POST['estado'];
-            $arrayVentas['id'] = $_POST['id'];
-
-            $Ventas = new Compras($arrayVentas);
-            $Ventas->update();
-
-            header("Location: ../../views/modules/ventas/show.php?id=" . $Ventas->getId() . "&respuesta=correcto");
+            $Venta = new Ventas($this->dataVenta);
+            if ($Venta->insert()) {
+                unset($_SESSION['frmVentas']);
+                $Venta->Connect();
+                $id = $Venta->getLastId('ventas');
+                $Venta->Disconnect();
+                header("Location: ../../views/modules/ventas/create.php?id=" . $id . "");
+            }
         } catch (\Exception $e) {
-            GeneralFunctions::console($e, 'error', 'errorStack');
-            //header("Location: ../../views/modules/ventas/edit.php?respuesta=error&mensaje=".$e->getMessage());
+            GeneralFunctions::logFile('Exception',$e, 'error');
+            //header("Location: ../../views/modules/ventas/create.php?respuesta=error");
         }
     }
 
-    static public function searchForID($id)
+    public function edit()
     {
         try {
-            return Compras::searchForId($id);
+            $Venta = new Ventas($this->dataVenta);
+            if($Venta->update()){
+                unset($_SESSION['frmVentas']);
+            }
+            header("Location: ../../views/modules/ventas/show.php?id=" . $Venta->getId() . "&respuesta=success&mensaje=Venta Actualizada");
         } catch (\Exception $e) {
-            GeneralFunctions::console($e, 'error', 'errorStack');
-            //header("Location: ../../views/modules/ventas/manager.php?respuesta=error");
+            GeneralFunctions::logFile('Exception',$e, 'error');
+            //header("Location: ../../views/modules/ventas/edit.php?respuesta=error");
         }
     }
 
-    static public function getAll()
-    {
+    static public function searchForID (array $data){
         try {
-            return Compras::getAll();
+            $result = Ventas::searchForId($data['id']);
+            if (!empty($data['request']) and $data['request'] === 'ajax' and !empty($result)) {
+                header('Content-type: application/json; charset=utf-8');
+                $result = json_encode($result->jsonSerialize());
+            }
+            return $result;
         } catch (\Exception $e) {
-            GeneralFunctions::console($e, 'log', 'errorStack');
-            //header("Location: ../Vista/modules/ventas/manager.php?respuesta=error");
+            GeneralFunctions::logFile('Exception',$e, 'error');
+        }
+        return null;
+    }
+
+    static public function getAll (array $data = null){
+        try {
+            $result = Ventas::getAll();
+            if (!empty($data['request']) and $data['request'] === 'ajax') {
+                header('Content-type: application/json; charset=utf-8');
+                $result = json_encode($result);
+            }
+            return $result;
+        } catch (\Exception $e) {
+            GeneralFunctions::logFile('Exception',$e, 'error');
+        }
+        return null;
+    }
+
+    static public function cancel(){
+        try {
+            $ObjVenta = Ventas::searchForId($_GET['Id']);
+            $ObjVenta->setEstado("Cancelada");
+            if($ObjVenta->update()){
+                header("Location: ../../views/modules/ventas/index.php");
+            }else{
+                header("Location: ../../views/modules/ventas/index.php?respuesta=error&mensaje=Error al guardar");
+            }
+        } catch (\Exception $e) {
+            GeneralFunctions::logFile('Exception',$e, 'error');
+            header("Location: ../../views/modules/ventas/index.php?respuesta=error");
         }
     }
 
+    static public function selectVentas (array $params = [] ){
 
-    static public function selectVentas($isMultiple = false,
-                                           $isRequired = true,
-                                           $id = "venta_id",
-                                           $nombre = "venta_id",
-                                           $defaultValue = "",
-                                           $class = "form-control",
-                                           $where = "",
-                                           $arrExcluir = array())
-    {
+        $params['isMultiple'] = $params['isMultiple'] ?? false;
+        $params['isRequired'] = $params['isRequired'] ?? true;
+        $params['id'] = $params['id'] ?? "venta_id";
+        $params['name'] = $params['name'] ?? "venta_id";
+        $params['defaultValue'] = $params['defaultValue'] ?? "";
+        $params['class'] = $params['class'] ?? "form-control";
+        $params['where'] = $params['where'] ?? "";
+        $params['arrExcluir'] = $params['arrExcluir'] ?? array();
+        $params['request'] = $params['request'] ?? 'html';
+
         $arrVentas = array();
-        if ($where != "") {
-            $base = "SELECT * FROM `h&mcomputadores`.ventas WHERE ";
-            $arrVentas = Compras::search($base . ' ' . $where);
-        } else {
-            $arrVentas = Compras::getAll();
+        if($params['where'] != ""){
+            $base = "SELECT * FROM ventas WHERE ";
+            $arrVentas = Ventas::search($base.$params['where']);
+        }else{
+            $arrVentas = Ventas::getAll();
         }
 
-        $htmlSelect = "<select " . (($isMultiple) ? "multiple" : "") . " " . (($isRequired) ? "required" : "") . " id= '" . $id . "' name='" . $nombre . "' class='" . $class . "' style='width: 100%;'>";
+        $htmlSelect = "<select ".(($params['isMultiple']) ? "multiple" : "")." ".(($params['isRequired']) ? "required" : "")." id= '".$params['id']."' name='".$params['name']."' class='".$params['class']."'>";
         $htmlSelect .= "<option value='' >Seleccione</option>";
-        if (count($arrVentas) > 0) {
-            /* @var $arrVentas Compras[] */
-            foreach ($arrVentas as $venta)
-                if (!VentasController::ventaIsInArray($venta->getId(), $arrExcluir))
-                    $htmlSelect .= "<option " . (($venta != "") ? (($defaultValue == $venta->getId()) ? "selected" : "") : "") . " value='" . $venta->getId() . "'>" .  $venta->getFecha() . "</option>";
+        if (is_array($arrVentas)  && count($arrVentas) > 0) {
+            /* @var $arrVentas Ventas[] */
+            foreach ($arrVentas as $ventas)
+                if (!VentasController::ventaIsInArray($ventas->getId(),$params['arrExcluir']))
+                    $htmlSelect .= "<option ".(($ventas != "") ? (($params['defaultValue'] == $ventas->getId()) ? "selected" : "" ) : "")." value='".$ventas->getId()."'>"."</option>";
         }
         $htmlSelect .= "</select>";
         return $htmlSelect;
     }
 
-    private static function ventaIsInArray($idVenta, $arrVentas)
-    {
-        if (count($arrVentas) > 0) {
-            foreach ($arrVentas as $venta) {
-                if ($venta->getId() == $idVenta) {
+    public static function ventaIsInArray($idVenta, $ArrVentas){
+        if(count($ArrVentas) > 0){
+            foreach ($ArrVentas as $Venta){
+                if($Venta->getId() == $idVenta){
                     return true;
                 }
             }
@@ -144,36 +139,4 @@ class VentasController
         return false;
     }
 
-    static public function activate()
-    {
-        try {
-            $ObjVenta = Compras::searchForId($_GET['Id']);
-            $ObjVenta->setEstado("Procesada");
-            if ($ObjVenta->update()) {
-                header("Location: ../../views/modules/ventas/index.php");
-            } else {
-                header("Location: ../../views/modules/ventas/index.php?respuesta=error&mensaje=Error al guardar");
-            }
-        } catch (\Exception $e) {
-            GeneralFunctions::console($e, 'error', 'errorStack');
-            //header("Location: ../../views/modules/ventas/index.php?respuesta=error&mensaje=".$e->getMessage());
-        }
-    }
-
-
-    static public function inactivate()
-    {
-        try {
-            $ObjVenta = Compras::searchForId($_GET['Id']);
-            $ObjVenta->setEstado("Pendiente");
-            if ($ObjVenta->update()) {
-                header("Location: ../../views/modules/ventas/index.php");
-            } else {
-                header("Location: ../../views/modules/ventas/index.php?respuesta=error&mensaje=Error al guardar");
-            }
-        } catch (\Exception $e) {
-            GeneralFunctions::console($e, 'error', 'errorStack');
-            //header("Location: ../../views/modules/ventas/index.php?respuesta=error");
-        }
-    }
 }

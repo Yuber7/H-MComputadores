@@ -2,92 +2,87 @@
 
 namespace App\Controllers;
 
-require(__DIR__ . '/../../vendor/autoload.php'); //Requerido para convertir un objeto en Array
-require_once(__DIR__ . '/../Models/Departamentos.php');
-require_once(__DIR__ . '/../Models/GeneralFunctions.php');
 
-use App\Models\Departamentos;
 use App\Models\GeneralFunctions;
+use App\Models\Departamentos;
 
-
-if (!empty($_GET['action'])) { //D.php?action=create
-    DepartamentosController::main($_GET['action']);
-}
 
 class DepartamentosController
 {
-
-    static function main($action)
-    {
-        if ($action == "create") {
-            DepartamentosController::create();
-        } else if ($action == "edit") {
-            DepartamentosController::edit();
-        } else if ($action == "searchForID") {
-            DepartamentosController::searchForID($_REQUEST['id']);
-        } else if ($action == "searchAll") {
-            DepartamentosController::getAll();
-        }  else if ($action == "Activar") {
-            DepartamentosController::activate();
-        } else if ($action == "Inactivar") {
-            DepartamentosController::inactivate();
-        }
-    }
-
-    static public function create()
+    static public function searchForID(array $data)
     {
         try {
-            $arrayDepartamentos = array();
-            $arrayDepartamentos['nombre'] = '';
-            $arrayDepartamentos['region'] = '';
-            $arrayDepartamentos['estado'] = 'Activo';
-            $Departamento = new Departamentos($arrayDepartamentos);
-            if ($Departamento->save()) {
-                header("Location: ../../views/modules/departamentos/create.php?id=" . $Departamento->getId());
+            $result = Departamentos::searchForId($data['id']);
+            if (!empty($data['request']) and $data['request'] === 'ajax' and !empty($result)) {
+                header('Content-type: application/json; charset=utf-8');
+                $result = json_encode($result->jsonSerialize());
             }
+            return $result;
         } catch (\Exception $e) {
-            GeneralFunctions::console($e, 'error', 'errorStack');
-            header("Location: ../../views/modules/departamentos/create.php?respuesta=error&mensaje=" . $e->getMessage());
+            GeneralFunctions::logFile('Exception',$e, 'error');
         }
+        return null;
     }
 
-    static public function edit()
+    static public function getAll(array $data = null)
     {
         try {
-            $arrayDepartamentos = array();
-            $arrayDepartamentos['nombre'] = $_POST['nombre'];
-            $arrayDepartamentos['region'] = $_POST['region'];
-            $arrayDepartamentos['estado'] = $_POST['estado'];
-            $arrayDepartamentos['id'] = $_POST['id'];
-
-            $Departamento = new Departamentos($arrayDepartamentos);
-            $Departamento->update();
-
-            header("Location: ../../views/modules/departamentos/show.php?id=" . $Departamento->getId() . "&respuesta=correcto");
+            $result = Departamentos::getAll();
+            if (!empty($data['request']) and $data['request'] === 'ajax') {
+                header('Content-type: application/json; charset=utf-8');
+                $result = json_encode($result);
+            }
+            return $result;
         } catch (\Exception $e) {
-            GeneralFunctions::console($e, 'error', 'errorStack');
-            header("Location: ../../views/modules/departamentos/edit.php?respuesta=error&mensaje=" . $e->getMessage());
+            GeneralFunctions::logFile('Exception',$e, 'error');
         }
+        return null;
     }
 
-    static public function searchForID($id)
+    static public function selectDepartamentos (array $params = [])
     {
-        try {
-            return Departamentos::searchForId($id);
-        } catch (\Exception $e) {
-            GeneralFunctions::console($e, 'error', 'errorStack');
-            //header("Location: ../../views/modules/departamentos/manager.php?respuesta=error");
+        $params['isMultiple'] = $params['isMultiple'] ?? false;
+        $params['isRequired'] = $params['isRequired'] ?? true;
+        $params['id'] = $params['id'] ?? "municipio_id";
+        $params['name'] = $params['name'] ?? "municipio_id";
+        $params['defaultValue'] = $params['defaultValue'] ?? "";
+        $params['class'] = $params['class'] ?? "form-control";
+        $params['where'] = $params['where'] ?? "";
+        $params['arrExcluir'] = $params['arrExcluir'] ?? array();
+        $params['request'] = $params['request'] ?? 'html';
+
+        $arrDepartamentos = array();
+        if ($params['where'] != "") {
+            //como se cambia o como se deberia cambiar ?
+            $base = "SELECT * FROM departamentos WHERE ";
+            $arrDepartamentos = Departamentos::search($base . ' ' . $params['where']);
+        } else {
+            $arrDepartamentos = Departamentos::getAll();
         }
+
+        $htmlSelect = "<select " . (($params['isMultiple']) ? "multiple" : "") . " " . (($params['isRequired']) ? "required" : "") . " id= '" . $params['id'] . "' name='" . $params['name'] . "' class='" . $params['class'] . "' style='width: 100%;'>";
+        $htmlSelect .= "<option value='' >Seleccione</option>";
+        if (count($arrDepartamentos) > 0) {
+            /* @var $arrDepartamentos Departamentos[] */
+            foreach ($arrDepartamentos as $departamento)
+                if (!DepartamentosController::departamentoIsInArray($departamento->getId(), $params['arrExcluir']))
+                    $htmlSelect .= "<option " . (($departamento != "") ? (($params['defaultValue'] == $departamento->getId()) ? "selected" : "") : "") . " value='" . $departamento->getId() . "'>" . $departamento->getNombre() . "</option>";
+        }
+        $htmlSelect .= "</select>";
+        return $htmlSelect;
     }
 
-    static public function getAll()
+
+    private static function departamentoIsInArray($idDepartamento, $ArrDepartamentos)
     {
-        try {
-            return Departamentos::getAll();
-        } catch (\Exception $e) {
-            GeneralFunctions::console($e, 'log', 'errorStack');
-            //header("Location: ../Vista/modules/departamentos/manager.php?respuesta=error");
+        if (count($ArrDepartamentos) > 0) {
+            foreach ($ArrDepartamentos as $Departamento) {
+                if ($Departamento->getId() == $idDepartamento) {
+                    return true;
+                }
+            }
         }
+        return false;
     }
 
 }

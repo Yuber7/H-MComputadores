@@ -2,100 +2,105 @@
 
 namespace App\Controllers;
 
-require(__DIR__ . '/../../vendor/autoload.php'); //Requerido para convertir un objeto en Array
-require_once(__DIR__ . '/../Models/DetalleVentas.php');
-require_once(__DIR__ . '/../Models/Ventas.php');
-require_once(__DIR__ . '/../Models/Productos.php');
-require_once(__DIR__ . '/../Models/GeneralFunctions.php');
-
+require (__DIR__.'/../../vendor/autoload.php');
 use App\Models\GeneralFunctions;
-use App\Models\Compras;
-
-if (!empty($_GET['action'])) { //VentasController.php?action=create
-    DetalleVentasController::main($_GET['action']);
-}
+use App\Models\DetalleVentas;
 
 class DetalleVentasController
 {
+    private array $dataDetalleVenta;
 
-    static function main($action)
+    public function __construct(array $_FORM)
     {
-        if ($action == "create") {
-            DetalleVentasController::create();
-        } else if ($action == "edit") {
-            DetalleVentasController::edit();
-        } else if ($action == "searchForID") {
-            DetalleVentasController::searchForID($_REQUEST['idDetalleVentas']);
-        } else if ($action == "searchAll") {
-            DetalleVentasController::getAll();
-        } else if ($action == "Disponible") {
-            DetalleVentasController::activate();
-        } else if ($action == "Agotado") {
-            DetalleVentasController::inactivate();
-        }
+        $this->dataDetalleVenta = array();
+        $this->dataDetalleVenta['id'] = $_FORM['id'] ?? NULL;
+        $this->dataDetalleVenta['venta_id'] = $_FORM['venta_id'] ?? '';
+        $this->dataDetalleVenta['producto_id'] = $_FORM['producto_id'] ?? '';
+        $this->dataDetalleVenta['precio_venta'] = $_FORM['precio_venta'] ?? '';
+        $this->dataDetalleVenta['cantidad'] = $_FORM['cantidad'] ?? '';
     }
 
-    static public function create()
+    public function create()
     {
         try {
-            $arrayDetalleVentas = array();
-            $arrayDetalleVentas['valor_unitario'] = $_POST['valor_unitario'];
-            $arrayDetalleVentas['cantidad'] = $_POST['cantidad'];
-            $arrayDetalleVentas['producto_id'] = $_POST['producto_id'];
-            $arrayDetalleVentas['venta_id'] = $_POST['venta_id'];
-            $arrayDetalleVentas['estado'] = $_POST['estado'];
-
-            if (!DetalleVentasController::DetalleVentaRegistrada($arrayDetalleVentas['id'])) {
-                $DetalleVentas = new DetalleVentasController($arrayDetalleVentas);
-                if ($DetalleVentas->save()) {
-                    header("Location: ../../views/modules/Detalleventas/index.php?accion=create&respuesta=correcto");
+            if (!empty($this->dataDetalleVenta['venta_id']) and !empty($this->dataDetalleVenta['producto_id'])) {
+                if(DetalleVentas::productoEnFactura($this->dataDetalleVenta['venta_id'], $this->dataDetalleVenta['producto_id'])){
+                    $this->edit();
+                }else{
+                    $DetalleVenta = new DetalleVentas($this->dataDetalleVenta);
+                    if ($DetalleVenta->insert()) {
+                        unset($_SESSION['frmDetalleVentas']);
+                        header("Location: ../../views/modules/ventas/create.php?id=".$this->dataDetalleVenta['venta_id']."&respuesta=success&mensaje=Producto Agregado");
+                    }
                 }
             } else {
-                header("Location: ../../views/modules/Detalleventas/create.php?respuesta=error&mensaje=Venta ya registrada");
+                header("Location: ../../views/modules/ventas/create.php?id=".$this->dataDetalleVenta['venta_id']."&respuesta=error&mensaje=Faltan parametros");
             }
-        } catch (Exception $e) {
-            GeneralFunctions::console($e, 'error', 'errorStack');
-            //header("Location: ../../views/modules/usuarios/create.php?respuesta=error&mensaje=" . $e->getMessage());
+        } catch (\Exception $e) {
+            GeneralFunctions::logFile('Exception',$e, 'error');
         }
     }
 
-    static public function edit()
+    public function edit()
     {
         try {
-            $arrayDetalleVentas = array();
-            $arrayDetalleVentas['valor_unitario'] = $_POST['valor_unitario'];
-            $arrayDetalleVentas['cantidad'] = $_POST['cantidad'];
-            $arrayDetalleVentas['producto_id'] = $_POST['producto_id'];
-            $arrayDetalleVentas['venta_id'] = $_POST['venta_id'];
-            $arrayDetalleVentas['estado'] = $_POST['estado'];
-
-            $DetalleVentas = new Compras($arrayDetalleVentas);
-            $DetalleVentas->update();
-
-            header("Location: ../../views/modules/Detalleventas/show.php?id=" . $DetalleVentas->getId() . "&respuesta=correcto");
+            $arrDetalleVenta = DetalleVentas::search("SELECT * FROM detalle_ventas WHERE venta_id = ".$this->dataDetalleVenta['venta_id']." and producto_id = ".$this->dataDetalleVenta['producto_id']);
+            /* @var $arrDetalleVenta DetalleVentas[] */
+            $DetalleVenta = $arrDetalleVenta[0];
+            $OldCantidad = $DetalleVenta->getCantidad();
+            $DetalleVenta->setCantidad($OldCantidad + $this->dataDetalleVenta['cantidad']);
+            if ($DetalleVenta->update()) {
+                $DetalleVenta->getProducto()->substractStock($this->dataDetalleVenta['cantidad']);
+                unset($_SESSION['frmDetalleVentas']);
+                header("Location: ../../views/modules/ventas/create.php?id=".$this->dataDetalleVenta['venta_id']."&respuesta=success&mensaje=Producto Actualizado");
+            }
         } catch (\Exception $e) {
-            GeneralFunctions::console($e, 'error', 'errorStack');
-            //header("Location: ../../views/modules/ventas/edit.php?respuesta=error&mensaje=".$e->getMessage());
+            GeneralFunctions::logFile('Exception',$e, 'error');
         }
     }
 
-    static public function searchForID($id)
+    public function deleted (int $id){
+        try {
+            $ObjDetalleVenta = DetalleVentas::searchForId($id);
+            $objProducto = $ObjDetalleVenta->getProducto();
+            if($ObjDetalleVenta->deleted()){
+                $objProducto->addStock($ObjDetalleVenta->getCantidad());
+                header("Location: ../../views/modules/ventas/create.php?id=".$ObjDetalleVenta->getVentasId()."&respuesta=success&mensaje=Producto Eliminado");
+            }else{
+                header("Location: ../../views/modules/ventas/create.php?id=".$ObjDetalleVenta->getVentasId()."&respuesta=error&mensaje=Error al eliminar");
+            }
+        } catch (\Exception $e) {
+            GeneralFunctions::logFile('Exception',$e, 'error');
+        }
+    }
+
+    static public function searchForID(array $data)
     {
         try {
-            return DetalleVentasController::searchForId($id);
+            $result = DetalleVentas::searchForId($data['id']);
+            if (!empty($data['request']) and $data['request'] === 'ajax' and !empty($result)) {
+                header('Content-type: application/json; charset=utf-8');
+                $result = json_encode($result->jsonSerialize());
+            }
+            return $result;
         } catch (\Exception $e) {
-            GeneralFunctions::console($e, 'error', 'errorStack');
-            //header("Location: ../../views/modules/Detalleventas/manager.php?respuesta=error");
+            GeneralFunctions::logFile('Exception',$e, 'error');
         }
+        return null;
     }
 
     static public function getAll()
     {
         try {
-            return DetalleVentasController::getAll();
+            $result = DetalleVentas::getAll();
+            if (!empty($data['request']) and $data['request'] === 'ajax') {
+                header('Content-type: application/json; charset=utf-8');
+                $result = json_encode($result);
+            }
+            return $result;
         } catch (\Exception $e) {
-            GeneralFunctions::console($e, 'log', 'errorStack');
-            //header("Location: ../Vista/modules/ventas/manager.php?respuesta=error");
+            GeneralFunctions::logFile('Exception',$e, 'error');
         }
+        return null;
     }
 }

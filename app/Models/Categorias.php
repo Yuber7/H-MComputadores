@@ -15,7 +15,7 @@ class Categorias extends AbstractDBConnection implements Model, JsonSerializable
     protected string $estado;
 
     /* Relaciones */
-    private ?array $productosCategoria;
+    protected ?array $productosCategoria;
 
     /**
      * Categorias constructor. Recibe un array asociativo
@@ -40,7 +40,7 @@ class Categorias extends AbstractDBConnection implements Model, JsonSerializable
     /**
      * @return mixed|int
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -48,7 +48,7 @@ class Categorias extends AbstractDBConnection implements Model, JsonSerializable
     /**
      * @param  mixed|int $id
      */
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }
@@ -108,7 +108,7 @@ class Categorias extends AbstractDBConnection implements Model, JsonSerializable
      */
     public function getProductosCategoria(): ?array
     {
-        $this->productosCategoria = Productos::search("SELECT * FROM h&mcomputadores.productos WHERE categoria_id = ".$this->id." and estado = 'Activo'");
+        $this->productosCategoria = Productos::search("SELECT * FROM `h&mcomputadores`.productos WHERE categoria_id = ".$this->id." and estado = 'Disponible'");
         return $this->productosCategoria;
     }
 
@@ -135,7 +135,7 @@ class Categorias extends AbstractDBConnection implements Model, JsonSerializable
      */
     function insert(): ?bool
     {
-        $query = "INSERT INTO h&mcomputadores.categorias VALUES (:id,:nombre,:descripcion,:estado)";
+        $query = "INSERT INTO `h&mcomputadores`.categorias VALUES (:id,:nombre,:descripcion,:estado)";
         return $this->save($query);
     }
 
@@ -144,7 +144,7 @@ class Categorias extends AbstractDBConnection implements Model, JsonSerializable
      */
     public function update(): ?bool
     {
-        $query = "UPDATE weber.categorias SET 
+        $query = "UPDATE `h&mcomputadores`.categorias SET 
             nombre = :nombre, descripcion = :descripcion,
             estado = :estado WHERE id = :id";
         return $this->save($query);
@@ -199,7 +199,7 @@ class Categorias extends AbstractDBConnection implements Model, JsonSerializable
             if ($id > 0) {
                 $Categoria = new Categorias();
                 $Categoria->Connect();
-                $getrow = $Categoria->getRow("SELECT * FROM h&mcomputadores.categorias WHERE id =?", array($id));
+                $getrow = $Categoria->getRow("SELECT * FROM `h&mcomputadores`.categorias WHERE id =?", array($id));
                 $Categoria->Disconnect();
                 return ($getrow) ? new Categorias($getrow) : null;
             }else{
@@ -217,7 +217,7 @@ class Categorias extends AbstractDBConnection implements Model, JsonSerializable
      */
     public static function getAll() : ?array
     {
-        return Categorias::search("SELECT * FROM h&mcomputadores.categorias");
+        return Categorias::search("SELECT * FROM `h&mcomputadores`.categorias");
     }
 
     /**
@@ -228,7 +228,7 @@ class Categorias extends AbstractDBConnection implements Model, JsonSerializable
     public static function categoriaRegistrada($nombre): bool
     {
         $nombre = trim(strtolower($nombre));
-        $result = Categorias::search("SELECT id FROM h&mcomputadores.categorias where nombre = '" . $nombre. "'");
+        $result = Categorias::search("SELECT id FROM `h&mcomputadores`.categorias where nombre = '" . $nombre. "'");
         if ( !empty($result) && count ($result) > 0 ) {
             return true;
         } else {

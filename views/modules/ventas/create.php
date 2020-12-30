@@ -1,21 +1,33 @@
 <?php
-require_once ("../../../app/Controllers/PersonasController.php");
 require("../../partials/routes.php");
+require_once("../../partials/check_login.php");
 
 use App\Controllers\ProductosController;
 use App\Controllers\PersonasController;
 use App\Controllers\VentasController;
-use App\Models\DetalleCompras;
+use App\Models\DetalleVentas;
 use App\Models\GeneralFunctions;
 use Carbon\Carbon;
 
+$nameModel = "Venta";
+$pluralModel = $nameModel.'s';
+$frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
 ?>
 
+<?php
+$dataVenta = null;
+if (!empty($_GET['id'])) {
+    $dataVenta = VentasController::searchForID(["id" => $_GET['id']]);
+    if ($dataVenta->getEstado() != "Pendiente"){
+        header('Location: index.php?respuesta=warning&mensaje=La venta ya ha finalizado');
+    }
+}
+?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?= $_ENV['TITLE_SITE'] ?> | Crear Venta</title>
+    <title><?= $_ENV['TITLE_SITE'] ?> | Crear <?= $nameModel ?></title>
     <?php require("../../partials/head_imports.php"); ?>
     <!-- DataTables -->
     <link rel="stylesheet" href="<?= $adminlteURL ?>/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
@@ -32,42 +44,36 @@ use Carbon\Carbon;
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
+        <!-- Generar Mensaje de alerta -->
+        <?= (!empty($_GET['respuesta'])) ? GeneralFunctions::getAlertDialog($_GET['respuesta'], $_GET['mensaje']) : ""; ?>
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Crear una nueva Venta</h1>
+                        <h1>Crear una nueva <?= $nameModel ?></h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/">Ventas</a></li>
-                            <li class="breadcrumb-item active">Inicio</li>
+                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/"><?= $_ENV['ALIASE_SITE'] ?></a></li>
+                            <li class="breadcrumb-item"><a href="index.php"><?= $pluralModel ?></a></li>
+                            <li class="breadcrumb-item active">Crear</li>
                         </ol>
                     </div>
                 </div>
             </div><!-- /.container-fluid -->
         </section>
 
-
         <!-- Main content -->
         <section class="content">
-            <?php if (!empty($_GET['respuesta'])) { ?>
-                <?php if ($_GET['respuesta'] != "correcto") { ?>
-                    <div class="alert alert-danger alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                        <h5><i class="icon fas fa-ban"></i> Error!</h5>
-                        Error al crear la Venta: <?= $_GET['mensaje'] ?>
-                    </div>
-                <?php } ?>
-            <?php } ?>
             <div class="container-fluid">
                 <!-- /.row -->
                 <div class="row">
                     <div class="col-md-4">
                         <div class="card card-info">
                             <div class="card-header">
-                                <h3 class="card-title"><i class="fas fa-shopping-cart"></i> &nbsp; Información de la Venta</h3>
+                                <h3 class="card-title"><i class="fas fa-shopping-cart"></i> &nbsp; Información de la
+                                    <?= $nameModel ?></h3>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
                                             data-source="create.php" data-source-selector="#card-refresh-content"
@@ -80,58 +86,66 @@ use Carbon\Carbon;
                             </div>
 
                             <div class="card-body">
-                                <form class="form-horizontal" method="post" id="frmCreateVenta" name="frmCreateVenta"
-                                      action="../../../app/Controllers/VentasController.php?action=create">
+                                <form class="form-horizontal" method="post" id="frmCreate<?= $nameModel ?>" name="frmCreate<?= $nameModel ?>"
+                                      action="../../../app/Controllers/MainController.php?controller=<?= $pluralModel ?>&action=create">
                                     <div class="form-group row">
-                                        <label for="fecha" class="col-sm-4 col-form-label">Fecha</label>
+                                        <label for="administrador_id" class="col-sm-4 col-form-label">Administrador</label>
                                         <div class="col-sm-8">
-                                            <input required type="date" min="<?= Carbon::now()->subYear(20)->format('Y-m-d') ?>" class="form-control" id="fecha"
-                                                   name="fecha" placeholder="Ingrese  Fecha">
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group row">
-                                        <label for="valor_total" class="col-sm-4 col-form-label">Valor Total</label>
-                                        <div class="col-sm-8">
-                                            <input required type="number" class="form-control" id="valor_total" name="valor_total" placeholder="Ingrese valor total">
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group row">
-                                        <label for="persona_id" class="col-sm-4 col-form-label">Persona</label>
-                                        <div class="col-sm-8">
-                                            <?= PersonasController::selectPersonas(false,
-                                                true,
-                                                'persona_id',
-                                                'persona_id',
-                                                '',
-                                                'form-control select2bs4 select2-info',
-                                                "estado = 'Activo'")
+                                            <?= PersonasController::selectPersona(
+                                                array (
+                                                    'id' => 'administrador_id',
+                                                    'name' => 'administrador_id',
+                                                    'defaultValue' => (!empty($dataVenta)) ? $dataVenta->getAdministrador()->getId() : '',
+                                                    'class' => 'form-control select2bs4 select2-info',
+                                                    'where' => "rol = 'Administrador' and estado = 'Activo'"
+                                                )
+                                            )
                                             ?>
-                                            <span class="text-info"><a href="../personas/create.php">Crear Persona</a></span>
+                                            <span class="text-info"><a href="../personas/create.php">Crear Administrador</a></span>
                                         </div>
                                     </div>
-
                                     <div class="form-group row">
-                                        <label for="forma_pago" class="col-sm-4 col-form-label">Forma Pago</label>
+                                        <label for="cliente_id" class="col-sm-4 col-form-label">Cliente</label>
                                         <div class="col-sm-8">
-                                            <select id="forma_pago" name="forma_pago" class="custom-select">
-                                                <option value="Efectivo">Efectivo</option>
-                                                <option value="Cheque">Cheque</option>
-                                                <option value="Otros">Otros</option>
+                                            <?= PersonasController::selectPersona(
+                                                array (
+                                                    'id' => 'cliente_id',
+                                                    'name' => 'cliente_id',
+                                                    'defaultValue' => (!empty($dataVenta)) ? $dataVenta->getCliente()->getId() : '',
+                                                    'class' => 'form-control select2bs4 select2-info',
+                                                    'where' => "rol = 'Cliente' and estado = 'Activo'"
+                                                )
+                                            )
+                                            ?>
+                                            <span class="text-info"><a href="../personas/create.php">Crear Cliente</a></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="forma_pago" class="col-sm-4 col-form-label">Forma de pago</label>
+                                        <div class="col-sm-8">
+                                            <select required id="forma_pago" name="forma_pago" class="custom-select">
+                                                <option <?= (!empty($frmSession['forma_pago']) && $frmSession['forma_pago'] == "Efectivo") ? "selected" : ""; ?> value="Efectivo">Efectivo</option>
+                                                <option <?= (!empty($frmSession['forma_pago']) && $frmSession['forma_pago'] == "Cheque") ? "selected" : ""; ?> value="Cheque">Cheque</option>
+                                                <option <?= (!empty($frmSession['forma_pago']) && $frmSession['forma_pago'] == "Otros") ? "selected" : ""; ?> value="Otros">Otros</option>
                                             </select>
                                         </div>
                                     </div>
-
-                                    <div class="form-group row">
-                                        <label for="estado" class="col-sm-4 col-form-label">Estado</label>
-                                        <div class="col-sm-8">
-                                            <select id="estado" name="estado" class="custom-select">
-                                                <option value="Pendiente">Pendiente</option>
-                                                <option value="Procesada">Procesada</option>
-                                            </select>
+                                    <?php
+                                    if (!empty($dataVenta)) {
+                                        ?>
+                                        <div class="form-group row">
+                                            <label for="fecha" class="col-sm-4 col-form-label">Fecha</label>
+                                            <div class="col-sm-8">
+                                                <?= $dataVenta->getFecha() ?>
+                                            </div>
                                         </div>
-                                    </div>
+                                        <div class="form-group row">
+                                            <label for="valor_total" class="col-sm-4 col-form-label">Valor Total</label>
+                                            <div class="col-sm-8">
+                                                <?= GeneralFunctions::formatCurrency($dataVenta->getValorTotal()) ?>
+                                            </div>
+                                        </div>
+                                    <?php } ?>
                                     <hr>
                                     <button type="submit" class="btn btn-info">Enviar</button>
                                     <a href="index.php" role="button" class="btn btn-default float-right">Cancelar</a>
@@ -178,19 +192,45 @@ use Carbon\Carbon;
                                                 <th>Producto</th>
                                                 <th>Cantidad</th>
                                                 <th>Precio</th>
-                                                <th>Acciones</th>
+                                                <th>Total</th>
+                                                <th>Act</th>
                                             </tr>
                                             </thead>
                                             <tbody>
+                                            <?php
+                                            if (!empty($dataVenta) and !empty($dataVenta->getId())) {
+                                                $arrDetalleVentas = DetalleVentas::search("SELECT * FROM `h&mcomputadores`.detalle_ventas WHERE venta_id = ".$dataVenta->getId());
+                                                if(count($arrDetalleVentas) > 0) {
+                                                    /* @var $arrDetalleVentas DetalleVentas[] */
+                                                    foreach ($arrDetalleVentas as $detalleVenta) {
+                                                        ?>
+                                                        <tr>
+                                                            <td><?= $detalleVenta->getId(); ?></td>
+                                                            <td><?= $detalleVenta->getProducto()->getNombre(); ?></td>
+                                                            <td><?= $detalleVenta->getCantidad(); ?></td>
+                                                            <td><?= GeneralFunctions::formatCurrency($detalleVenta->getPrecioVenta()); ?></td>
+                                                            <td><?= GeneralFunctions::formatCurrency($detalleVenta->getTotalProducto()); ?></td>
+                                                            <td>
+                                                                <a type="button"
+                                                                   href="../../../app/Controllers/MainController.php?controller=DetalleVentas&action=deleted&id=<?= $detalleVenta->getId(); ?>"
+                                                                   data-toggle="tooltip" title="Eliminar"
+                                                                   class="btn docs-tooltip btn-danger btn-xs"><i
+                                                                            class="fa fa-times-circle"></i></a>
+                                                            </td>
+                                                        </tr>
+                                                    <?php }
+                                                }
+                                            }?>
 
                                             </tbody>
                                             <tfoot>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Nombres</th>
+                                                <th>Producto</th>
+                                                <th>Cantidad</th>
                                                 <th>Precio</th>
-                                                <th>Stock</th>
-                                                <th>Acciones</th>
+                                                <th>Total</th>
+                                                <th>Act</th>
                                             </tr>
                                             </tfoot>
                                         </table>
@@ -218,19 +258,30 @@ use Carbon\Carbon;
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form action="../../../app/Controllers/DetalleVentasController.php?action=create" method="post">
+                    <form action="../../../app/Controllers/MainController.php?controller=DetalleVentas&action=create" method="post">
                         <div class="modal-body">
-                            <?php //var_dump($dataVenta); ?>
-                            <input id="ventas_id" name="ventas_id" value="" hidden
+                            <input id="venta_id" name="venta_id" value="<?= !empty($dataVenta) ? $dataVenta->getId() : ''; ?>" hidden
                                    required="required" type="text">
                             <div class="form-group row">
                                 <label for="producto_id" class="col-sm-4 col-form-label">Producto</label>
                                 <div class="col-sm-8">
-
+                                    <?= ProductosController::selectProducto(
+                                        array (
+                                            'id' => 'producto_id',
+                                            'name' => 'producto_id',
+                                            'defaultValue' => '',
+                                            'class' => 'form-control select2bs4 select2-info',
+                                            'where' => "estado = 'Disponible' and stock > 0"
+                                        )
+                                    )
+                                    ?>
                                     <div id="divResultProducto">
                                         <span class="text-muted">Precio Base: </span> <span id="spPrecio"></span>,
                                         <span class="text-muted">Precio Venta: </span> <span id="spPrecioVenta"></span>,
                                         <span class="text-muted">Stock: </span> <span id="spStock"></span>.
+                                        <span class="badge badge-info" id="spFoto" data-toggle="tooltip" data-html="true"
+                                              title="<img class='img-thumbnail' src='../../public/uploadFiles/photos/products/'>">Foto
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -272,43 +323,65 @@ use Carbon\Carbon;
 </div>
 <!-- ./wrapper -->
 <?php require('../../partials/scripts.php'); ?>
-<!-- DataTables -->
-<script src="<?= $adminlteURL ?>/plugins/datatables/jquery.dataTables.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-responsive/js/dataTables.responsive.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-responsive/js/responsive.bootstrap4.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-buttons/js/dataTables.buttons.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-buttons/js/buttons.bootstrap4.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/jszip/jszip.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/pdfmake/pdfmake.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-buttons/js/buttons.html5.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-buttons/js/buttons.print.js"></script>
-<script src="<?= $adminlteURL ?>/plugins/datatables-buttons/js/buttons.colVis.js"></script>
+<!-- Scripts requeridos para las datatables -->
+<?php require('../../partials/datatables_scripts.php'); ?>
 
 <script>
+
     $(function () {
-        $('.datatable').DataTable({
-            "dom": 'Bfrtip',
-            "paging": true,
-            "lengthChange": true,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "autoWidth": true,
-            "language": {
-                "url": "../../public/Spanish.json" //Idioma
-            },
-            "buttons": [
-                'copy', 'print', 'excel', 'pdf'
-            ],
-            "pagingType": "full_numbers",
-            "responsive": true,
-            "stateSave": true, //Guardar la configuracion del usuario
+
+        $("#divResultProducto").hide();
+
+        $('#producto_id').on('select2:select', function (e) {
+            var dataSelect = e.params.data;
+            var dataProducto = null;
+            if(dataSelect.id !== ""){
+                $.post("../../../app/Controllers/MainController.php?controller=Productos&action=searchForID",
+                    {
+                        id: dataSelect.id,
+                        request: 'ajax'
+                    }, "json"
+                )
+                .done(function( resultProducto ) {
+                    dataProducto = resultProducto;
+                })
+                .fail(function(err) {
+                    console.log( "Error al realizar la consulta"+err );
+                })
+                .always(function() {
+                    updateDataProducto(dataProducto);
+                });
+            }else{
+                updateDataProducto(dataProducto);
+            }
         });
+
+        function updateDataProducto(dataProducto){
+            if(dataProducto !== null){
+                $("#divResultProducto").slideDown();
+                $("#spPrecio").html("$"+dataProducto.precio);
+                $("#spPrecioVenta").html("$"+dataProducto.precio_venta);
+                $("#spStock").html(dataProducto.stock+" Unidad(es)");
+                $("#cantidad").attr("max",dataProducto.stock);
+                $("#precio_venta").val(dataProducto.precio_venta);
+            }else{
+                $("#divResultProducto").slideUp();
+                $("#spPrecio").html("");
+                $("#spPrecioVenta").html("");
+                $("#spStock").html("");
+                $("#cantidad").removeAttr("max").val('0');
+                $("#precio_venta").val('0.0');
+                $("#total_producto").val('0.0');
+            }
+        }
+
+        $( "#cantidad" ).on( "change keyup focusout", function() {
+            $("#total_producto").val($( "#cantidad" ).val() *  $("#precio_venta").val());
+        });
+
     });
 </script>
 
 
 </body>
 </html>
-
