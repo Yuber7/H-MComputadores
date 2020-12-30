@@ -5,7 +5,6 @@ require_once("../../partials/check_login.php");
 use App\Controllers\DepartamentosController;
 use App\Controllers\MunicipiosController;
 use App\Models\GeneralFunctions;
-use Carbon\Carbon;
 
 $nameModel = "Persona";
 $pluralModel = $nameModel.'s';
@@ -95,9 +94,9 @@ $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
                                                     Tipo Documento</label>
                                                 <div class="col-sm-10">
                                                     <select id="tipo_documento" name="tipo_documento" class="custom-select">
-                                                        <option <?= (!empty($frmSession['tipo_documento']) && $frmSession['tipo_documento'] == "C.C") ? "selected" : ""; ?> value="C.C">Cedula de Ciudadania</option>
-                                                        <option <?= (!empty($frmSession['tipo_documento']) && $frmSession['tipo_documento'] == "C.E") ? "selected" : ""; ?> value="C.E">Cedula de Extranjeria</option>
-                                                        <option <?= (!empty($frmSession['tipo_documento']) && $frmSession['tipo_documento'] == "T.I") ? "selected" : ""; ?> value="T.I">Tarjeta de Identidad</option>
+                                                        <option <?= (!empty($frmSession['tipo_documento']) && $frmSession['tipo_documento'] == "CC") ? "selected" : ""; ?> value="CC">Cedula de Ciudadania</option>
+                                                        <option <?= (!empty($frmSession['tipo_documento']) && $frmSession['tipo_documento'] == "CE") ? "selected" : ""; ?> value="CE">Cedula de Extranjeria</option>
+                                                        <option <?= (!empty($frmSession['tipo_documento']) && $frmSession['tipo_documento'] == "TI") ? "selected" : ""; ?> value="TI">Tarjeta de Identidad</option>
                                                         <option <?= (!empty($frmSession['tipo_documento']) && $frmSession['tipo_documento'] == "NIT") ? "selected" : ""; ?> value="NIT">NIT</option>
                                                         <option <?= (!empty($frmSession['tipo_documento']) && $frmSession['tipo_documento'] == "REG") ? "selected" : ""; ?> value="REG">Registro Civil</option>
                                                         <option <?= (!empty($frmSession['tipo_documento']) && $frmSession['tipo_documento'] == "PAS") ? "selected" : ""; ?> value="PAS">Pasaporte</option>
@@ -170,7 +169,6 @@ $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
                                                            value="<?= $frmSession['email'] ?? '' ?>">
                                                 </div>
                                             </div>
-                                            <?php if ($_SESSION['UserInSession']['rol'] == 'Administrador'){ ?>
                                                 <div class="form-group row">
                                                     <label for="user" class="col-sm-2 col-form-label">Usuario</label>
                                                     <div class="col-sm-10">
@@ -184,34 +182,35 @@ $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
                                                         <input type="password" class="form-control" id="password" name="password" placeholder="Ingrese su Usuario">
                                                     </div>
                                                 </div>
-                                                <div class="form-group row">
-                                                    <label for="estado" class="col-sm-2 col-form-label">Estado</label>
-                                                    <div class="col-sm-10">
-                                                        <select required id="estado" name="estado" class="custom-select">
-                                                            <option <?= ( !empty($frmSession['estado']) && $frmSession['estado'] == "Activo") ? "selected" : ""; ?> value="Activo">Activo</option>
-                                                            <option <?= ( !empty($frmSession['estado']) && $frmSession['estado'] == "Inactivo") ? "selected" : ""; ?> value="Inactivo">Inactivo</option>
-                                                        </select>
+                                            <div class="form-group row">
+                                                <label for="estado" class="col-sm-2 col-form-label">Estado</label>
+                                                <div class="col-sm-10">
+                                                    <select required id="estado" name="estado" class="custom-select">
+                                                        <option <?= ( !empty($frmSession['estado']) && $frmSession['estado'] == "Activo") ? "selected" : ""; ?> value="Activo">Activo</option>
+                                                        <option <?= ( !empty($frmSession['estado']) && $frmSession['estado'] == "Inactivo") ? "selected" : ""; ?> value="Inactivo">Inactivo</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+<!--                                        Codigo de Foto-->
+                                        <!--<div class="col-sm-2">
+                                            <div class="info-box">
+                                                <div class="imageupload panel panel-primary">
+                                                    <div class="panel-heading clearfix">
+                                                        <h5 class="panel-title pull-left">Foto de Perfil</h5>
+                                                    </div>
+                                                    <div class="file-tab panel-body">
+                                                        <label class="btn btn-default btn-file">
+                                                            <span>Seleccionar</span>
+                                                             The file is stored here.
+                                                            <input type="file" id="foto" name="foto">
+                                                        </label>
+                                                        <button type="button" class="btn btn-default">Eliminar</button>
                                                     </div>
                                                 </div>
-                                            <?php } ?>
-                                        </div>
-<!--                                        <div class="col-sm-2">-->
-<!--                                            <div class="info-box">-->
-<!--                                                <div class="imageupload panel panel-primary">-->
-<!--                                                    <div class="panel-heading clearfix">-->
-<!--                                                        <h5 class="panel-title pull-left">Foto de Perfil</h5>-->
-<!--                                                    </div>-->
-<!--                                                    <div class="file-tab panel-body">-->
-<!--                                                        <label class="btn btn-default btn-file">-->
-<!--                                                            <span>Seleccionar</span>-->
-<!--                                                             The file is stored here. -->
-<!--                                                            <input type="file" id="foto" name="foto">-->
-<!--                                                        </label>-->
-<!--                                                        <button type="button" class="btn btn-default">Eliminar</button>-->
-<!--                                                    </div>-->
-<!--                                                </div>-->
-<!--                                            </div>-->
-<!--                                        </div>-->
+                                            </div>
+                                        </div>-->
+
                                     </div>
 
                                     <hr>

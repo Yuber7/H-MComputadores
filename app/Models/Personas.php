@@ -311,8 +311,8 @@ class Personas extends AbstractDBConnection implements Model, JsonSerializable
     {
         $arrData = [
             ':id' =>    $this->getId(),
-            ':nombres' =>   $this->getNombre(),
-            ':apellidos' =>   $this->getApellido(),
+            ':nombre' =>   $this->getNombre(),
+            ':apellido' =>   $this->getApellido(),
             ':tipo_documento' =>  $this->getTipoDocumento(),
             ':documento' =>   $this->getDocumento(),
             ':telefono' =>   $this->getTelefono(),
@@ -336,9 +336,9 @@ class Personas extends AbstractDBConnection implements Model, JsonSerializable
     public function insert(): ?bool
     {
         $query = "INSERT INTO `h&mcomputadores`.personas VALUES (
-            :id,:nombres,:apellidos,:tipo_documento,:documento,
-            :telefono,:direccion,:municipio_id,:fecha_nacimiento,:user,
-            :password,:foto,:rol,:estado,:created_at,:updated_at
+            :id,:nombre,:apellido,:tipo_documento,:documento,
+            :telefono,:rol,:municipio_id,:direccion,:email,:user,
+            :password,:estado
         )";
         return $this->save($query);
     }

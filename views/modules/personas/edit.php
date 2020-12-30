@@ -199,7 +199,6 @@ $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
                                                                    placeholder="Ingrese su Email">
                                                         </div>
                                                     </div>
-                                                    <?php if ($_SESSION['UserInSession']['rol'] == 'Administrador'){ ?>
                                                         <div class="form-group row">
                                                             <label for="user" class="col-sm-2 col-form-label">Usuario</label>
                                                             <div class="col-sm-10">
@@ -222,7 +221,6 @@ $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                    <?php } ?>
                                                 </div>
                                             </div>
                                             <hr>

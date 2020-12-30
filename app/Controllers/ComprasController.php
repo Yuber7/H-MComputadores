@@ -1,11 +1,11 @@
 <?php
 
+
 namespace App\Controllers;
 
 require (__DIR__.'/../../vendor/autoload.php');
-
-use App\Models\Compras;
 use App\Models\GeneralFunctions;
+use App\Models\Compras;
 use Carbon\Carbon;
 
 class ComprasController{
@@ -122,7 +122,7 @@ class ComprasController{
             /* @var $arrCompras Compras[] */
             foreach ($arrCompras as $compras)
                 if (!ComprasController::compraIsInArray($compras->getId(),$params['arrExcluir']))
-                    $htmlSelect .= "<option ".(($compras != "") ? (($params['defaultValue'] == $compras->getId()) ? "selected" : "" ) : "")." value='".$compras->getId()."'>".$compras->getFecha()."</option>";
+                    $htmlSelect .= "<option ".(($compras != "") ? (($params['defaultValue'] == $compras->getId()) ? "selected" : "" ) : "")." value='".$compras->getId()."'>"."</option>";
         }
         $htmlSelect .= "</select>";
         return $htmlSelect;

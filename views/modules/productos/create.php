@@ -1,13 +1,18 @@
 <?php
-use App\Controllers\CategoriasController;
-require_once ("../../../app/Controllers/CategoriasController.php");
 require("../../partials/routes.php");
-?>
+require_once("../../partials/check_login.php");
 
+use App\Controllers\CategoriasController;
+use App\Models\GeneralFunctions;
+
+$nameModel = "Producto";
+$pluralModel = $nameModel.'s';
+$frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
+?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?= $_ENV['TITLE_SITE'] ?> | Crear Producto</title>
+    <title><?= $_ENV['TITLE_SITE'] ?> | Crear <?= $nameModel ?></title>
     <?php require("../../partials/head_imports.php"); ?>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -25,12 +30,13 @@ require("../../partials/routes.php");
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Crear un Producto</h1>
+                        <h1>Crear un Nuevo <?= $nameModel ?></h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/">Producto</a></li>
-                            <li class="breadcrumb-item active">Inicio</li>
+                            <li class="breadcrumb-item"><a href="<?= $baseURL; ?>/views/"><?= $_ENV['ALIASE_SITE'] ?></a></li>
+                            <li class="breadcrumb-item"><a href="index.php"><?= $pluralModel ?></a></li>
+                            <li class="breadcrumb-item active">Crear</li>
                         </ol>
                     </div>
                 </div>
@@ -39,119 +45,103 @@ require("../../partials/routes.php");
 
         <!-- Main content -->
         <section class="content">
-            <?php if (!empty($_GET['respuesta'])) { ?>
-                <?php if ($_GET['respuesta'] != "correcto") { ?>
-                    <div class="alert alert-danger alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                        <h5><i class="icon fas fa-ban"></i> Error!</h5>
-                        Error al crear el Producto: <?= $_GET['mensaje'] ?>
-                    </div>
-                <?php } ?>
-            <?php } ?>
+            <!-- Generar Mensaje de alerta -->
+            <?= (!empty($_GET['respuesta'])) ? GeneralFunctions::getAlertDialog($_GET['respuesta'], $_GET['mensaje']) : ""; ?>
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
                         <!-- Horizontal Form -->
                         <div class="card card-info">
                             <div class="card-header">
-                                <h3 class="card-title"><i class="fas fa-user"></i> &nbsp; Información del Producto</h3>
+                                <h3 class="card-title"><i class="fas fa-box"></i> &nbsp; Información del <?= $nameModel ?></h3>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
                                             data-source="create.php" data-source-selector="#card-refresh-content"
                                             data-load-on-init="false"><i class="fas fa-sync-alt"></i></button>
                                     <button type="button" class="btn btn-tool" data-card-widget="maximize"><i
-                                            class="fas fa-expand"></i></button>
+                                                class="fas fa-expand"></i></button>
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
-                                            class="fas fa-minus"></i></button>
+                                                class="fas fa-minus"></i></button>
                                 </div>
                             </div>
                             <!-- /.card-header -->
+                            <!-- form start -->
                             <div class="card-body">
-                                <!-- form start -->
-                                <form class="form-horizontal" method="post" id="frmCreateProducto"
-                                      name="frmCreateProducto"
-                                      action="../../../app/Controllers/ProductosController.php?action=create">
+                                <form class="form-horizontal" method="post" id="frmCreate<?= $nameModel ?>"
+                                      name="frmCreate<?= $nameModel ?>"
+                                      action="../../../app/Controllers/MainController.php?controller=<?= $pluralModel ?>&action=create">
                                     <div class="form-group row">
                                         <label for="nombre" class="col-sm-2 col-form-label">Nombre</label>
                                         <div class="col-sm-10">
                                             <input required type="text" class="form-control" id="nombre" name="nombre"
-                                                   placeholder="Ingrese el nombre del Producto">
+                                                   placeholder="Ingrese el nombre" value="<?= $frmSession['nombre'] ?? '' ?>">
                                         </div>
                                     </div>
-
                                     <div class="form-group row">
                                         <label for="marca" class="col-sm-2 col-form-label">Marca</label>
                                         <div class="col-sm-10">
-                                            <input required type="text" class="form-control" id="marca"
-                                                   name="marca" placeholder="Ingrese la marca del Producto">
+                                            <input required type="text" class="form-control" id="marca" name="marca"
+                                                   placeholder="Ingrese la marca" value="<?= $frmSession['marca'] ?? '' ?>">
                                         </div>
                                     </div>
-
-                                    <div class="form-group row">
-                                        <label for="categoria_id" class="col-sm-2 col-form-label">Categoria</label>
-                                        <div class="col-sm-10">
-                                            <?= CategoriasController::selectCategorias(false,
-                                                true,
-                                                'categoria_id',
-                                                'categoria_id',
-                                                '',
-                                                'form-control select2bs4 select2-info',
-                                                "estado = 'Activo'")
-                                            ?>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group row">
-                                        <label for="referencia_fabrica" class="col-sm-2 col-form-label">Referencia</label>
-                                        <div class="col-sm-10">
-                                            <input required type="text"  class="form-control"
-                                                   id="referencia_fabrica" name="referencia_fabrica" placeholder="Ingrese la referencia de fabrica">
-                                        </div>
-                                    </div>
-
                                     <div class="form-group row">
                                         <label for="descripcion" class="col-sm-2 col-form-label">Descripcion</label>
                                         <div class="col-sm-10">
-                                            <textarea required class="form-control" id="descripcion"
-                                                      name="descripcion" placeholder="Ingrese una descripción" rows="3"></textarea>
+                                            <input required type="text" class="form-control" id="descripcion" name="descripcion"
+                                                   placeholder="Ingrese la descripcion" value="<?= $frmSession['descripcion'] ?? '' ?>">
                                         </div>
                                     </div>
-
-
-                                    <div class="form-group row">
-                                        <label for="stock" class="col-sm-2 col-form-label">Stock</label>
-                                        <div class="col-sm-10">
-                                            <input required type="number"  class="form-control"
-                                                   id="stock" name="stock" placeholder="Ingrese el stock">
-                                        </div>
-                                    </div>
-
                                     <div class="form-group row">
                                         <label for="precio" class="col-sm-2 col-form-label">Precio</label>
                                         <div class="col-sm-10">
-                                            <input required type="number"  class="form-control"
-                                                   id="precio" name="precio" placeholder="Ingrese el precio del producto">
+                                            <input required type="number" class="form-control" id="precio" name="precio"
+                                                   placeholder="Ingrese el precio" value="<?= $frmSession['precio'] ?? '' ?>">
                                         </div>
                                     </div>
-
-                                        <div class="form-group row">
-                                            <label for="estado" class="col-sm-2 col-form-label">Estado</label>
-                                            <div class="col-sm-10">
-                                                <select id="estado" name="estado" class="custom-select">
-                                                    <option value="Disponible">Disponible</option>
-                                                    <option value="Agotado">Agotado</option>
-                                                </select>
-                                            </div>
+                                    <div class="form-group row">
+                                        <label for="porcentaje_ganancia" class="col-sm-2 col-form-label">Porcentaje de Ganancia</label>
+                                        <div class="col-sm-10">
+                                            <input required type="number" min="1" step="0.1" class="form-control" id="porcentaje_ganancia" name="porcentaje_ganancia"
+                                                   placeholder="Ingrese el porcentaje de ganancia" value="<?= $frmSession['porcentaje_ganancia'] ?? '' ?>">
                                         </div>
-
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="stock" class="col-sm-2 col-form-label">Stock</label>
+                                        <div class="col-sm-10">
+                                            <input required type="number" minlength="6" class="form-control" id="stock"
+                                                   name="stock" placeholder="Ingrese el stock" value="<?= $frmSession['stock'] ?? '' ?>">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="categoria_id" class="col-sm-2 col-form-label">Categoria</label>
+                                        <div class="col-sm-10 ">
+                                            <?= CategoriasController::selectCategoria(
+                                                array(
+                                                    'id' => 'categoria_id',
+                                                    'name' => 'categoria_id',
+                                                    'defaultValue' => (!empty($frmSession['categoria_id'])) ? $frmSession['categoria_id'] : '',
+                                                    'class' => 'form-control select2bs4 select2-info',
+                                                    'where' => "estado = 'Activo'"
+                                                )
+                                            );
+                                            ?>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="estado" class="col-sm-2 col-form-label">Estado</label>
+                                        <div class="col-sm-10">
+                                            <select required id="estado" name="estado" class="custom-select">
+                                                <option <?= ( !empty($frmSession['estado']) && $frmSession['estado'] == "Disponible") ? "selected" : ""; ?> value="Disponible">Disponible</option>
+                                                <option <?= ( !empty($frmSession['estado']) && $frmSession['estado'] == "Agotado") ? "selected" : ""; ?> value="Agotado">Agotado</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                     <hr>
                                     <button type="submit" class="btn btn-info">Enviar</button>
                                     <a href="index.php" role="button" class="btn btn-default float-right">Cancelar</a>
-                                    <!-- /.card-footer -->
                                 </form>
                             </div>
                             <!-- /.card-body -->
-
                         </div>
                         <!-- /.card -->
                     </div>

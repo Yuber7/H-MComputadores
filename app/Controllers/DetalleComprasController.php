@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Controllers;
 
 require (__DIR__.'/../../vendor/autoload.php');
@@ -16,7 +17,7 @@ class DetalleComprasController
         $this->dataDetalleCompra['id'] = $_FORM['id'] ?? NULL;
         $this->dataDetalleCompra['compra_id'] = $_FORM['compra_id'] ?? '';
         $this->dataDetalleCompra['producto_id'] = $_FORM['producto_id'] ?? '';
-        $this->dataDetalleCompra['precio_venta'] = $_FORM['precio_venta'] ?? '';
+        $this->dataDetalleCompra['precio_compra'] = $_FORM['precio_compra'] ?? 0.0;
         $this->dataDetalleCompra['cantidad'] = $_FORM['cantidad'] ?? '';
     }
 
@@ -29,7 +30,7 @@ class DetalleComprasController
                 }else{
                     $DetalleCompra = new DetalleCompras($this->dataDetalleCompra);
                     if ($DetalleCompra->insert()) {
-                        unset($_SESSION['frmDetalleVentas']);
+                        unset($_SESSION['frmDetalleCompras']);
                         header("Location: ../../views/modules/compras/create.php?id=".$this->dataDetalleCompra['compra_id']."&respuesta=success&mensaje=Producto Agregado");
                     }
                 }
@@ -52,7 +53,7 @@ class DetalleComprasController
             if ($DetalleCompra->update()) {
                 $DetalleCompra->getProducto()->substractStock($this->dataDetalleCompra['cantidad']);
                 unset($_SESSION['frmDetalleCompras']);
-                header("Location: ../../views/modules/compras/create.php?id=".$this->dataDetalleCompra['compra_id']."&respuesta=success&mensaje=Producto Actualizado");
+                header("Location: ../../views/modules/compras/create.php?id=".$this->dataDetalleCompra['Compra_id']."&respuesta=success&mensaje=Producto Actualizado");
             }
         } catch (\Exception $e) {
             GeneralFunctions::logFile('Exception',$e, 'error');
@@ -65,9 +66,9 @@ class DetalleComprasController
             $objProducto = $ObjDetalleCompra->getProducto();
             if($ObjDetalleCompra->deleted()){
                 $objProducto->addStock($ObjDetalleCompra->getCantidad());
-                header("Location: ../../views/modules/compras/create.php?id=".$ObjDetalleCompra->getCompraId()."&respuesta=success&mensaje=Producto Eliminado");
+                header("Location: ../../views/modules/compras/create.php?id=".$ObjDetalleCompra->getComprasId()."&respuesta=success&mensaje=Producto Eliminado");
             }else{
-                header("Location: ../../views/modules/compras/create.php?id=".$ObjDetalleCompra->getCompraId()."&respuesta=error&mensaje=Error al eliminar");
+                header("Location: ../../views/modules/compras/create.php?id=".$ObjDetalleCompra->getComprasId()."&respuesta=error&mensaje=Error al eliminar");
             }
         } catch (\Exception $e) {
             GeneralFunctions::logFile('Exception',$e, 'error');

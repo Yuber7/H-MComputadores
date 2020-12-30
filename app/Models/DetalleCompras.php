@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Interfaces\Model;
+use App\Interfaces\Model;
 use Exception;
 use JsonSerializable;
 
@@ -57,43 +57,19 @@ class DetalleCompras extends AbstractDBConnection implements Model, JsonSerializ
     }
 
     /**
-     * @return float
+     * @return int|mixed
      */
-    public function getPrecioCompra(): float
+    public function getCompraId() : int
     {
-        return $this->precio_compra;
+        return $this->compra_id;
     }
 
     /**
-     * @param float $precio_compra
+     * @param int|mixed $compra_id
      */
-    public function setPrecioCompra(float $precio_compra): void
+    public function setCompraId(int $compra_id): void
     {
-        $this->precio_compra = $precio_compra;
-    }
-
-    /**
-     * @return int
-     */
-    public function getCantidad(): int
-    {
-        return $this->cantidad;
-    }
-
-
-    public function getTotalProducto() : float
-    {
-        return $this->getPrecioCompra() * $this->getCantidad();
-    }
-
-
-
-    /**
-     * @param int $cantidad
-     */
-    public function setCantidad(int $cantidad): void
-    {
-        $this->cantidad = $cantidad;
+        $this->compra_id = $compra_id;
     }
 
     /**
@@ -113,53 +89,67 @@ class DetalleCompras extends AbstractDBConnection implements Model, JsonSerializ
     }
 
     /**
-     * @return int
+     * @return int|mixed
      */
-    public function getCompraId(): int
+    public function getCantidad() : int
     {
-        return $this->compra_id;
+        return $this->cantidad;
     }
 
     /**
-     * @param int $compra_id
+     * @param int|mixed $cantidad
      */
-    public function setCompraId(int $compra_id): void
+    public function setCantidad(int $cantidad): void
     {
-        $this->compra_id = $compra_id;
+        $this->cantidad = $cantidad;
     }
 
-
+    /**
+     * @return float|mixed
+     */
+    public function getPrecioCompra() : float
+    {
+        return $this->precio_compra;
+    }
 
     /**
+     * @param float|mixed $precio_compra
+     */
+    public function setPrecioCompra(float $precio_compra): void
+    {
+        $this->precio_compra = $precio_compra;
+    }
+
+    public function getTotalProducto() : float
+    {
+        return $this->getPrecioCompra() * $this->getCantidad();
+    }
+
+    /* Relaciones */
+    /**
+     * Retorna el objeto compra correspondiente al detalle compra
      * @return Compras|null
      */
     public function getCompra(): ?Compras
     {
-        return $this->compra;
+        if(!empty($this->compras_id)){
+            $this->compra = Compras::searchForId($this->compras_id) ?? new Compras();
+            return $this->compra;
+        }
+        return NULL;
     }
 
     /**
-     * @param Compras|null $compra
-     */
-    public function setCompra(?Compras $compra): void
-    {
-        $this->compra = $compra;
-    }
-
-    /**
+     * Retorna el objeto producto correspondiente al detalle compra
      * @return Productos|null
      */
     public function getProducto(): ?Productos
     {
-        return $this->producto;
-    }
-
-    /**
-     * @param Productos|null $producto
-     */
-    public function setProducto(?Productos $producto): void
-    {
-        $this->producto = $producto;
+        if(!empty($this->producto_id)){
+            $this->producto = Productos::searchForId($this->producto_id) ?? new Productos();
+            return $this->producto;
+        }
+        return NULL;
     }
 
     protected function save(string $query, string $type = 'insert'): ?bool
@@ -177,6 +167,7 @@ class DetalleCompras extends AbstractDBConnection implements Model, JsonSerializ
         }
 
         $this->Connect();
+        var_dump($arrData);
         $result = $this->insertRow($query, $arrData);
         $this->Disconnect();
         return $result;
@@ -184,7 +175,7 @@ class DetalleCompras extends AbstractDBConnection implements Model, JsonSerializ
 
     function insert()
     {
-        $query = "INSERT INTO h&mcomputadores.detalle_compras VALUES (:id,:compra_id,:producto_id,:precio_compra,:cantidad,:estado)";
+        $query = "INSERT INTO `h&mcomputadores`.detalle_compras VALUES (:id,:compra_id,:producto_id,:precio_compra,:cantidad)";
         if($this->save($query)){
             return $this->getProducto()->substractStock($this->getCantidad());
         }
@@ -196,9 +187,9 @@ class DetalleCompras extends AbstractDBConnection implements Model, JsonSerializ
      */
     public function update() : bool
     {
-        $query = "UPDATE h&mcomputadores.detalle_compras SET 
-            compra_id = :compra_id, producto_id = :producto_id, 
-            precio_compra = :precio_compra, cantidad = :cantidad WHERE id = :id";
+        $query = "UPDATE `h&mcomputadores`.detalle_compras SET 
+            compra_id = :compra_id, producto_id = :producto_id, precio_compra = :precio_compra, 
+            cantidad = :cantidad WHERE id = :id";
         return $this->save($query);
     }
 
@@ -246,7 +237,7 @@ class DetalleCompras extends AbstractDBConnection implements Model, JsonSerializ
             if ($id > 0) {
                 $DetalleCompra = new DetalleCompras();
                 $DetalleCompra->Connect();
-                $getrow = $DetalleCompra->getRow("SELECT * FROM h&mcomputadores.detalle_compras WHERE id = ?", array($id));
+                $getrow = $DetalleCompra->getRow("SELECT * FROM `h&mcomputadores`.detalle_compras WHERE id = ?", array($id));
                 $DetalleCompra->Disconnect();
                 return ($getrow) ? new DetalleCompras($getrow) : null;
             }else{
@@ -263,7 +254,7 @@ class DetalleCompras extends AbstractDBConnection implements Model, JsonSerializ
      */
     public static function getAll() : array
     {
-        return DetalleCompras::search("SELECT * FROM h&mcomputadores.detalle_compras");
+        return DetalleCompras::search("SELECT * FROM `h&mcomputadores`.detalle_compras");
     }
 
     /**
@@ -273,7 +264,7 @@ class DetalleCompras extends AbstractDBConnection implements Model, JsonSerializ
      */
     public static function productoEnFactura($compra_id,$producto_id): bool
     {
-        $result = DetalleCompras::search("SELECT id FROM h&mcomputadores.detalle_compras where compra_id = '" . $compra_id. "' and producto_id = '" . $producto_id. "'");
+        $result = DetalleCompras::search("SELECT id FROM `h&mcomputadores`.detalle_compras where compra_id = '" . $compra_id. "' and producto_id = '" . $producto_id. "'");
         if (count($result) > 0) {
             return true;
         } else {
@@ -286,7 +277,7 @@ class DetalleCompras extends AbstractDBConnection implements Model, JsonSerializ
      */
     public function __toString() : string
     {
-        return "Compra: ".$this->compra->getId().", Producto: ".$this->producto->getNombre().", Cantidad: $this->cantidad, Precio Venta: $this->precio_compra";
+        return "Compra: ".$this->compra->getId().", Producto: ".$this->producto->getNombre().", Precio Compra: $this->precio_compra, Cantidad: $this->cantidad";
     }
 
     /**

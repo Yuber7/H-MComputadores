@@ -22,7 +22,7 @@ class PersonasController
         $this->dataPersona['rol'] = $_FORM['rol'] ?? 'Cliente';
         $this->dataPersona['municipio_id'] = $_FORM['municipio_id'] ?? NULL;
         $this->dataPersona['direccion'] = $_FORM['direccion'] ?? NULL;
-        $this->dataPersona['email'] = !empty($_FORM['email']) ?? NULL;
+        $this->dataPersona['email'] = $_FORM['email'] ?? NULL;
         $this->dataPersona['user'] = $_FORM['user'] ?? NULL;
         $this->dataPersona['password'] = $_FORM['password'] ?? NULL;
         $this->dataPersona['estado'] = $_FORM['estado'] ?? 'Activo';
@@ -30,7 +30,7 @@ class PersonasController
 
     public function create($withFiles = null) {
         try {
-            if (!empty($this->dataUsuario['documento']) && !Personas::personaRegistrada($this->dataPersona['documento'])) {
+            if (!empty($this->dataPersona['documento']) && !Personas::personaRegistrada($this->dataPersona['documento'])) {
 
                 /*if(!empty($withFiles)){
                     $fotoUsuario = $withFiles['foto'];
@@ -39,8 +39,9 @@ class PersonasController
                 }*/
 
                 $Persona = new Personas ($this->dataPersona);
+                var_dump($this->dataPersona);
                 if ($Persona->insert()) {
-                    unset($_SESSION['frmPersona']);
+                    unset($_SESSION['frmPersonas']);
                     header("Location: ../../views/modules/personas/index.php?respuesta=success&mensaje=Persona Registrada");
                 }
             } else {
@@ -157,7 +158,7 @@ class PersonasController
         }
         $htmlSelect = "<select " . (($params['isMultiple']) ? "multiple" : "") . " " . (($params['isRequired']) ? "required" : "") . " id= '" . $params['id'] . "' name='" . $params['name'] . "' class='" . $params['class'] . "' style='width: 100%;'>";
         $htmlSelect .= "<option value='' >Seleccione</option>";
-        if (count($arrPersonas) > 0) {
+        if (is_array($arrPersonas)  && count($arrPersonas) > 0) {
             /* @var $arrPersonas Personas[] */
             foreach ($arrPersonas as $persona)
                 if (!PersonasController::personaIsInArray($persona->getId(), $params['arrExcluir']))

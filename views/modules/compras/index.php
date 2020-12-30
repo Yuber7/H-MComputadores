@@ -6,7 +6,6 @@ require_once("../../partials/check_login.php");
 use App\Controllers\ComprasController;
 use App\Models\Compras;
 use App\Models\GeneralFunctions;
-use App\Models\Ventas;
 
 $nameModel = "Compra";
 $pluralModel = $nameModel.'s';
@@ -66,7 +65,7 @@ $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
                                             data-source="index.php" data-source-selector="#card-refresh-content"
                                             data-load-on-init="false"><i class="fas fa-sync-alt"></i></button>
                                     <button type="button" class="btn btn-tool" data-card-widget="maximize"><i
-                                            class="fas fa-expand"></i></button>
+                                                class="fas fa-expand"></i></button>
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse"
                                             data-toggle="tooltip" title="Collapse">
                                         <i class="fas fa-minus"></i></button>
@@ -91,7 +90,7 @@ $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
                                             <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Fecha Compra</th>
+                                                <th>Fecha</th>
                                                 <th>Administrador</th>
                                                 <th>Proveedor</th>
                                                 <th>Valor Total</th>
@@ -107,26 +106,26 @@ $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
                                                 ?>
                                                 <tr>
                                                     <td><?= $compra->getId(); ?></td>
-                                                    <td><?= $compra->getFecha(); ?></td>
                                                     <td><?= $compra->getAdministrador()->getNombre(); ?> <?= $compra->getAdministrador()->getApellido(); ?></td>
                                                     <td><?= $compra->getProveedor()->getNombre(); ?> <?= $compra->getProveedor()->getApellido(); ?></td>
+                                                    <td><?= $compra->getFecha(); ?></td>
                                                     <td><?= GeneralFunctions::formatCurrency($compra->getValorTotal()); ?></td>
                                                     <td><?= $compra->getEstado(); ?></td>
                                                     <td>
                                                         <a href="show.php?id=<?php echo $compra->getId(); ?>"
                                                            type="button" data-toggle="tooltip" title="Ver"
                                                            class="btn docs-tooltip btn-warning btn-xs"><i
-                                                                class="fa fa-eye"></i></a>
+                                                                    class="fa fa-eye"></i></a>
                                                         <?php if ($compra->getEstado() == "Pendiente") { ?>
                                                             <a href="create.php?id=<?php echo $compra->getId(); ?>"
                                                                type="button" data-toggle="tooltip" title="Retomar"
                                                                class="btn docs-tooltip btn-success btn-xs"><i
-                                                                    class="fa fa-undo-alt"></i></a>
+                                                                        class="fa fa-undo-alt"></i></a>
                                                             <a type="button"
                                                                href="../../../app/Controllers/MainController.php?controller=<?= $pluralModel ?>&action=cancel&Id=<?= $compra->getId(); ?>"
                                                                data-toggle="tooltip" title="Cancelar"
                                                                class="btn docs-tooltip btn-danger btn-xs"><i
-                                                                    class="fa fa-times-circle"></i></a>
+                                                                        class="fa fa-times-circle"></i></a>
                                                         <?php } ?>
                                                     </td>
                                                 </tr>
@@ -136,7 +135,7 @@ $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
                                             <tfoot>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Fecha Compra</th>
+                                                <th>Fecha</th>
                                                 <th>Administrador</th>
                                                 <th>Proveedor</th>
                                                 <th>Valor Total</th>

@@ -56,7 +56,7 @@ class Productos extends AbstractDBConnection implements Model, JsonSerializable
     /**
      * @return int|mixed
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

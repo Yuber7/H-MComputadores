@@ -1,8 +1,9 @@
 <?php
 
+
 namespace App\Models;
 
-use App\Models\Interfaces\Model;
+use App\Interfaces\Model;
 use Carbon\Carbon;
 use Exception;
 use JsonSerializable;
@@ -11,7 +12,7 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
 {
     private ?int $id;
     private Carbon $fecha;
-    protected int $administrador_id;
+    private int $administrador_id;
     private int $cliente_id;
     private float $valor_total;
     private string $forma_pago;
@@ -19,7 +20,7 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
 
     /* Relaciones */
     private ?Personas $administrador;
-    private ?Personas $cliente; //objeto del cliente
+    private ?Personas $cliente;
     private ?array $detalleVenta;
 
     /**
@@ -30,12 +31,12 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
     {
         parent::__construct();
         $this->setId($venta['id'] ?? NULL);
-        $this->setFecha(!empty($venta['fecha']) ? Carbon::parse($venta['fecha']) : new Carbon());
+        $this->setFecha(!empty($venta['created_at']) ? Carbon::parse($venta['created_at']) : new Carbon());
         $this->setAdministradorId($venta['administrador_id'] ?? 0);
         $this->setClienteId($venta['cliente_id'] ?? 0);
-        $this->setValorTotal($venta['valor_total'] ?? 0);
-        $this->setFormaPago($venta['forma_pago'] ?? 'Efectivo');
+        $this->setFormaPago($venta['forma_pago'] ?? '');
         $this->setEstado($venta['estado'] ?? 'Pendiente');
+        $this->setValorTotal();
     }
 
     /**
@@ -47,15 +48,16 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
     }
 
     /**
-     * @return int|null
+     * @return int|mixed
+     * @return int|mixed
      */
-    public function getId(): ?int
+    public function getId() : ?int
     {
         return $this->id;
     }
 
     /**
-     * @param int|null $id
+     * @param int|mixed $id
      */
     public function setId(?int $id): void
     {
@@ -63,15 +65,47 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
     }
 
     /**
-     * @return Carbon
+     * @return int
      */
-    public function getFecha(): Carbon
+    public function getClienteId() : int
     {
-        return $this->fecha;
+        return $this->cliente_id;
     }
 
     /**
-     * @param Carbon $fecha
+     * @param int $cliente_id
+     */
+    public function setClienteId(int $cliente_id): void
+    {
+        $this->cliente_id = $cliente_id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getAdministradorId() : int
+    {
+        return $this->administrador_id;
+    }
+
+    /**
+     * @param int $empleado_id
+     */
+    public function setAdministradorId(int $administrador_id): void
+    {
+        $this->administrador_id = $administrador_id;
+    }
+
+    /**
+     * @return Carbon|mixed
+     */
+    public function getFecha() : Carbon
+    {
+        return $this->fecha->locale('es');
+    }
+
+    /**
+     * @param Carbon|mixed $fecha
      */
     public function setFecha(Carbon $fecha): void
     {
@@ -87,9 +121,9 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
     }
 
     /**
-     * @param float $valor_total
+     * @param float|mixed $valorTotal
      */
-    public function setValorTotal(float $valor_total): void
+    public function setValorTotal(): void
     {
         $total = 0;
         if($this->getId() != null){
@@ -105,39 +139,7 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
     }
 
     /**
-     * @return int
-     */
-    public function getAdministradorId(): int
-    {
-        return $this->administrador_id;
-    }
-
-    /**
-     * @param int $administrador_id
-     */
-    public function setAdministradorId(int $administrador_id): void
-    {
-        $this->$administrador_id = $administrador_id;
-    }
-
-    /**
-     * @return int
-     */
-    public function getClienteId(): int
-    {
-        return $this->cliente_id;
-    }
-
-    /**
-     * @param int cliente_id
-     */
-    public function setClienteId(int $cliente_id): void
-    {
-        $this->cliente_id = $cliente_id;
-    }
-
-    /**
-     * @return string
+     * @return float
      */
     public function getFormaPago(): string
     {
@@ -145,7 +147,7 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
     }
 
     /**
-     * @param string $forma_pago
+     * @param float $forma_pago
      */
     public function setFormaPago(string $forma_pago): void
     {
@@ -153,34 +155,27 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
     }
 
     /**
-     * @return string
+     * @return mixed|string
      */
-    public function getEstado(): string
+    public function getEstado() : string
     {
         return $this->estado;
     }
 
     /**
-     * @param string $estado
+     * @param mixed|string $estado
      */
     public function setEstado(string $estado): void
     {
         $this->estado = $estado;
     }
 
+    /* Relaciones */
     /**
-     * @return array|null
-     */
-    public function getDetalleVenta(): ?array
-    {
-        $this->detalleVenta = DetalleCompras::search('SELECT * FROM `h&mcomputadores`.detalle_ventas where venta_id = '.$this->id);
-        return $this->detalleVenta;
-    }
-
-    /**
+     * Retorna el objeto usuario del empleado correspondiente a la venta
      * @return Personas|null
      */
-    public function getAdministradorVenta(): ?Personas
+    public function getAdministrador(): ?Personas
     {
         if(!empty($this->administrador_id)){
             $this->administrador = Personas::searchForId($this->administrador_id) ?? new Personas();
@@ -190,6 +185,7 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
     }
 
     /**
+     * Retorna el objeto usuario del cliente correspondiente a la venta
      * @return Personas|null
      */
     public function getCliente(): ?Personas
@@ -202,13 +198,15 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
     }
 
     /**
-     * @param Personas|null $cliente
+     * retorna un array de detalles venta que perteneces a una venta
+     * @return array
      */
-    public function setCliente(?Personas $cliente): void
+    public function getDetalleVenta(): ?array
     {
-        $this->cliente = $cliente;
-    }
 
+        $this->detalleVenta = DetalleVentas::search('SELECT * FROM `h&mcomputadores`.detalle_ventas where venta_id = '.$this->id);
+        return $this->detalleVenta;
+    }
 
     /**
      * @param string $query
@@ -246,9 +244,8 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
     public function update() : ?bool
     {
         $query = "UPDATE `h&mcomputadores`.ventas SET 
-            fecha = :fecha,administrador_id = :administrador_id,
-            cliente_id = :cliente_id, valor_total = :valor_total, 
-            forma_pago = :forma_pago,estado = :estado WHERE id = :id";
+            fecha = :fecha, administrador_id = :administrador_id, cliente_id = :cliente_id,
+            valor_total = :valor_total, forma_pago = :forma_pago, estado = :estado WHERE id = :id";
         return $this->save($query);
     }
 
@@ -323,10 +320,10 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
      * @return bool
      * @throws Exception
      */
-    public static function facturaRegistrada($fecha): bool
+    public static function facturaRegistrada($id): bool
     {
-        $fecha = trim(strtolower($fecha));
-        $result = Categorias::search("SELECT id FROM `h&mcomputadores`.ventas where fecha = '" . $fecha. "'");
+        $id = trim(strtolower($id));
+        $result = Categorias::search("SELECT id FROM `h&mcomputadores`.ventas where id = '" . $id. "'");
         if ( !empty($result) && count ($result) > 0 ) {
             return true;
         } else {
@@ -339,7 +336,7 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
      */
     public function __toString() : string
     {
-        return "Fecha : $this->fecha, Cliente: ".$this->getCliente()->nombresCompletos().", Administrador: ".$this->getAdministrador()->nombresCompletos().", Fecha: $this->fecha->toDateTimeString(), Estado: $this->estado";
+        return "Fecha: $this->fecha->toDateTimeString(), Administrador: ".$this->getAdministrador()->nombresCompletos().",Cliente: ".$this->getCliente()->nombresCompletos().",   Valor Total: $this->valor_total, Estado: $this->estado";
     }
 
     /**
@@ -353,7 +350,7 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
     {
         return [
             'fecha' => $this->getFecha()->toDateTimeString(),
-            'administrador' => $this->getAdministradorVenta()->jsonSerialize(),
+            'empleado' => $this->getAdministrador()->jsonSerialize(),
             'cliente' => $this->getCliente()->jsonSerialize(),
             'valor_total' => $this->getValorTotal(),
             'forma_pago' => $this->getFormaPago(),
