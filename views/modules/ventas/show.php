@@ -62,7 +62,7 @@ $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
                                     ?>
                                     <div class="card-header">
                                         <h3 class="card-title"><i class="fas fa-shopping-cart"></i> &nbsp; Ver
-                                            Información de <?= $DataVentas->getNumeroSerie() ?>
+                                            Información de <?= $DataVentas->getId() ?>
                                             -<?= $DataVentas->getId() ?></h3>
                                         <div class="card-tools">
                                             <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
@@ -83,20 +83,20 @@ $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
 
                                             <strong><i class="fas fa-sort-numeric-down mr-1"></i> Numero</strong>
                                         <p class="text-muted">
-                                            <?= $DataVentas->getNumeroSerie() . "-" . $DataVentas->getId(); ?>
+                                            <?= $DataVentas->getId(); ?>
                                         </p>
                                         <hr>
                                         <strong><i class="fas fa-user-ninja mr-1"></i> Cliente</strong>
-                                        <p class="text-muted"><?= $DataVentas->getCliente()->getNombres() . " " . $DataVentas->getCliente()->getApellidos() ?></p>
+                                        <p class="text-muted"><?= $DataVentas->getCliente()->getNombre() . " " . $DataVentas->getCliente()->getApellido() ?></p>
                                         <hr>
                                         <strong><i class="far fa-user mr-1"></i> Empleado</strong>
-                                        <p class="text-muted"><?= $DataVentas->getEmpleado()->getNombres() . " " . $DataVentas->getEmpleado()->getApellidos() ?></p>
+                                        <p class="text-muted"><?= $DataVentas->getAdministrador()->getNombre() . " " . $DataVentas->getAdministrador()->getApellido() ?></p>
                                         <hr>
                                         <strong><i class="far fa-calendar mr-1"></i> Fecha Venta</strong>
-                                        <p class="text-muted"><?= $DataVentas->getFechaVenta(); ?></p>
+                                        <p class="text-muted"><?= $DataVentas->getFecha(); ?></p>
                                         <hr>
-                                        <strong><i class="fas fa-money-bill mr-1"></i> Monto</strong>
-                                        <p class="text-muted"><?= GeneralFunctions::formatCurrency($DataVentas->getMonto()); ?></p>
+                                        <strong><i class="fas fa-money-bill mr-1"></i> Valor Total</strong>
+                                        <p class="text-muted"><?= GeneralFunctions::formatCurrency($DataVentas->getValorTotal()); ?></p>
                                         <hr>
                                         <strong><i class="fas fa-cog mr-1"></i> Estado</strong>
                                         <p class="text-muted"><?= $DataVentas->getEstado(); ?></p>
