@@ -15,7 +15,7 @@ class Categorias extends AbstractDBConnection implements Model, JsonSerializable
     protected string $estado;
 
     /* Relaciones */
-    private ?array $productosCategoria;
+    protected ?array $productosCategoria;
 
     /**
      * Categorias constructor. Recibe un array asociativo
@@ -108,7 +108,7 @@ class Categorias extends AbstractDBConnection implements Model, JsonSerializable
      */
     public function getProductosCategoria(): ?array
     {
-        $this->productosCategoria = Productos::search("SELECT * FROM `h&mcomputadores`.productos WHERE categoria_id = ".$this->id." and estado = 'Activo'");
+        $this->productosCategoria = Productos::search("SELECT * FROM `h&mcomputadores`.productos WHERE categoria_id = ".$this->id." and estado = 'Disponible'");
         return $this->productosCategoria;
     }
 

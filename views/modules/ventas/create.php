@@ -88,24 +88,22 @@ if (!empty($_GET['id'])) {
                             <div class="card-body">
                                 <form class="form-horizontal" method="post" id="frmCreate<?= $nameModel ?>" name="frmCreate<?= $nameModel ?>"
                                       action="../../../app/Controllers/MainController.php?controller=<?= $pluralModel ?>&action=create">
-
                                     <div class="form-group row">
-                                        <label for="administrador_id" class="col-sm-4 col-form-label">Admin</label>
+                                        <label for="administrador_id" class="col-sm-4 col-form-label">Administrador</label>
                                         <div class="col-sm-8">
                                             <?= PersonasController::selectPersona(
                                                 array (
-                                                   'id' => 'administrador_id',
+                                                    'id' => 'administrador_id',
                                                     'name' => 'administrador_id',
-                                                    'defaultValue' => (!empty($dataVenta)) ? $dataVenta->getAdministradorVenta()->getId() : '',
+                                                    'defaultValue' => (!empty($dataVenta)) ? $dataVenta->getAdministrador()->getId() : '',
                                                     'class' => 'form-control select2bs4 select2-info',
                                                     'where' => "rol = 'Administrador' and estado = 'Activo'"
                                                 )
                                             )
                                             ?>
+                                            <span class="text-info"><a href="../personas/create.php">Crear Administrador</a></span>
                                         </div>
                                     </div>
-
-
                                     <div class="form-group row">
                                         <label for="cliente_id" class="col-sm-4 col-form-label">Cliente</label>
                                         <div class="col-sm-8">
@@ -122,32 +120,29 @@ if (!empty($_GET['id'])) {
                                             <span class="text-info"><a href="../personas/create.php">Crear Cliente</a></span>
                                         </div>
                                     </div>
-
+                                    <div class="form-group row">
+                                        <label for="forma_pago" class="col-sm-4 col-form-label">Forma de pago</label>
+                                        <div class="col-sm-8">
+                                            <select required id="forma_pago" name="forma_pago" class="custom-select">
+                                                <option <?= (!empty($frmSession['forma_pago']) && $frmSession['forma_pago'] == "Efectivo") ? "selected" : ""; ?> value="Efectivo">Efectivo</option>
+                                                <option <?= (!empty($frmSession['forma_pago']) && $frmSession['forma_pago'] == "Cheque") ? "selected" : ""; ?> value="Cheque">Cheque</option>
+                                                <option <?= (!empty($frmSession['forma_pago']) && $frmSession['forma_pago'] == "Otros") ? "selected" : ""; ?> value="Otros">Otros</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                     <?php
                                     if (!empty($dataVenta)) {
                                         ?>
                                         <div class="form-group row">
-                                            <label for="fecha" class="col-sm-4 col-form-label">Fecha
-                                                Venta</label>
+                                            <label for="fecha" class="col-sm-4 col-form-label">Fecha</label>
                                             <div class="col-sm-8">
                                                 <?= $dataVenta->getFecha() ?>
                                             </div>
                                         </div>
                                         <div class="form-group row">
-                                            <label for="numero_serie" class="col-sm-4 col-form-label">Valor Total</label>
+                                            <label for="valor_total" class="col-sm-4 col-form-label">Valor Total</label>
                                             <div class="col-sm-8">
                                                 <?= GeneralFunctions::formatCurrency($dataVenta->getValorTotal()) ?>
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group row">
-                                            <label for="rol" class="col-sm-2 col-form-label">Rol</label>
-                                            <div class="col-sm-8">
-                                                <select required id="rol" name="rol" class="custom-select">
-                                                    <option <?= (!empty($frmSession['forma_pago']) && $frmSession['forma_pago'] == "Efectivo") ? "selected" : ""; ?> value="Efectivo">Efectivo</option>
-                                                    <option <?= (!empty($frmSession['forma_pago']) && $frmSession['forma_pago'] == "Cheque") ? "selected" : ""; ?> value="Cheque">Cheque</option>
-                                                    <option <?= (!empty($frmSession['forma_pago']) && $frmSession['forma_pago'] == "Otros") ? "selected" : ""; ?> value="Otros">Otros</option>
-                                                </select>
                                             </div>
                                         </div>
                                     <?php } ?>
@@ -157,9 +152,8 @@ if (!empty($_GET['id'])) {
                                 </form>
                             </div>
                         </div>
+                        <!-- /.card -->
                     </div>
-
-                    <!-- /.card -->
                     <div class="col-md-8">
                         <div class="card card-lightblue">
                             <div class="card-header">
@@ -277,7 +271,7 @@ if (!empty($_GET['id'])) {
                                             'name' => 'producto_id',
                                             'defaultValue' => '',
                                             'class' => 'form-control select2bs4 select2-info',
-                                            'where' => "estado = 'Activo' and stock > 0"
+                                            'where' => "estado = 'Disponible' and stock > 0"
                                         )
                                     )
                                     ?>
@@ -285,9 +279,6 @@ if (!empty($_GET['id'])) {
                                         <span class="text-muted">Precio Base: </span> <span id="spPrecio"></span>,
                                         <span class="text-muted">Precio Venta: </span> <span id="spPrecioVenta"></span>,
                                         <span class="text-muted">Stock: </span> <span id="spStock"></span>.
-                                        <span class="badge badge-info" id="spFoto" data-toggle="tooltip" data-html="true"
-                                              title="<img class='img-thumbnail' src='../../public/uploadFiles/photos/products/'>">Foto
-                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -327,8 +318,6 @@ if (!empty($_GET['id'])) {
 
     <?php require('../../partials/footer.php'); ?>
 </div>
-
-
 <!-- ./wrapper -->
 <?php require('../../partials/scripts.php'); ?>
 <!-- Scripts requeridos para las datatables -->
@@ -350,15 +339,15 @@ if (!empty($_GET['id'])) {
                         request: 'ajax'
                     }, "json"
                 )
-                    .done(function( resultProducto ) {
-                        dataProducto = resultProducto;
-                    })
-                    .fail(function(err) {
-                        console.log( "Error al realizar la consulta"+err );
-                    })
-                    .always(function() {
-                        updateDataProducto(dataProducto);
-                    });
+                .done(function( resultProducto ) {
+                    dataProducto = resultProducto;
+                })
+                .fail(function(err) {
+                    console.log( "Error al realizar la consulta"+err );
+                })
+                .always(function() {
+                    updateDataProducto(dataProducto);
+                });
             }else{
                 updateDataProducto(dataProducto);
             }
@@ -368,10 +357,10 @@ if (!empty($_GET['id'])) {
             if(dataProducto !== null){
                 $("#divResultProducto").slideDown();
                 $("#spPrecio").html("$"+dataProducto.precio);
-                $("#spPrecioVenta").html("$"+dataProducto.precio_venta);
+                $("#spPrecioVenta").html("$"+Number(((dataProducto.precio * dataProducto.porcentaje_ganancia)/100)+dataProducto.precio));
                 $("#spStock").html(dataProducto.stock+" Unidad(es)");
                 $("#cantidad").attr("max",dataProducto.stock);
-                $("#precio_venta").val(dataProducto.precio_venta);
+                $("#precio_venta").val(Number(((dataProducto.precio * dataProducto.porcentaje_ganancia)/100)+dataProducto.precio));
             }else{
                 $("#divResultProducto").slideUp();
                 $("#spPrecio").html("");

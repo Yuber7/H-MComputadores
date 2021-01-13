@@ -43,7 +43,7 @@ class CategoriasController{
                 unset($_SESSION['frmCategorias']);
             }
 
-            header("Location: ../../views/modules/categorias/show.php?id=" . $Categoria->getId() . "&respuesta=correcto");
+            header("Location: ../../views/modules/categorias/show.php?id=" . $Categoria->getId() . "&respuesta=success&mensaje=Categoria Actualizada!");
         } catch (\Exception $e) {
             GeneralFunctions::logFile('Exception',$e, 'error');
         }

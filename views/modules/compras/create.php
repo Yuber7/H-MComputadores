@@ -17,9 +17,9 @@ $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
 <?php
 $dataCompra = null;
 if (!empty($_GET['id'])) {
-    $dataCompra= ComprasController::searchForID(["id" => $_GET['id']]);
+    $dataCompra = ComprasController::searchForID(["id" => $_GET['id']]);
     if ($dataCompra->getEstado() != "Pendiente"){
-        header('Location: index.php?respuesta=warning&mensaje=La venta ya ha finalizado');
+        header('Location: index.php?respuesta=warning&mensaje=La compra ya ha finalizado');
     }
 }
 ?>
@@ -79,9 +79,9 @@ if (!empty($_GET['id'])) {
                                             data-source="create.php" data-source-selector="#card-refresh-content"
                                             data-load-on-init="false"><i class="fas fa-sync-alt"></i></button>
                                     <button type="button" class="btn btn-tool" data-card-widget="maximize"><i
-                                            class="fas fa-expand"></i></button>
+                                                class="fas fa-expand"></i></button>
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
-                                            class="fas fa-minus"></i></button>
+                                                class="fas fa-minus"></i></button>
                                 </div>
                             </div>
 
@@ -90,7 +90,7 @@ if (!empty($_GET['id'])) {
                                       action="../../../app/Controllers/MainController.php?controller=<?= $pluralModel ?>&action=create">
 
                                     <div class="form-group row">
-                                        <label for="administrador_id" class="col-sm-4 col-form-label">Admin</label>
+                                        <label for="administrador_id" class="col-sm-4 col-form-label">Administrador</label>
                                         <div class="col-sm-8">
                                             <?= PersonasController::selectPersona(
                                                 array (
@@ -106,7 +106,7 @@ if (!empty($_GET['id'])) {
                                     </div>
 
                                     <div class="form-group row">
-                                        <label for="cliente_id" class="col-sm-4 col-form-label">Proveedor</label>
+                                        <label for="proveedor_id" class="col-sm-4 col-form-label">Proveedor</label>
                                         <div class="col-sm-8">
                                             <?= PersonasController::selectPersona(
                                                 array (
@@ -122,27 +122,21 @@ if (!empty($_GET['id'])) {
                                         </div>
                                     </div>
 
-                                     <?php
+                                    <?php
                                     if (!empty($dataCompra)) {
                                         ?>
-
-
                                         <div class="form-group row">
-                                            <label for="fecha" class="col-sm-4 col-form-label">Fecha
-                                                Venta</label>
+                                            <label for="fecha" class="col-sm-4 col-form-label">Fecha</label>
                                             <div class="col-sm-8">
                                                 <?= $dataCompra->getFecha() ?>
                                             </div>
-
-
                                         </div>
                                         <div class="form-group row">
-                                            <label for="numero_serie" class="col-sm-4 col-form-label">Valor Total</label>
+                                            <label for="valor_total" class="col-sm-4 col-form-label">Valor Total</label>
                                             <div class="col-sm-8">
                                                 <?= GeneralFunctions::formatCurrency($dataCompra->getValorTotal()) ?>
                                             </div>
                                         </div>
-
                                     <?php } ?>
                                     <hr>
                                     <button type="submit" class="btn btn-info">Enviar</button>
@@ -150,9 +144,8 @@ if (!empty($_GET['id'])) {
                                 </form>
                             </div>
                         </div>
+                        <!-- /.card -->
                     </div>
-
-                    <!-- /.card -->
                     <div class="col-md-8">
                         <div class="card card-lightblue">
                             <div class="card-header">
@@ -162,9 +155,9 @@ if (!empty($_GET['id'])) {
                                             data-source="create.php" data-source-selector="#card-refresh-content"
                                             data-load-on-init="false"><i class="fas fa-sync-alt"></i></button>
                                     <button type="button" class="btn btn-tool" data-card-widget="maximize"><i
-                                            class="fas fa-expand"></i></button>
+                                                class="fas fa-expand"></i></button>
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
-                                            class="fas fa-minus"></i></button>
+                                                class="fas fa-minus"></i></button>
                                 </div>
                             </div>
 
@@ -214,7 +207,7 @@ if (!empty($_GET['id'])) {
                                                                    href="../../../app/Controllers/MainController.php?controller=DetalleCompras&action=deleted&id=<?= $detalleCompra->getId(); ?>"
                                                                    data-toggle="tooltip" title="Eliminar"
                                                                    class="btn docs-tooltip btn-danger btn-xs"><i
-                                                                        class="fa fa-times-circle"></i></a>
+                                                                            class="fa fa-times-circle"></i></a>
                                                             </td>
                                                         </tr>
                                                     <?php }
@@ -270,7 +263,7 @@ if (!empty($_GET['id'])) {
                                             'name' => 'producto_id',
                                             'defaultValue' => '',
                                             'class' => 'form-control select2bs4 select2-info',
-                                            'where' => "estado = 'Activo' and stock > 0"
+                                            'where' => "estado = 'Disponible' and stock > 0"
                                         )
                                     )
                                     ?>
@@ -359,14 +352,14 @@ if (!empty($_GET['id'])) {
             if(dataProducto !== null){
                 $("#divResultProducto").slideDown();
                 $("#spPrecio").html("$"+dataProducto.precio);
-                $("#spPrecioCompra").html("$"+dataProducto.precio_compra);
+                $("#spPrecioVenta").html("$"+dataProducto.precio_venta);
                 $("#spStock").html(dataProducto.stock+" Unidad(es)");
                 $("#cantidad").attr("max",dataProducto.stock);
-                $("#precio_compra").val(dataProducto.precio_compra);
+                $("#precio_compra").val(dataProducto.precio_venta);
             }else{
                 $("#divResultProducto").slideUp();
                 $("#spPrecio").html("");
-                $("#spPrecioCompra").html("");
+                $("#spPrecioVenta").html("");
                 $("#spStock").html("");
                 $("#cantidad").removeAttr("max").val('0');
                 $("#precio_compra").val('0.0');
@@ -375,7 +368,7 @@ if (!empty($_GET['id'])) {
         }
 
         $( "#cantidad" ).on( "change keyup focusout", function() {
-            $("#total_producto").val($( "#cantidad" ).val() *  $("#precio_compra").val());
+            $("#total_producto").val($( "#cantidad" ).val() *  $("#precio_venta").val());
         });
 
     });

@@ -1,13 +1,13 @@
 <?php
 require("../../partials/routes.php");
 require_once("../../partials/check_login.php");
-require("../../../app/Controllers/ComprasController.php");
+require("../../../app/Controllers/VentasController.php");
 
-use App\Controllers\ComprasController;
-use App\Models\Compras;
+use App\Controllers\VentasController;
+use App\Models\Ventas;
 use App\Models\GeneralFunctions;
 
-$nameModel = "Compra";
+$nameModel = "Venta";
 $pluralModel = $nameModel.'s';
 $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
 ?>
@@ -56,20 +56,20 @@ $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
                         <!-- Horizontal Form -->
                         <div class="card card-green">
                             <?php if (!empty($_GET["id"]) && isset($_GET["id"])) {
-                                $DataCompras = ComprasController::searchForID(["id" => $_GET["id"]]);
-                                /* @var $DataCompras Compras */
-                                if (!empty($DataCompras)) {
+                                $DataVentas = VentasController::searchForID(["id" => $_GET["id"]]);
+                                /* @var $DataVentas Ventas */
+                                if (!empty($DataVentas)) {
                                     ?>
                                     <div class="card-header">
                                         <h3 class="card-title"><i class="fas fa-shopping-cart"></i> &nbsp; Ver
-                                            Información de <?= $DataCompras->getId() ?>
-                                            -<?= $DataCompras->getId() ?></h3>
+                                            Información de <?= $DataVentas->getNumeroSerie() ?>
+                                            -<?= $DataVentas->getId() ?></h3>
                                         <div class="card-tools">
                                             <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
                                                     data-source="show.php" data-source-selector="#card-refresh-content"
                                                     data-load-on-init="false"><i class="fas fa-sync-alt"></i></button>
                                             <button type="button" class="btn btn-tool" data-card-widget="maximize"><i
-                                                    class="fas fa-expand"></i></button>
+                                                        class="fas fa-expand"></i></button>
                                             <button type="button" class="btn btn-tool" data-card-widget="collapse"
                                                     data-toggle="tooltip" title="Collapse">
                                                 <i class="fas fa-minus"></i></button>
@@ -81,25 +81,25 @@ $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
                                     <div class="card-body">
                                         <p>
 
-                                            <strong><i class="fas fa-sort-numeric-down mr-1"></i> Id Registro</strong>
+                                            <strong><i class="fas fa-sort-numeric-down mr-1"></i> Numero</strong>
                                         <p class="text-muted">
-                                            <?= $DataCompras->getId(); ?>
+                                            <?= $DataVentas->getNumeroSerie() . "-" . $DataVentas->getId(); ?>
                                         </p>
                                         <hr>
-                                        <strong><i class="fas fa-user-ninja mr-1"></i> Fecha Compra</strong>
-                                        <p class="text-muted"><?= $DataCompras->getFecha(); ?></p>
+                                        <strong><i class="fas fa-user-ninja mr-1"></i> Cliente</strong>
+                                        <p class="text-muted"><?= $DataVentas->getCliente()->getNombres() . " " . $DataVentas->getCliente()->getApellidos() ?></p>
                                         <hr>
-                                        <strong><i class="far fa-user mr-1"></i> Administrador </strong>
-                                        <p class="text-muted"><?= $DataCompras->getAdministrador()->getNombre() . " " . $DataCompras->getAdministrador()->getApellido() ?></p>
+                                        <strong><i class="far fa-user mr-1"></i> Empleado</strong>
+                                        <p class="text-muted"><?= $DataVentas->getEmpleado()->getNombres() . " " . $DataVentas->getEmpleado()->getApellidos() ?></p>
                                         <hr>
-                                        <strong><i class="far fa-user mr-1"></i> Proveedor </strong>
-                                        <p class="text-muted"><?= $DataCompras->getProveedor()->getNombre() . " " . $DataCompras->getProveedor()->getApellido() ?></p>
+                                        <strong><i class="far fa-calendar mr-1"></i> Fecha Venta</strong>
+                                        <p class="text-muted"><?= $DataVentas->getFechaVenta(); ?></p>
                                         <hr>
-                                        <strong><i class="fas fa-money-bill mr-1"></i>Valor Total</strong>
-                                        <p class="text-muted"><?= GeneralFunctions::formatCurrency($DataCompras->getValorTotal()); ?></p>
+                                        <strong><i class="fas fa-money-bill mr-1"></i> Monto</strong>
+                                        <p class="text-muted"><?= GeneralFunctions::formatCurrency($DataVentas->getMonto()); ?></p>
                                         <hr>
                                         <strong><i class="fas fa-cog mr-1"></i> Estado</strong>
-                                        <p class="text-muted"><?= $DataCompras->getEstado(); ?></p>
+                                        <p class="text-muted"><?= $DataVentas->getEstado(); ?></p>
                                         </p>
 
                                     </div>

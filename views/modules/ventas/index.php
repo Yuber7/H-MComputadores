@@ -91,10 +91,10 @@ $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
                                             <tr>
                                                 <th>#</th>
                                                 <th>Fecha</th>
-                                                <th>administrador</th>
+                                                <th>Administrador</th>
                                                 <th>Cliente</th>
-                                                <th>valor total</th>
-                                                <th>forma pago</th>
+                                                <th>Valor Total</th>
+                                                <th>Forma de pago</th>
                                                 <th>Estado</th>
                                                 <th>Acciones</th>
                                             </tr>
@@ -108,8 +108,8 @@ $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
                                                 <tr>
                                                     <td><?= $venta->getId(); ?></td>
                                                     <td><?= $venta->getFecha(); ?></td>
-                                                    <td><?= $venta->getAdministradorVenta()->getNombre(); ?> <?= $venta->getAdministradorVenta()->getApellido(); ?></td>
-                                                    <td><?= $venta->getCliente()->getNombre(); ?> <?= $venta->getCliente()->getApellido(); ?></td>
+                                                    <td><?= $venta->getAdministrador()->getNombre(); ?> <?= $venta->getAdministrador()->getApellido(); ?></td>
+                                                    <td><?= $venta->getCliente()->getNombre(); ?> <?= $venta->getAdministrador()->getApellido(); ?></td>
                                                     <td><?= GeneralFunctions::formatCurrency($venta->getValorTotal()); ?></td>
                                                     <td><?= $venta->getFormaPago(); ?></td>
                                                     <td><?= $venta->getEstado(); ?></td>
@@ -137,11 +137,11 @@ $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
                                             <tfoot>
                                             <tr>
                                                 <th>#</th>
-                                                <th>fecha</th>
+                                                <th>Fecha</th>
                                                 <th>Administrador</th>
                                                 <th>Cliente</th>
                                                 <th>Valor Total</th>
-                                                <th>Forma Pago</th>
+                                                <th>Forma de pago</th>
                                                 <th>Estado</th>
                                                 <th>Acciones</th>
                                             </tr>

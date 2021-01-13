@@ -6,7 +6,6 @@ require("../../../app/Controllers/CategoriasController.php");
 use App\Controllers\CategoriasController;
 use App\Models\Categorias;
 use App\Models\GeneralFunctions;
-use Carbon\Carbon;
 
 $nameModel = "Categoria";
 $pluralModel = $nameModel.'s';
@@ -129,7 +128,6 @@ $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
                                         busqueda <?= ($_GET['mensaje']) ?? "" ?>
                                     </div>
                                 <?php } ?>
-                                </p>
                             <?php } ?>
                         </div>
                         <!-- /.card -->
