@@ -279,9 +279,6 @@ if (!empty($_GET['id'])) {
                                         <span class="text-muted">Precio Base: </span> <span id="spPrecio"></span>,
                                         <span class="text-muted">Precio Venta: </span> <span id="spPrecioVenta"></span>,
                                         <span class="text-muted">Stock: </span> <span id="spStock"></span>.
-                                        <span class="badge badge-info" id="spFoto" data-toggle="tooltip" data-html="true"
-                                              title="<img class='img-thumbnail' src='../../public/uploadFiles/photos/products/'>">Foto
-                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -360,10 +357,10 @@ if (!empty($_GET['id'])) {
             if(dataProducto !== null){
                 $("#divResultProducto").slideDown();
                 $("#spPrecio").html("$"+dataProducto.precio);
-                $("#spPrecioVenta").html("$"+dataProducto.precio_venta);
+                $("#spPrecioVenta").html("$"+Number(((dataProducto.precio * dataProducto.porcentaje_ganancia)/100)+dataProducto.precio));
                 $("#spStock").html(dataProducto.stock+" Unidad(es)");
                 $("#cantidad").attr("max",dataProducto.stock);
-                $("#precio_venta").val(dataProducto.precio_venta);
+                $("#precio_venta").val(Number(((dataProducto.precio * dataProducto.porcentaje_ganancia)/100)+dataProducto.precio));
             }else{
                 $("#divResultProducto").slideUp();
                 $("#spPrecio").html("");
