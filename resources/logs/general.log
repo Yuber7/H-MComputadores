@@ -9749,3 +9749,543 @@
 
 )
   
+[2021-01-12T22:09:37.633773+00:00] General.ERROR: Exception  
+[2021-01-12T22:09:37.636831+00:00] General.ERROR: Archivo: C:\laragon\www\H-MComputadores\app\Models\AbstractDBConnection.php  
+[2021-01-12T22:09:37.637226+00:00] General.ERROR: Line: 126  
+[2021-01-12T22:09:37.637562+00:00] General.ERROR: Mensaje: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'estado' at row 1  
+[2021-01-12T22:09:37.638359+00:00] General.ERROR: Array
+(
+    [0] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\AbstractDBConnection.php
+            [line] => 126
+            [function] => execute
+            [class] => PDOStatement
+            [type] => ->
+            [args] => Array
+                (
+                )
+
+        )
+
+    [1] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Ventas.php
+            [line] => 227
+            [function] => insertRow
+            [class] => App\Models\AbstractDBConnection
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => UPDATE `h&mcomputadores`.ventas SET 
+            fecha = :fecha, administrador_id = :administrador_id, cliente_id = :cliente_id,
+            valor_total = :valor_total, forma_pago = :forma_pago, estado = :estado WHERE id = :id
+                    [1] => Array
+                        (
+                            [:id] => 7
+                            [:fecha] => 2021-01-12 22:09:37
+                            [:administrador_id] => 1
+                            [:cliente_id] => 4
+                            [:valor_total] => 11200
+                            [:forma_pago] => Efectivo
+                            [:estado] => Cancelada
+                        )
+
+                )
+
+        )
+
+    [2] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Ventas.php
+            [line] => 249
+            [function] => save
+            [class] => App\Models\Ventas
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => UPDATE `h&mcomputadores`.ventas SET 
+            fecha = :fecha, administrador_id = :administrador_id, cliente_id = :cliente_id,
+            valor_total = :valor_total, forma_pago = :forma_pago, estado = :estado WHERE id = :id
+                )
+
+        )
+
+    [3] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Controllers\VentasController.php
+            [line] => 88
+            [function] => update
+            [class] => App\Models\Ventas
+            [type] => ->
+            [args] => Array
+                (
+                )
+
+        )
+
+    [4] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Controllers\MainController.php
+            [line] => 29
+            [function] => cancel
+            [class] => App\Controllers\VentasController
+            [type] => ::
+            [args] => Array
+                (
+                )
+
+        )
+
+)
+  
+[2021-01-12T22:41:10.370959+00:00] General.ERROR: Exception  
+[2021-01-12T22:41:10.372810+00:00] General.ERROR: Archivo: C:\laragon\www\H-MComputadores\app\Models\AbstractDBConnection.php  
+[2021-01-12T22:41:10.373180+00:00] General.ERROR: Line: 126  
+[2021-01-12T22:41:10.373514+00:00] General.ERROR: Mensaje: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'estado' at row 1  
+[2021-01-12T22:41:10.373880+00:00] General.ERROR: Array
+(
+    [0] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\AbstractDBConnection.php
+            [line] => 126
+            [function] => execute
+            [class] => PDOStatement
+            [type] => ->
+            [args] => Array
+                (
+                )
+
+        )
+
+    [1] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Ventas.php
+            [line] => 227
+            [function] => insertRow
+            [class] => App\Models\AbstractDBConnection
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => UPDATE `h&mcomputadores`.ventas SET 
+            fecha = :fecha, administrador_id = :administrador_id, cliente_id = :cliente_id,
+            valor_total = :valor_total, forma_pago = :forma_pago, estado = :estado WHERE id = :id
+                    [1] => Array
+                        (
+                            [:id] => 11
+                            [:fecha] => 2021-01-12 22:41:10
+                            [:administrador_id] => 1
+                            [:cliente_id] => 4
+                            [:valor_total] => 0
+                            [:forma_pago] => Cheque
+                            [:estado] => Cancelada
+                        )
+
+                )
+
+        )
+
+    [2] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Ventas.php
+            [line] => 249
+            [function] => save
+            [class] => App\Models\Ventas
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => UPDATE `h&mcomputadores`.ventas SET 
+            fecha = :fecha, administrador_id = :administrador_id, cliente_id = :cliente_id,
+            valor_total = :valor_total, forma_pago = :forma_pago, estado = :estado WHERE id = :id
+                )
+
+        )
+
+    [3] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Controllers\VentasController.php
+            [line] => 88
+            [function] => update
+            [class] => App\Models\Ventas
+            [type] => ->
+            [args] => Array
+                (
+                )
+
+        )
+
+    [4] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Controllers\MainController.php
+            [line] => 29
+            [function] => cancel
+            [class] => App\Controllers\VentasController
+            [type] => ::
+            [args] => Array
+                (
+                )
+
+        )
+
+)
+  
+[2021-01-12T22:41:29.455541+00:00] General.ERROR: Exception  
+[2021-01-12T22:41:29.458161+00:00] General.ERROR: Archivo: C:\laragon\www\H-MComputadores\app\Models\AbstractDBConnection.php  
+[2021-01-12T22:41:29.458869+00:00] General.ERROR: Line: 126  
+[2021-01-12T22:41:29.459481+00:00] General.ERROR: Mensaje: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'estado' at row 1  
+[2021-01-12T22:41:29.460119+00:00] General.ERROR: Array
+(
+    [0] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\AbstractDBConnection.php
+            [line] => 126
+            [function] => execute
+            [class] => PDOStatement
+            [type] => ->
+            [args] => Array
+                (
+                )
+
+        )
+
+    [1] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Ventas.php
+            [line] => 227
+            [function] => insertRow
+            [class] => App\Models\AbstractDBConnection
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => UPDATE `h&mcomputadores`.ventas SET 
+            fecha = :fecha, administrador_id = :administrador_id, cliente_id = :cliente_id,
+            valor_total = :valor_total, forma_pago = :forma_pago, estado = :estado WHERE id = :id
+                    [1] => Array
+                        (
+                            [:id] => 11
+                            [:fecha] => 2021-01-12 22:41:29
+                            [:administrador_id] => 1
+                            [:cliente_id] => 4
+                            [:valor_total] => 0
+                            [:forma_pago] => Cheque
+                            [:estado] => Cancelada
+                        )
+
+                )
+
+        )
+
+    [2] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Ventas.php
+            [line] => 249
+            [function] => save
+            [class] => App\Models\Ventas
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => UPDATE `h&mcomputadores`.ventas SET 
+            fecha = :fecha, administrador_id = :administrador_id, cliente_id = :cliente_id,
+            valor_total = :valor_total, forma_pago = :forma_pago, estado = :estado WHERE id = :id
+                )
+
+        )
+
+    [3] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Controllers\VentasController.php
+            [line] => 88
+            [function] => update
+            [class] => App\Models\Ventas
+            [type] => ->
+            [args] => Array
+                (
+                )
+
+        )
+
+    [4] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Controllers\MainController.php
+            [line] => 29
+            [function] => cancel
+            [class] => App\Controllers\VentasController
+            [type] => ::
+            [args] => Array
+                (
+                )
+
+        )
+
+)
+  
+[2021-01-12T22:41:33.631859+00:00] General.ERROR: Exception  
+[2021-01-12T22:41:33.634102+00:00] General.ERROR: Archivo: C:\laragon\www\H-MComputadores\app\Models\AbstractDBConnection.php  
+[2021-01-12T22:41:33.634742+00:00] General.ERROR: Line: 126  
+[2021-01-12T22:41:33.635379+00:00] General.ERROR: Mensaje: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'estado' at row 1  
+[2021-01-12T22:41:33.636036+00:00] General.ERROR: Array
+(
+    [0] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\AbstractDBConnection.php
+            [line] => 126
+            [function] => execute
+            [class] => PDOStatement
+            [type] => ->
+            [args] => Array
+                (
+                )
+
+        )
+
+    [1] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Ventas.php
+            [line] => 227
+            [function] => insertRow
+            [class] => App\Models\AbstractDBConnection
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => UPDATE `h&mcomputadores`.ventas SET 
+            fecha = :fecha, administrador_id = :administrador_id, cliente_id = :cliente_id,
+            valor_total = :valor_total, forma_pago = :forma_pago, estado = :estado WHERE id = :id
+                    [1] => Array
+                        (
+                            [:id] => 11
+                            [:fecha] => 2021-01-12 22:41:33
+                            [:administrador_id] => 1
+                            [:cliente_id] => 4
+                            [:valor_total] => 0
+                            [:forma_pago] => Cheque
+                            [:estado] => Cancelada
+                        )
+
+                )
+
+        )
+
+    [2] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Ventas.php
+            [line] => 249
+            [function] => save
+            [class] => App\Models\Ventas
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => UPDATE `h&mcomputadores`.ventas SET 
+            fecha = :fecha, administrador_id = :administrador_id, cliente_id = :cliente_id,
+            valor_total = :valor_total, forma_pago = :forma_pago, estado = :estado WHERE id = :id
+                )
+
+        )
+
+    [3] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Controllers\VentasController.php
+            [line] => 88
+            [function] => update
+            [class] => App\Models\Ventas
+            [type] => ->
+            [args] => Array
+                (
+                )
+
+        )
+
+    [4] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Controllers\MainController.php
+            [line] => 29
+            [function] => cancel
+            [class] => App\Controllers\VentasController
+            [type] => ::
+            [args] => Array
+                (
+                )
+
+        )
+
+)
+  
+[2021-01-12T22:42:44.590311+00:00] General.ERROR: Exception  
+[2021-01-12T22:42:44.592150+00:00] General.ERROR: Archivo: C:\laragon\www\H-MComputadores\app\Models\AbstractDBConnection.php  
+[2021-01-12T22:42:44.592774+00:00] General.ERROR: Line: 126  
+[2021-01-12T22:42:44.593372+00:00] General.ERROR: Mensaje: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'estado' at row 1  
+[2021-01-12T22:42:44.593961+00:00] General.ERROR: Array
+(
+    [0] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\AbstractDBConnection.php
+            [line] => 126
+            [function] => execute
+            [class] => PDOStatement
+            [type] => ->
+            [args] => Array
+                (
+                )
+
+        )
+
+    [1] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Ventas.php
+            [line] => 227
+            [function] => insertRow
+            [class] => App\Models\AbstractDBConnection
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => UPDATE `h&mcomputadores`.ventas SET 
+            fecha = :fecha, administrador_id = :administrador_id, cliente_id = :cliente_id,
+            valor_total = :valor_total, forma_pago = :forma_pago, estado = :estado WHERE id = :id
+                    [1] => Array
+                        (
+                            [:id] => 11
+                            [:fecha] => 2021-01-12 22:42:44
+                            [:administrador_id] => 1
+                            [:cliente_id] => 4
+                            [:valor_total] => 13440
+                            [:forma_pago] => Cheque
+                            [:estado] => Cancelada
+                        )
+
+                )
+
+        )
+
+    [2] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Ventas.php
+            [line] => 249
+            [function] => save
+            [class] => App\Models\Ventas
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => UPDATE `h&mcomputadores`.ventas SET 
+            fecha = :fecha, administrador_id = :administrador_id, cliente_id = :cliente_id,
+            valor_total = :valor_total, forma_pago = :forma_pago, estado = :estado WHERE id = :id
+                )
+
+        )
+
+    [3] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Controllers\VentasController.php
+            [line] => 88
+            [function] => update
+            [class] => App\Models\Ventas
+            [type] => ->
+            [args] => Array
+                (
+                )
+
+        )
+
+    [4] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Controllers\MainController.php
+            [line] => 29
+            [function] => cancel
+            [class] => App\Controllers\VentasController
+            [type] => ::
+            [args] => Array
+                (
+                )
+
+        )
+
+)
+  
+[2021-01-12T22:43:10.494990+00:00] General.ERROR: Exception  
+[2021-01-12T22:43:10.496988+00:00] General.ERROR: Archivo: C:\laragon\www\H-MComputadores\app\Models\AbstractDBConnection.php  
+[2021-01-12T22:43:10.497810+00:00] General.ERROR: Line: 126  
+[2021-01-12T22:43:10.498601+00:00] General.ERROR: Mensaje: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'estado' at row 1  
+[2021-01-12T22:43:10.499406+00:00] General.ERROR: Array
+(
+    [0] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\AbstractDBConnection.php
+            [line] => 126
+            [function] => execute
+            [class] => PDOStatement
+            [type] => ->
+            [args] => Array
+                (
+                )
+
+        )
+
+    [1] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Ventas.php
+            [line] => 227
+            [function] => insertRow
+            [class] => App\Models\AbstractDBConnection
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => UPDATE `h&mcomputadores`.ventas SET 
+            fecha = :fecha, administrador_id = :administrador_id, cliente_id = :cliente_id,
+            valor_total = :valor_total, forma_pago = :forma_pago, estado = :estado WHERE id = :id
+                    [1] => Array
+                        (
+                            [:id] => 11
+                            [:fecha] => 2021-01-12 22:43:10
+                            [:administrador_id] => 1
+                            [:cliente_id] => 4
+                            [:valor_total] => 13440
+                            [:forma_pago] => Cheque
+                            [:estado] => Cancelada
+                        )
+
+                )
+
+        )
+
+    [2] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Ventas.php
+            [line] => 249
+            [function] => save
+            [class] => App\Models\Ventas
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => UPDATE `h&mcomputadores`.ventas SET 
+            fecha = :fecha, administrador_id = :administrador_id, cliente_id = :cliente_id,
+            valor_total = :valor_total, forma_pago = :forma_pago, estado = :estado WHERE id = :id
+                )
+
+        )
+
+    [3] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Controllers\VentasController.php
+            [line] => 88
+            [function] => update
+            [class] => App\Models\Ventas
+            [type] => ->
+            [args] => Array
+                (
+                )
+
+        )
+
+    [4] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Controllers\MainController.php
+            [line] => 29
+            [function] => cancel
+            [class] => App\Controllers\VentasController
+            [type] => ::
+            [args] => Array
+                (
+                )
+
+        )
+
+)
+  
