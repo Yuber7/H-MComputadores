@@ -1,13 +1,15 @@
 <?php
 require("../../partials/routes.php");
 require_once("../../partials/check_login.php");
-require("../../../app/Controllers/VentasController.php");
+require("../../../app/Controllers/ComprasController.php");
 
-use App\Controllers\VentasController;
+use App\Controllers\ComprasController;
+
+use App\Models\Compras;
 use App\Models\Ventas;
 use App\Models\GeneralFunctions;
 
-$nameModel = "Venta";
+$nameModel = "Compra";
 $pluralModel = $nameModel.'s';
 $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
 ?>
@@ -56,14 +58,13 @@ $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
                         <!-- Horizontal Form -->
                         <div class="card card-green">
                             <?php if (!empty($_GET["id"]) && isset($_GET["id"])) {
-                                $DataVentas = VentasController::searchForID(["id" => $_GET["id"]]);
-                                /* @var $DataVentas Ventas */
-                                if (!empty($DataVentas)) {
+                                $DataCompras = ComprasController::searchForID(["id" => $_GET["id"]]);
+                                /* @var $DataCompras Compras */
+                                if (!empty($DataCompras)) {
                                     ?>
                                     <div class="card-header">
-                                        <h3 class="card-title"><i class="fas fa-shopping-cart"></i> &nbsp; Ver
-                                            Información de <?= $DataVentas->getNumeroSerie() ?>
-                                            -<?= $DataVentas->getId() ?></h3>
+                                        <h3 class="card-title"><i class="fas fa-shopping-cart"></i> &nbsp;
+                                            Ver Información de <?= $DataCompras->getId() ?></h3>
                                         <div class="card-tools">
                                             <button type="button" class="btn btn-tool" data-card-widget="card-refresh"
                                                     data-source="show.php" data-source-selector="#card-refresh-content"
@@ -82,24 +83,22 @@ $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
                                         <p>
 
                                             <strong><i class="fas fa-sort-numeric-down mr-1"></i> Numero</strong>
-                                        <p class="text-muted">
-                                            <?= $DataVentas->getNumeroSerie() . "-" . $DataVentas->getId(); ?>
-                                        </p>
+                                        <p class="text-muted"> <?= $DataCompras->getId(); ?> </p>
                                         <hr>
-                                        <strong><i class="fas fa-user-ninja mr-1"></i> Cliente</strong>
-                                        <p class="text-muted"><?= $DataVentas->getCliente()->getNombres() . " " . $DataVentas->getCliente()->getApellidos() ?></p>
+                                        <strong><i class="fas fa-user-ninja mr-1"></i> Administrador</strong>
+                                        <p class="text-muted"><?= $DataCompras->getAdministrador()->getNombre() . " " . $DataCompras->getAdministrador()->getApellido() ?></p>
                                         <hr>
-                                        <strong><i class="far fa-user mr-1"></i> Empleado</strong>
-                                        <p class="text-muted"><?= $DataVentas->getEmpleado()->getNombres() . " " . $DataVentas->getEmpleado()->getApellidos() ?></p>
+                                        <strong><i class="far fa-user mr-1"></i> Proveedor</strong>
+                                        <p class="text-muted"><?= $DataCompras->getProveedor()->getNombre() . " " . $DataCompras->getProveedor()->getApellido() ?></p>
                                         <hr>
-                                        <strong><i class="far fa-calendar mr-1"></i> Fecha Venta</strong>
-                                        <p class="text-muted"><?= $DataVentas->getFechaVenta(); ?></p>
+                                        <strong><i class="far fa-calendar mr-1"></i> Fecha Compra</strong>
+                                        <p class="text-muted"><?= $DataCompras->getFecha(); ?></p>
                                         <hr>
-                                        <strong><i class="fas fa-money-bill mr-1"></i> Monto</strong>
-                                        <p class="text-muted"><?= GeneralFunctions::formatCurrency($DataVentas->getMonto()); ?></p>
+                                        <strong><i class="fas fa-money-bill mr-1"></i> Valor Total</strong>
+                                        <p class="text-muted"><?= GeneralFunctions::formatCurrency($DataCompras->getValorTotal()); ?></p>
                                         <hr>
                                         <strong><i class="fas fa-cog mr-1"></i> Estado</strong>
-                                        <p class="text-muted"><?= $DataVentas->getEstado(); ?></p>
+                                        <p class="text-muted"><?= $DataCompras->getEstado(); ?></p>
                                         </p>
 
                                     </div>

@@ -34,7 +34,7 @@ class Compras extends AbstractDBConnection implements Model, JsonSerializable
         $this->setAdministradorId($venta['administrador_id'] ?? 0);
         $this->setProveedorId($venta['proveedor_id'] ?? 0);
         $this->setValorTotal();
-        $this->setEstado($venta['estado'] ?? 'Pendiente');
+        $this->setEstado($venta['estado'] ?? 'En Progreso');
     }
 
     /**
@@ -225,7 +225,7 @@ class Compras extends AbstractDBConnection implements Model, JsonSerializable
     public function update() : ?bool
     {
         $query = "UPDATE `h&mcomputadores`.compras SET 
-            fecha_compra = :fecha_compra, administrador_id = :administrador_id, 
+            fecha = :fecha, administrador_id = :administrador_id, 
             proveedor_id = :proveedor_id, valor_total = :valor_total, estado = :estado WHERE id = :id";
         return $this->save($query);
     }
@@ -235,7 +235,7 @@ class Compras extends AbstractDBConnection implements Model, JsonSerializable
      */
     public function deleted() : bool
     {
-        $this->setEstado("Inactivo"); //Cambia el estado del Usuario
+        $this->setEstado("Finalizada"); //Cambia el estado del Usuario
         return $this->update();                    //Guarda los cambios..
     }
 

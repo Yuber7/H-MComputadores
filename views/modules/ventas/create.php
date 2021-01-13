@@ -18,7 +18,7 @@ $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
 $dataVenta = null;
 if (!empty($_GET['id'])) {
     $dataVenta = VentasController::searchForID(["id" => $_GET['id']]);
-    if ($dataVenta->getEstado() != "Pendiente"){
+    if ($dataVenta->getEstado() != "En progreso"){
         header('Location: index.php?respuesta=warning&mensaje=La venta ya ha finalizado');
     }
 }

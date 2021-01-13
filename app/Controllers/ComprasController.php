@@ -20,7 +20,7 @@ class ComprasController{
         $this->dataCompra['administrador_id'] = $_FORM['administrador_id'] ?? 0;
         $this->dataCompra['proveedor_id'] = $_FORM['proveedor_id'] ?? 0;
         $this->dataCompra['valor_total'] = $_FORM['valor_total'] ?? 0;
-        $this->dataCompra['estado'] = $_FORM['estado'] ?? 'Pendiente';
+        $this->dataCompra['estado'] = $_FORM['estado'] ?? 'En Progreso';
     }
 
     public function create() {
@@ -84,7 +84,7 @@ class ComprasController{
     static public function cancel(){
         try {
             $ObjCompra = Compras::searchForId($_GET['Id']);
-            $ObjCompra->setEstado("Cancelada");
+            $ObjCompra->setEstado("Finalizada");
             if($ObjCompra->update()){
                 header("Location: ../../views/modules/compras/index.php");
             }else{
