@@ -116,7 +116,7 @@ $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
                                                            type="button" data-toggle="tooltip" title="Ver"
                                                            class="btn docs-tooltip btn-warning btn-xs"><i
                                                                     class="fa fa-eye"></i></a>
-                                                        <?php if ($compra->getEstado() == "Pendiente") { ?>
+                                                        <?php if ($compra->getEstado() == "En progreso") { ?>
                                                             <a href="create.php?id=<?php echo $compra->getId(); ?>"
                                                                type="button" data-toggle="tooltip" title="Retomar"
                                                                class="btn docs-tooltip btn-success btn-xs"><i

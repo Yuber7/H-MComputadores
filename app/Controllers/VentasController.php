@@ -20,7 +20,7 @@ class VentasController{
         $this->dataVenta['cliente_id'] = $_FORM['cliente_id'] ?? 0;
         $this->dataVenta['valor_total'] = $_FORM['valor_total'] ?? 0;
         $this->dataVenta['forma_pago'] = $_FORM['forma_pago'] ?? '';
-        $this->dataVenta['estado'] = $_FORM['estado'] ?? 'Pendiente';
+        $this->dataVenta['estado'] = $_FORM['estado'] ?? 'En progreso';
     }
 
     public function create() {
@@ -84,7 +84,7 @@ class VentasController{
     static public function cancel(){
         try {
             $ObjVenta = Ventas::searchForId($_GET['Id']);
-            $ObjVenta->setEstado("Cancelada");
+            $ObjVenta->setEstado("Finalizada");
             if($ObjVenta->update()){
                 header("Location: ../../views/modules/ventas/index.php");
             }else{

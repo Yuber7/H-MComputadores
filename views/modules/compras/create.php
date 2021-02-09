@@ -18,7 +18,7 @@ $frmSession = $_SESSION['frm'.$pluralModel] ?? NULL;
 $dataCompra = null;
 if (!empty($_GET['id'])) {
     $dataCompra = ComprasController::searchForID(["id" => $_GET['id']]);
-    if ($dataCompra->getEstado() != "Pendiente"){
+    if ($dataCompra->getEstado() != "En progreso"){
         header('Location: index.php?respuesta=warning&mensaje=La compra ya ha finalizado');
     }
 }
@@ -352,10 +352,10 @@ if (!empty($_GET['id'])) {
             if(dataProducto !== null){
                 $("#divResultProducto").slideDown();
                 $("#spPrecio").html("$"+dataProducto.precio);
-                $("#spPrecioVenta").html("$"+dataProducto.precio_venta);
+                $("#spPrecioCompra").html("$"+Number(dataProducto.precio));
                 $("#spStock").html(dataProducto.stock+" Unidad(es)");
                 $("#cantidad").attr("max",dataProducto.stock);
-                $("#precio_compra").val(dataProducto.precio_venta);
+                $("#precio_compra").val(Number(dataProducto.precio));
             }else{
                 $("#divResultProducto").slideUp();
                 $("#spPrecio").html("");
@@ -368,7 +368,7 @@ if (!empty($_GET['id'])) {
         }
 
         $( "#cantidad" ).on( "change keyup focusout", function() {
-            $("#total_producto").val($( "#cantidad" ).val() *  $("#precio_venta").val());
+            $("#total_producto").val($( "#cantidad" ).val() *  $("#precio_compra").val());
         });
 
     });

@@ -35,7 +35,7 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
         $this->setAdministradorId($venta['administrador_id'] ?? 0);
         $this->setClienteId($venta['cliente_id'] ?? 0);
         $this->setFormaPago($venta['forma_pago'] ?? '');
-        $this->setEstado($venta['estado'] ?? 'Pendiente');
+        $this->setEstado($venta['estado'] ?? 'En progreso');
         $this->setValorTotal();
     }
 
@@ -254,7 +254,7 @@ class Ventas extends AbstractDBConnection implements Model, JsonSerializable
      */
     public function deleted() : bool
     {
-        $this->setEstado("Inactivo"); //Cambia el estado del Usuario
+        $this->setEstado("Finalizada"); //Cambia el estado del Usuario
         return $this->update();                    //Guarda los cambios..
     }
 

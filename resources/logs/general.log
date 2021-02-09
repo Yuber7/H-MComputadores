@@ -10289,3 +10289,89 @@
 
 )
   
+[2021-01-13T18:43:04.489468+00:00] General.ERROR: Exception  
+[2021-01-13T18:43:04.534790+00:00] General.ERROR: Archivo: C:\laragon\www\H-MComputadores\app\Models\AbstractDBConnection.php  
+[2021-01-13T18:43:04.535886+00:00] General.ERROR: Line: 126  
+[2021-01-13T18:43:04.536933+00:00] General.ERROR: Mensaje: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'estado' at row 1  
+[2021-01-13T18:43:04.537800+00:00] General.ERROR: Array
+(
+    [0] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\AbstractDBConnection.php
+            [line] => 126
+            [function] => execute
+            [class] => PDOStatement
+            [type] => ->
+            [args] => Array
+                (
+                )
+
+        )
+
+    [1] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Ventas.php
+            [line] => 227
+            [function] => insertRow
+            [class] => App\Models\AbstractDBConnection
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => INSERT INTO `h&mcomputadores`.ventas VALUES (:id,:fecha,:administrador_id,:cliente_id,:valor_total,:forma_pago,:estado)
+                    [1] => Array
+                        (
+                            [:id] => 
+                            [:fecha] => 2021-01-13 18:43:04
+                            [:administrador_id] => 1
+                            [:cliente_id] => 2
+                            [:valor_total] => 0
+                            [:forma_pago] => Efectivo
+                            [:estado] => Pendiente
+                        )
+
+                )
+
+        )
+
+    [2] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Models\Ventas.php
+            [line] => 238
+            [function] => save
+            [class] => App\Models\Ventas
+            [type] => ->
+            [args] => Array
+                (
+                    [0] => INSERT INTO `h&mcomputadores`.ventas VALUES (:id,:fecha,:administrador_id,:cliente_id,:valor_total,:forma_pago,:estado)
+                )
+
+        )
+
+    [3] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Controllers\VentasController.php
+            [line] => 29
+            [function] => insert
+            [class] => App\Models\Ventas
+            [type] => ->
+            [args] => Array
+                (
+                )
+
+        )
+
+    [4] => Array
+        (
+            [file] => C:\laragon\www\H-MComputadores\app\Controllers\MainController.php
+            [line] => 29
+            [function] => create
+            [class] => App\Controllers\VentasController
+            [type] => ->
+            [args] => Array
+                (
+                )
+
+        )
+
+)
+  
